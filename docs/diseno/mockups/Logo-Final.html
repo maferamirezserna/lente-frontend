@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Lente · Logo, versiones mejoradas</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#2F5BEA}a:hover{color:#1A36A8}
+.fb{transform-box:fill-box;transform-origin:center}
+@keyframes glide{0%,8%{transform:translate(0,0)}46%,54%{transform:translate(290px,36px)}92%,100%{transform:translate(0,0)}}
+@keyframes unglide{0%,8%{transform:translate(0,0)}46%,54%{transform:translate(-290px,-36px)}92%,100%{transform:translate(0,0)}}
+@keyframes word{0%,8%{transform:translate(-52px,0)}28%,58%{transform:translate(0,0)}78%,84%{transform:translate(125px,0)}100%{transform:translate(-52px,0)}}
+@keyframes unword{0%,8%{transform:translate(52px,0)}28%,58%{transform:translate(0,0)}78%,84%{transform:translate(-125px,0)}100%{transform:translate(52px,0)}}
+@keyframes glint{to{transform:rotate(360deg)}}
+@keyframes glow{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes bob{0%,100%{transform:translate(0,0)}50%{transform:translate(0,-6px)}}
+@keyframes unbob{0%,100%{transform:translate(0,0)}50%{transform:translate(0,6px)}}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.glide{animation:glide 7s ease-in-out infinite}
+.unglide{animation:unglide 7s ease-in-out infinite}
+.word{animation:word 7s cubic-bezier(.45,0,.25,1) infinite}
+.unword{animation:unword 7s cubic-bezier(.45,0,.25,1) infinite}
+.glint{animation:glint 3.5s linear infinite}
+.glow{animation:glow 2.4s ease-in-out infinite}
+.bob{animation:bob 3s ease-in-out infinite}
+.unbob{animation:unbob 3s ease-in-out infinite}
+.tag{animation:fadein .8s ease-out .3s both}
+@media (prefers-reduced-motion: reduce){.glide,.unglide,.word,.unword,.glint,.glow,.bob,.unbob,.tag{animation:none}}
+</style>
+</helmet>
+<div style="width: 1320px; height: 940px; box-sizing: border-box; padding: 36px 44px; background: #FFFFFF; font-family: 'Nunito', system-ui, sans-serif; color: #1F2A37; display: flex; flex-direction: column; gap: 18px">
+  <div style="display: flex; flex-direction: column; gap: 4px">
+    <h1 style="margin: 0; font-weight: 900; font-size: 34px">Logo de Lente · versiones mejoradas</h1>
+    <p style="margin: 0; font-weight: 700; font-size: 15px; color: #4B5563">Basadas en la 1 y la 4, en azul cobalto, con luz concentrada, borde de vidrio, destello en el aro y eslogan.</p>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; flex-grow: 1">
+
+    <section style="border-radius: 24px; overflow: hidden; display: flex; flex-direction: column; background-color: #1A36A8; background-image: radial-gradient(rgba(255,255,255,.07) 1px, transparent 1px), radial-gradient(120% 90% at 0% 0%, #6E94FF 0%, #2F5BEA 45%, #1A36A8 100%); background-size: 3px 3px, 100% 100%">
+      <svg width="100%" height="290" viewBox="0 0 520 290" role="img" aria-label="Lupa de vidrio que aclara una noticia sobre fondo azul">
+        <defs>
+          <linearGradient id="rimA" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF"></stop><stop offset=".42" stop-color="#9AA6B6"></stop><stop offset=".58" stop-color="#EEF2F7"></stop><stop offset="1" stop-color="#5E6A7A"></stop></linearGradient>
+          <radialGradient id="glassA" cx=".35" cy=".3" r=".85"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".55"></stop><stop offset=".5" stop-color="#FFFFFF" stop-opacity=".06"></stop><stop offset="1" stop-color="#2F5BEA" stop-opacity=".22"></stop></radialGradient>
+          <linearGradient id="handleA" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0F2370"></stop><stop offset=".45" stop-color="#4C7DFF"></stop><stop offset="1" stop-color="#0F2370"></stop></linearGradient>
+          <radialGradient id="causticA" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FFFBEA"></stop><stop offset=".6" stop-color="#FFF3B0" stop-opacity=".5"></stop><stop offset="1" stop-color="#FFF3B0" stop-opacity="0"></stop></radialGradient>
+          <clipPath id="magA"><circle cx="130" cy="110" r="56"></circle></clipPath>
+        </defs>
+        <g transform="rotate(-3 260 150)">
+          <rect x="26" y="28" width="470" height="244" rx="14" fill="#0B1A4A" opacity=".35" style="filter: blur(10px)"></rect>
+          <rect x="20" y="20" width="480" height="246" rx="14" fill="#FBFAF7"></rect>
+          <g style="filter: blur(1.4px); opacity: .65">
+            <text x="44" y="72" font-family="Georgia, 'Times New Roman', serif" font-weight="700" font-size="30" fill="#1F2A37">Miles de jóvenes</text>
+            <text x="44" y="108" font-family="Georgia, 'Times New Roman', serif" font-weight="700" font-size="30" fill="#1F2A37">«invaden» el parque</text>
+            <text x="44" y="146" font-family="Georgia, serif" font-size="13" fill="#4B5563">Los vecinos, indignados, aseguraron que el ruido fue</text>
+            <text x="44" y="168" font-family="Georgia, serif" font-size="13" fill="#4B5563">insoportable hasta la madrugada y que el lugar quedó</text>
+            <text x="44" y="190" font-family="Georgia, serif" font-size="13" fill="#4B5563">convertido en un basurero, según denunciaron ayer.</text>
+            <text x="44" y="212" font-family="Georgia, serif" font-size="13" fill="#4B5563">Los organizadores dicen que todo se hizo con permiso</text>
+            <text x="44" y="234" font-family="Georgia, serif" font-size="13" fill="#4B5563">y que el parque quedó limpio a las seis de la mañana.</text>
+          </g>
+          <g class="glide">
+            <ellipse cx="150" cy="184" rx="62" ry="16" fill="#0B1A4A" opacity=".2" style="filter: blur(7px)"></ellipse>
+            <ellipse class="glow" cx="148" cy="182" rx="20" ry="6" fill="url(#causticA)"></ellipse>
+            <rect x="182" y="135" width="20" height="74" rx="10" fill="url(#handleA)" transform="rotate(-45 192 172)"></rect>
+            <g clip-path="url(#magA)">
+              <circle cx="130" cy="110" r="56" fill="#FFFFFF"></circle>
+              <g transform="translate(-58.5 -49.5) scale(1.45)">
+                <g class="unglide">
+                  <text x="44" y="72" font-family="Georgia, 'Times New Roman', serif" font-weight="700" font-size="30" fill="#1F2A37">Miles de jóvenes</text>
+                  <text x="44" y="108" font-family="Georgia, 'Times New Roman', serif" font-weight="700" font-size="30" fill="#1F2A37">«<tspan fill="#2F5BEA">invaden</tspan>» el parque</text>
+                  <text x="44" y="146" font-family="Georgia, serif" font-size="13" fill="#4B5563">Los vecinos, <tspan fill="#2F5BEA" font-weight="700">indignados</tspan>, aseguraron que el ruido fue</text>
+                  <text x="44" y="168" font-family="Georgia, serif" font-size="13" fill="#4B5563"><tspan fill="#2F5BEA" font-weight="700">insoportable</tspan> hasta la madrugada y que el lugar quedó</text>
+                  <text x="44" y="190" font-family="Georgia, serif" font-size="13" fill="#4B5563">convertido en un <tspan fill="#2F5BEA" font-weight="700">basurero</tspan>, según denunciaron ayer.</text>
+                  <text x="44" y="212" font-family="Georgia, serif" font-size="13" fill="#4B5563">Los organizadores dicen que todo se hizo con permiso</text>
+                  <text x="44" y="234" font-family="Georgia, serif" font-size="13" fill="#4B5563">y que el parque quedó limpio a las seis de la mañana.</text>
+                </g>
+              </g>
+              <circle cx="130" cy="110" r="56" fill="url(#glassA)"></circle>
+              <circle cx="129" cy="110" r="54" fill="none" stroke="#22D3EE" stroke-opacity=".35" stroke-width="3"></circle>
+              <circle cx="131" cy="110" r="54" fill="none" stroke="#FF4D6D" stroke-opacity=".25" stroke-width="3"></circle>
+            </g>
+            <circle cx="130" cy="110" r="61" fill="none" stroke="url(#rimA)" stroke-width="10"></circle>
+            <g class="fb glint">
+              <circle cx="130" cy="110" r="61" fill="none" stroke="none"></circle>
+              <path d="M130 49a61 61 0 0 1 22 4" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"></path>
+            </g>
+            <path d="M94 84a44 44 0 0 1 26-22" fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" opacity=".9"></path>
+            <circle cx="100" cy="94" r="3" fill="#FFFFFF" opacity=".9"></circle>
+          </g>
+        </g>
+      </svg>
+      <div style="padding: 4px 24px 18px; display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap">
+        <span style="font-weight: 900; font-size: 44px; letter-spacing: -1px; color: #FFFFFF; line-height: 1">lente</span>
+        <span class="tag" style="font-weight: 800; font-size: 16px; color: #DCE6FF">Mira más allá de la noticia</span>
+      </div>
+    </section>
+
+    <section style="border: 2px solid #E5E7EB; border-radius: 24px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 2px; padding: 10px 20px 18px">
+      <svg width="100%" height="270" viewBox="0 0 520 270" role="img" aria-label="Palabra lente con una lupa de vidrio que recorre las letras">
+        <defs>
+          <linearGradient id="rimB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF"></stop><stop offset=".42" stop-color="#9AA6B6"></stop><stop offset=".58" stop-color="#EEF2F7"></stop><stop offset="1" stop-color="#5E6A7A"></stop></linearGradient>
+          <radialGradient id="glassB" cx=".35" cy=".3" r=".85"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".5"></stop><stop offset=".6" stop-color="#FFFFFF" stop-opacity=".04"></stop><stop offset="1" stop-color="#2F5BEA" stop-opacity=".2"></stop></radialGradient>
+          <linearGradient id="handleB" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0F2370"></stop><stop offset=".45" stop-color="#4C7DFF"></stop><stop offset="1" stop-color="#0F2370"></stop></linearGradient>
+          <radialGradient id="causticB" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FFF7D6"></stop><stop offset="1" stop-color="#FFF7D6" stop-opacity="0"></stop></radialGradient>
+          <clipPath id="magB"><circle cx="170" cy="150" r="54"></circle></clipPath>
+        </defs>
+        <text x="100" y="182" font-family="Nunito, sans-serif" font-weight="900" font-size="128" letter-spacing="-4" fill="#1F2A37">lente</text>
+        <g class="word">
+          <ellipse cx="184" cy="236" rx="56" ry="11" fill="#1F2A37" opacity=".13" style="filter: blur(6px)"></ellipse>
+          <ellipse class="glow" cx="182" cy="234" rx="18" ry="5" fill="url(#causticB)"></ellipse>
+          <rect x="221" y="177" width="18" height="66" rx="9" fill="url(#handleB)" transform="rotate(-45 230 210)"></rect>
+          <g clip-path="url(#magB)">
+            <circle cx="170" cy="150" r="54" fill="#FFFFFF"></circle>
+            <g transform="translate(-85 -75) scale(1.5)">
+              <g class="unword">
+                <text x="100" y="182" font-family="Nunito, sans-serif" font-weight="900" font-size="128" letter-spacing="-4" fill="#2F5BEA">lente</text>
+              </g>
+            </g>
+            <circle cx="170" cy="150" r="54" fill="url(#glassB)"></circle>
+            <circle cx="169" cy="150" r="52" fill="none" stroke="#22D3EE" stroke-opacity=".35" stroke-width="3"></circle>
+            <circle cx="171" cy="150" r="52" fill="none" stroke="#FF4D6D" stroke-opacity=".25" stroke-width="3"></circle>
+          </g>
+          <circle cx="170" cy="150" r="58" fill="none" stroke="url(#rimB)" stroke-width="9"></circle>
+          <g class="fb glint">
+            <circle cx="170" cy="150" r="58" fill="none" stroke="none"></circle>
+            <path d="M170 92a58 58 0 0 1 21 4" fill="none" stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round"></path>
+          </g>
+          <path d="M134 128a42 42 0 0 1 26-22" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" opacity=".9"></path>
+        </g>
+      </svg>
+      <span class="tag" style="font-weight: 800; font-size: 18px; color: #2F5BEA">Mira más allá de la noticia</span>
+    </section>
+
+    <section style="border-radius: 24px; overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 2px; padding: 10px 20px 18px; background-color: #1A36A8; background-image: radial-gradient(rgba(255,255,255,.07) 1px, transparent 1px), radial-gradient(120% 100% at 100% 0%, #6E94FF 0%, #2F5BEA 45%, #1A36A8 100%); background-size: 3px 3px, 100% 100%">
+      <svg width="100%" height="270" viewBox="0 0 520 270" role="img" aria-label="Palabra lente en blanco con lupa sobre fondo azul">
+        <defs>
+          <linearGradient id="rimC" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF"></stop><stop offset=".42" stop-color="#A9B4C4"></stop><stop offset=".58" stop-color="#F2F5F9"></stop><stop offset="1" stop-color="#6E7A8A"></stop></linearGradient>
+          <radialGradient id="glassC" cx=".35" cy=".3" r=".85"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".35"></stop><stop offset="1" stop-color="#FFFFFF" stop-opacity=".02"></stop></radialGradient>
+          <clipPath id="magC"><circle cx="170" cy="150" r="54"></circle></clipPath>
+        </defs>
+        <text x="100" y="182" font-family="Nunito, sans-serif" font-weight="900" font-size="128" letter-spacing="-4" fill="#FFFFFF">lente</text>
+        <g class="bob">
+          <ellipse cx="184" cy="236" rx="56" ry="11" fill="#0B1A4A" opacity=".35" style="filter: blur(6px)"></ellipse>
+          <rect x="221" y="177" width="18" height="66" rx="9" fill="#FFC800" transform="rotate(-45 230 210)"></rect>
+          <g clip-path="url(#magC)">
+            <circle cx="170" cy="150" r="54" fill="#3D68F0"></circle>
+            <g transform="translate(-85 -75) scale(1.5)">
+              <g class="unbob">
+                <text x="100" y="182" font-family="Nunito, sans-serif" font-weight="900" font-size="128" letter-spacing="-4" fill="#FFE14D">lente</text>
+              </g>
+            </g>
+            <circle cx="170" cy="150" r="54" fill="url(#glassC)"></circle>
+          </g>
+          <circle cx="170" cy="150" r="58" fill="none" stroke="url(#rimC)" stroke-width="9"></circle>
+          <g class="fb glint">
+            <circle cx="170" cy="150" r="58" fill="none" stroke="none"></circle>
+            <path d="M170 92a58 58 0 0 1 21 4" fill="none" stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round"></path>
+          </g>
+          <path d="M134 128a42 42 0 0 1 26-22" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" opacity=".85"></path>
+        </g>
+      </svg>
+      <span class="tag" style="font-weight: 800; font-size: 18px; color: #DCE6FF">Mira más allá de la noticia</span>
+    </section>
+
+    <section style="border: 2px solid #E5E7EB; border-radius: 24px; display: flex; flex-direction: column; justify-content: center; gap: 22px; padding: 22px 28px">
+      <div style="display: flex; align-items: center; gap: 18px">
+        <div class="bob" style="flex-shrink: 0">
+          <svg width="112" height="112" viewBox="0 0 120 120" role="img" aria-label="Ícono de Lente">
+            <defs>
+              <linearGradient id="bgD" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6E94FF"></stop><stop offset="1" stop-color="#1A36A8"></stop></linearGradient>
+              <linearGradient id="rimD" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF"></stop><stop offset=".5" stop-color="#B8C3D3"></stop><stop offset="1" stop-color="#FFFFFF"></stop></linearGradient>
+              <clipPath id="iconD"><rect x="4" y="4" width="112" height="112" rx="28"></rect></clipPath>
+              <clipPath id="magD"><circle cx="54" cy="54" r="26"></circle></clipPath>
+            </defs>
+            <g clip-path="url(#iconD)">
+              <rect x="4" y="4" width="112" height="112" fill="url(#bgD)"></rect>
+              <rect x="20" y="22" width="80" height="78" rx="8" fill="#FBFAF7" transform="rotate(-4 60 60)"></rect>
+              <g transform="rotate(-4 60 60)">
+                <rect x="28" y="32" width="56" height="7" rx="3.5" fill="#C9CED6"></rect>
+                <rect x="28" y="46" width="44" height="5" rx="2.5" fill="#DCE0E6"></rect>
+                <rect x="28" y="57" width="52" height="5" rx="2.5" fill="#DCE0E6"></rect>
+                <rect x="28" y="68" width="40" height="5" rx="2.5" fill="#DCE0E6"></rect>
+                <rect x="28" y="79" width="48" height="5" rx="2.5" fill="#DCE0E6"></rect>
+              </g>
+              <ellipse cx="64" cy="88" rx="26" ry="6" fill="#0B1A4A" opacity=".25"></ellipse>
+              <rect x="70" y="66" width="12" height="36" rx="6" fill="#FFC800" transform="rotate(-45 76 84)"></rect>
+              <g clip-path="url(#magD)">
+                <circle cx="54" cy="54" r="26" fill="#FFFFFF"></circle>
+                <g transform="rotate(-4 60 60)">
+                  <rect x="20" y="44" width="56" height="10" rx="5" fill="#2F5BEA"></rect>
+                  <rect x="20" y="60" width="66" height="7" rx="3.5" fill="#BFCBEA"></rect>
+                </g>
+              </g>
+              <circle cx="54" cy="54" r="28" fill="none" stroke="url(#rimD)" stroke-width="6"></circle>
+              <path d="M36 44a20 20 0 0 1 12-10" fill="none" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round"></path>
+            </g>
+          </svg>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 2px">
+          <span style="font-weight: 900; font-size: 64px; letter-spacing: -2px; line-height: 1; color: #1F2A37">lente</span>
+          <span class="tag" style="font-weight: 800; font-size: 17px; color: #2F5BEA">Mira más allá de la noticia</span>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 16px; padding-top: 14px; border-top: 2px solid #F0F2F5">
+        <div style="display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: 14px; background: #F3F6FF">
+          <div style="width: 28px; height: 28px; border-radius: 8px; background: #2F5BEA; display: flex; align-items: center; justify-content: center">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="M15.5 15.5 21 21"></path></svg>
+          </div>
+          <span style="font-weight: 900; font-size: 20px">lente</span>
+        </div>
+        <span style="font-weight: 700; font-size: 13px; color: #4B5563">Versión pequeña para la barra superior y la pestaña del navegador.</span>
+      </div>
+    </section>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1320,"height":940}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

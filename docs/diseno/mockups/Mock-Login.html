@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Lente · Iniciar sesión</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#2F5BEA}a:hover{color:#1A36A8}
+.fb{transform-box:fill-box;transform-origin:center}
+@keyframes glide{0%,8%{transform:translate(0,0)}46%,54%{transform:translate(290px,36px)}92%,100%{transform:translate(0,0)}}
+@keyframes unglide{0%,8%{transform:translate(0,0)}46%,54%{transform:translate(-290px,-36px)}92%,100%{transform:translate(0,0)}}
+@keyframes word{0%,8%{transform:translate(-52px,0)}28%,58%{transform:translate(0,0)}78%,84%{transform:translate(125px,0)}100%{transform:translate(-52px,0)}}
+@keyframes unword{0%,8%{transform:translate(52px,0)}28%,58%{transform:translate(0,0)}78%,84%{transform:translate(-125px,0)}100%{transform:translate(52px,0)}}
+@keyframes glint{to{transform:rotate(360deg)}}
+@keyframes glow{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes bob{0%,100%{transform:translate(0,0)}50%{transform:translate(0,-6px)}}
+@keyframes unbob{0%,100%{transform:translate(0,0)}50%{transform:translate(0,6px)}}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.glide{animation:glide 7s ease-in-out infinite}
+.unglide{animation:unglide 7s ease-in-out infinite}
+.word{animation:word 7s cubic-bezier(.45,0,.25,1) infinite}
+.unword{animation:unword 7s cubic-bezier(.45,0,.25,1) infinite}
+.glint{animation:glint 3.5s linear infinite}
+.glow{animation:glow 2.4s ease-in-out infinite}
+.bob{animation:bob 3s ease-in-out infinite}
+.unbob{animation:unbob 3s ease-in-out infinite}
+.tag{animation:fadein .8s ease-out .3s both}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{animation:spin .8s linear infinite}
+.press{transition:transform .08s ease}
+.press:active{transform:translateY(3px)}
+.field:focus{outline: 3px solid #A9BEFF; outline-offset: 1px; border-color: #2F5BEA !important}
+@media (prefers-reduced-motion: reduce){.glide,.unglide,.word,.unword,.glint,.glow,.bob,.unbob,.tag,.spinner{animation:none}}
+</style>
+</helmet>
+<div style="min-height: 800px; display: flex; flex-wrap: wrap; font-family: 'Nunito', system-ui, sans-serif; color: #1F2A37; background: #FFFFFF">
+
+  <section style="flex: 999 1 560px; min-width: 0; min-height: 420px; box-sizing: border-box; padding: 48px clamp(24px, 5vw, 64px); display: flex; flex-direction: column; justify-content: center; gap: 28px; background-color: #1A36A8; background-image: radial-gradient(rgba(255,255,255,.07) 1px, transparent 1px), radial-gradient(120% 90% at 0% 0%, #6E94FF 0%, #2F5BEA 45%, #1A36A8 100%); background-size: 3px 3px, 100% 100%">
+    <svg width="100%" style="max-width: 620px; display: block" viewBox="0 0 520 290" role="img" aria-label="Lupa de vidrio que aclara una noticia sobre fondo azul">
+        <defs>
+          <linearGradient id="rimA" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF"></stop><stop offset=".42" stop-color="#9AA6B6"></stop><stop offset=".58" stop-color="#EEF2F7"></stop><stop offset="1" stop-color="#5E6A7A"></stop></linearGradient>
+          <radialGradient id="glassA" cx=".35" cy=".3" r=".85"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".55"></stop><stop offset=".5" stop-color="#FFFFFF" stop-opacity=".06"></stop><stop offset="1" stop-color="#2F5BEA" stop-opacity=".22"></stop></radialGradient>
+          <linearGradient id="handleA" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="{{accDark}}"></stop><stop offset=".45" stop-color="{{acc}}"></stop><stop offset="1" stop-color="{{accDark}}"></stop></linearGradient>
+          <radialGradient id="causticA" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FFFBEA"></stop><stop offset=".6" stop-color="#FFF3B0" stop-opacity=".5"></stop><stop offset="1" stop-color="#FFF3B0" stop-opacity="0"></stop></radialGradient>
+          <clipPath id="magA"><circle cx="130" cy="110" r="56"></circle></clipPath>
+        </defs>
+        <g transform="rotate(-3 260 150)">
+          <rect x="26" y="28" width="470" height="244" rx="14" fill="#0B1A4A" opacity=".35" style="filter: blur(10px)"></rect>
+          <rect x="20" y="20" width="480" height="246" rx="14" fill="#FBFAF7"></rect>
+          <g style="filter: blur(1.4px); opacity: .65">
+            <text x="44" y="72" font-family="Georgia, 'Times New Roman', serif" font-weight="700" font-size="30" fill="#1F2A37">Miles de jóvenes</text>
+            <text x="44" y="108" font-family="Georgia, 'Times New Roman', serif" font-weight="700" font-size="30" fill="#1F2A37">«invaden» el parque</text>
+            <text x="44" y="146" font-family="Georgia, serif" font-size="13" fill="#4B5563">Los vecinos, indignados, aseguraron que el ruido fue</text>
+            <text x="44" y="168" font-family="Georgia, serif" font-size="13" fill="#4B5563">insoportable hasta la madrugada y que el lugar quedó</text>
+            <text x="44" y="190" font-family="Georgia, serif" font-size="13" fill="#4B5563">convertido en un basurero, según denunciaron ayer.</text>
+            <text x="44" y="212" font-family="Georgia, serif" font-size="13" fill="#4B5563">Los organizadores dicen que todo se hizo con permiso</text>
+            <text x="44" y="234" font-family="Georgia, serif" font-size="13" fill="#4B5563">y que el parque quedó limpio a las seis de la mañana.</text>
+          </g>
+          <g class="glide">
+            <ellipse cx="150" cy="184" rx="62" ry="16" fill="#0B1A4A" opacity=".2" style="filter: blur(7px)"></ellipse>
+            <ellipse class="glow" cx="148" cy="182" rx="20" ry="6" fill="url(#causticA)"></ellipse>
+            <rect x="182" y="135" width="20" height="74" rx="10" fill="url(#handleA)" transform="rotate(-45 192 172)"></rect>
+            <g clip-path="url(#magA)">
+              <circle cx="130" cy="110" r="56" fill="#FFFFFF"></circle>
+              <g transform="translate(-58.5 -49.5) scale(1.45)">
+                <g class="unglide">
+                  <text x="44" y="72" font-family="Georgia, 'Times New Roman', serif" font-weight="700" font-size="30" fill="#1F2A37">Miles de jóvenes</text>
+                  <text x="44" y="108" font-family="Georgia, 'Times New Roman', serif" font-weight="700" font-size="30" fill="#1F2A37">«<tspan fill="#1A36A8">invaden</tspan>» el parque</text>
+                  <text x="44" y="146" font-family="Georgia, serif" font-size="13" fill="#4B5563">Los vecinos, <tspan fill="#1A36A8" font-weight="700">indignados</tspan>, aseguraron que el ruido fue</text>
+                  <text x="44" y="168" font-family="Georgia, serif" font-size="13" fill="#4B5563"><tspan fill="#1A36A8" font-weight="700">insoportable</tspan> hasta la madrugada y que el lugar quedó</text>
+                  <text x="44" y="190" font-family="Georgia, serif" font-size="13" fill="#4B5563">convertido en un <tspan fill="#1A36A8" font-weight="700">basurero</tspan>, según denunciaron ayer.</text>
+                  <text x="44" y="212" font-family="Georgia, serif" font-size="13" fill="#4B5563">Los organizadores dicen que todo se hizo con permiso</text>
+                  <text x="44" y="234" font-family="Georgia, serif" font-size="13" fill="#4B5563">y que el parque quedó limpio a las seis de la mañana.</text>
+                </g>
+              </g>
+              <circle cx="130" cy="110" r="56" fill="url(#glassA)"></circle>
+              <circle cx="129" cy="110" r="54" fill="none" stroke="#22D3EE" stroke-opacity=".35" stroke-width="3"></circle>
+              <circle cx="131" cy="110" r="54" fill="none" stroke="#FF4D6D" stroke-opacity=".25" stroke-width="3"></circle>
+            </g>
+            <circle cx="130" cy="110" r="61" fill="none" stroke="url(#rimA)" stroke-width="10"></circle>
+            <g class="fb glint">
+              <circle cx="130" cy="110" r="61" fill="none" stroke="none"></circle>
+              <path d="M130 49a61 61 0 0 1 22 4" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"></path>
+            </g>
+            <path d="M94 84a44 44 0 0 1 26-22" fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" opacity=".9"></path>
+            <circle cx="100" cy="94" r="3" fill="#FFFFFF" opacity=".9"></circle>
+          </g>
+        </g>
+      </svg>
+    <div style="display: flex; flex-direction: column; gap: 8px; max-width: 560px">
+      <span style="align-self: flex-start; margin-bottom: 6px; padding: 6px 14px; border-radius: 999px; background: {{acc}}; color: #10193D; font-weight: 900; font-size: 13px; letter-spacing: .6px">PARA PROFES DE 3.° A 11.°</span>
+      <span style="font-weight: 900; font-size: 56px; letter-spacing: -2px; line-height: 1; color: #FFFFFF">lente</span>
+      <span class="tag" style="font-weight: 900; font-size: 24px; color: {{acc}}">Mira más allá de la noticia</span>
+      <p style="margin: 10px 0 0; font-weight: 700; font-size: 21px; line-height: 1.5; color: #FFFFFF">Tus estudiantes aprenden a leer noticias como detectives: la idea principal, cómo está organizada y qué palabras muestran una postura.</p>
+    </div>
+  </section>
+
+  <section style="flex: 1 1 420px; min-width: 0; box-sizing: border-box; padding: 48px clamp(24px, 5vw, 64px); display: flex; flex-direction: column; justify-content: center; gap: 22px">
+    <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 4px">
+      <svg width="260" height="135" viewBox="0 0 520 270" role="img" aria-label="Palabra lente con una lupa de vidrio que recorre las letras">
+        <defs>
+          <linearGradient id="rimB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF"></stop><stop offset=".42" stop-color="#9AA6B6"></stop><stop offset=".58" stop-color="#EEF2F7"></stop><stop offset="1" stop-color="#5E6A7A"></stop></linearGradient>
+          <radialGradient id="glassB" cx=".35" cy=".3" r=".85"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".5"></stop><stop offset=".6" stop-color="#FFFFFF" stop-opacity=".04"></stop><stop offset="1" stop-color="#2F5BEA" stop-opacity=".2"></stop></radialGradient>
+          <linearGradient id="handleB" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="{{accDark}}"></stop><stop offset=".45" stop-color="{{acc}}"></stop><stop offset="1" stop-color="{{accDark}}"></stop></linearGradient>
+          <radialGradient id="causticB" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FFF7D6"></stop><stop offset="1" stop-color="#FFF7D6" stop-opacity="0"></stop></radialGradient>
+          <clipPath id="magB"><circle cx="170" cy="150" r="54"></circle></clipPath>
+        </defs>
+        <text x="100" y="182" font-family="Nunito, sans-serif" font-weight="900" font-size="128" letter-spacing="-4" fill="#1F2A37">lente</text>
+        <g class="word">
+          <ellipse cx="184" cy="236" rx="56" ry="11" fill="#1F2A37" opacity=".13" style="filter: blur(6px)"></ellipse>
+          <ellipse class="glow" cx="182" cy="234" rx="18" ry="5" fill="url(#causticB)"></ellipse>
+          <rect x="221" y="177" width="18" height="66" rx="9" fill="url(#handleB)" transform="rotate(-45 230 210)"></rect>
+          <g clip-path="url(#magB)">
+            <circle cx="170" cy="150" r="54" fill="#FFFFFF"></circle>
+            <g transform="translate(-85 -75) scale(1.5)">
+              <g class="unword">
+                <text x="100" y="182" font-family="Nunito, sans-serif" font-weight="900" font-size="128" letter-spacing="-4" fill="#2F5BEA">lente</text>
+              </g>
+            </g>
+            <circle cx="170" cy="150" r="54" fill="url(#glassB)"></circle>
+            <circle cx="169" cy="150" r="52" fill="none" stroke="#22D3EE" stroke-opacity=".35" stroke-width="3"></circle>
+            <circle cx="171" cy="150" r="52" fill="none" stroke="#FF4D6D" stroke-opacity=".25" stroke-width="3"></circle>
+          </g>
+          <circle cx="170" cy="150" r="58" fill="none" stroke="url(#rimB)" stroke-width="9"></circle>
+          <g class="fb glint">
+            <circle cx="170" cy="150" r="58" fill="none" stroke="none"></circle>
+            <path d="M170 92a58 58 0 0 1 21 4" fill="none" stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round"></path>
+          </g>
+          <path d="M134 128a42 42 0 0 1 26-22" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" opacity=".9"></path>
+        </g>
+      </svg>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <h1 style="margin: 0; font-weight: 900; font-size: 32px; line-height: 1.15">¡Hola, profe!</h1>
+      <span aria-hidden="true" style="width: 64px; height: 6px; border-radius: 999px; background: {{acc}}"></span>
+      <p style="margin: 0; font-weight: 700; font-size: 16px; color: #4B5563">Inicia sesión para abrir tus cursos.</p>
+    </div>
+
+    <form style="display: flex; flex-direction: column; gap: 16px; max-width: 420px" onSubmit="{{submit}}">
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <label for="usuario" style="font-weight: 800; font-size: 15px">Usuario</label>
+        <input id="usuario" class="field" type="text" autocomplete="username" placeholder="Ej.: jcastro" style="font: inherit; font-weight: 700; font-size: 17px; padding: 14px 16px; min-height: 52px; box-sizing: border-box; border-radius: 16px; border: 2px solid #E5E7EB; border-bottom-width: 4px; background: #F8FAFC; color: #1F2A37">
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <label for="clave" style="font-weight: 800; font-size: 15px">Clave</label>
+        <div style="position: relative">
+          <input id="clave" class="field" type="{{passType}}" autocomplete="current-password" placeholder="Tu clave" style="width: 100%; font: inherit; font-weight: 700; font-size: 17px; padding: 14px 56px 14px 16px; min-height: 52px; box-sizing: border-box; border-radius: 16px; border: 2px solid #E5E7EB; border-bottom-width: 4px; background: #F8FAFC; color: #1F2A37">
+          <button type="button" onClick="{{togglePass}}" aria-label="{{passLabel}}" style="position: absolute; right: 6px; top: 6px; width: 44px; height: 40px; border: 0; border-radius: 12px; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4B5563" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"></path><circle cx="12" cy="12" r="2.6"></circle><path d="{{eyeSlash}}"></path></svg>
+          </button>
+        </div>
+      </div>
+      <button type="submit" class="press" style="display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 56px; border: 0; border-radius: 16px; background: #2F5BEA; border-bottom: 5px solid #1A36A8; color: #FFFFFF; font-family: Nunito, sans-serif; font-weight: 900; font-size: 17px; letter-spacing: .8px; cursor: pointer">
+        <sc-if value="{{loading}}" hint-placeholder-val="{{ false }}">
+          <svg class="spinner" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M12 3a9 9 0 1 1-9 9"></path></svg>
+        </sc-if>
+        {{btnText}}
+      </button>
+      <p style="margin: 0; font-weight: 700; font-size: 14px; color: #4B5563">¿Olvidaste tu clave? Pídele al administrador que te la restablezca.</p>
+    </form>
+
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; max-width: 420px; padding-top: 18px; border-top: 2px solid #F0F2F5">
+      <span style="display: flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: #E9F9EF; color: #1D6B3A; font-weight: 800; font-size: 13px">
+        <span style="width: 9px; height: 9px; border-radius: 50%; background: #22A559"></span>Servidor disponible
+      </span>
+      <span style="font-weight: 700; font-size: 12px; color: #6B7280">Universidad de Manizales · Proyecto de grado</span>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"acento":{"editor":"enum","options":["azul","coral","naranja","rosa","amarillo"],"default":"azul"},"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+  state = { show: false, loading: false };
+  renderVals() {
+    const st = this.state;
+    const A = { azul: ['#9CC3FF', '#2F5BEA'], coral: ['#FFA48A', '#D9542E'], naranja: ['#FFB547', '#D97706'], durazno: ['#FFCBA8', '#E08A5A'], rosa: ['#FF9ACB', '#C9307A'], celeste: ['#9CD8FF', '#3B8FD1'], amarillo: ['#FFD43B', '#C99400'] }[this.props.acento ?? 'azul'] || ['#9CC3FF', '#2F5BEA'];
+    return {
+      acc: A[0], accDark: A[1],
+      passType: st.show ? 'text' : 'password',
+      passLabel: st.show ? 'Ocultar clave' : 'Mostrar clave',
+      eyeSlash: st.show ? '' : 'M4 4l16 16',
+      togglePass: () => this.setState({ show: !this.state.show }),
+      loading: st.loading,
+      btnText: st.loading ? 'ENTRANDO…' : 'INICIAR SESIÓN',
+      submit: (e) => {
+        if (e && e.preventDefault) e.preventDefault();
+        this.setState({ loading: true });
+        clearTimeout(this.t); this.t = setTimeout(() => this.setState({ loading: false }), 1800);
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

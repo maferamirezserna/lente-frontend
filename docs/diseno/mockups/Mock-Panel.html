@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Lente · Panel del curso 7.° A</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;800&amp;family=Nunito:wght@700;800;900&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#2F5BEA}a:hover{color:#1A36A8}
+@keyframes grow{from{width:0}}
+@keyframes slidein{from{transform:translateX(40px);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.grow{animation:grow .9s ease-out both}
+.slidein{animation:slidein .28s ease-out both}
+.rise{animation:rise .4s ease-out both}
+.press{transition:transform .08s ease}
+.press:active{transform:translateY(3px)}
+.card{transition:transform .15s ease,border-color .15s ease}
+.card:hover{transform:translateY(-3px);border-color:#9CC3FF !important}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{animation:spin 1s linear infinite}
+@keyframes toast{0%{opacity:0;transform:translateY(20px)}12%,85%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(20px)}}
+.toast{animation:toast 3.2s ease both}
+@keyframes sweepS{0%,100%{transform:translateX(-6px)}50%{transform:translateX(6px)}}
+.sweepS{animation:sweepS 1.6s ease-in-out infinite}
+.ta:focus{outline:3px solid #9CC3FF;outline-offset:1px;border-color:#2F5BEA !important}
+@media (prefers-reduced-motion: reduce){.spinner,.toast,.sweepS{animation:none}.grow,.slidein,.rise{animation:none}.press,.card{transition:none}}
+</style>
+</helmet>
+<div style="min-height: 940px; background: #F7F9FC; font-family: 'Nunito', system-ui, sans-serif; color: #1F2A37">
+  <header style="display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 14px clamp(16px, 4vw, 40px); border-bottom: 2px solid #E5E7EB; background: #FFFFFF">
+    <div style="display: flex; align-items: center; gap: 10px">
+      <div style="width: 40px; height: 40px; border-radius: 12px; background: #2F5BEA; border-bottom: 4px solid #1A36A8; display: flex; align-items: center; justify-content: center">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="M15.5 15.5 21 21"></path></svg>
+      </div>
+      <span style="font-weight: 900; font-size: 26px; letter-spacing: -1px">lente</span>
+    </div>
+    <nav aria-label="Secciones" style="display: flex; gap: 6px; flex-wrap: wrap"><a href="Mock-Cursos.dc.html" style="padding: 10px 16px; border-radius: 12px; text-decoration: none; color: #4B5563; font-weight: 800; font-size: 15px; border: 2px solid transparent">Mis cursos</a><a href="Mock-Textos.dc.html" style="padding: 10px 16px; border-radius: 12px; text-decoration: none; color: #4B5563; font-weight: 800; font-size: 15px; border: 2px solid transparent">Biblioteca de textos</a><a href="Mock-Panel.dc.html" aria-current="page" style="padding: 10px 16px; border-radius: 12px; text-decoration: none; background: #EEF3FF; color: #1A36A8; font-weight: 900; font-size: 15px; border: 2px solid #C9DBFF">Panel del curso</a></nav>
+    <div style="display: flex; align-items: center; gap: 10px">
+      <div style="width: 40px; height: 40px; border-radius: 50%; background: #C9DBFF; color: #1A36A8; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 15px">JC</div>
+      <span style="font-weight: 800; font-size: 15px">Prof. Castro</span>
+      <a href="Mock-Login.dc.html" style="padding: 8px 12px; border-radius: 12px; border: 2px solid #E5E7EB; border-bottom-width: 4px; color: #4B5563; text-decoration: none; font-weight: 800; font-size: 14px">Salir</a>
+    </div>
+  </header>
+  <main style="max-width: 1200px; margin: 0 auto; padding: 24px clamp(16px, 4vw, 40px) 48px; display: flex; flex-direction: column; gap: 18px">
+    <nav aria-label="Ruta" style="display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 14px; color: #4B5563"><a href="Mock-Cursos.dc.html" style="color: #2F5BEA; text-decoration: none">Mis cursos</a><span aria-hidden="true">›</span><a href="Mock-Estudiantes.dc.html" style="color: #2F5BEA; text-decoration: none">7.° A</a><span aria-hidden="true">›</span><span>Panel del curso</span></nav>
+    <div style="display: flex; align-items: center; gap: 14px">
+      <div style="width: 54px; height: 54px; border-radius: 16px; background: #2F5BEA; border-bottom: 4px solid #1A36A8; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 18px">7°</div>
+      <div style="display: flex; flex-direction: column"><h1 style="margin: 0; font-weight: 900; font-size: 32px">Panel de 7.° A</h1><span style="font-weight: 700; font-size: 15px; color: #4B5563">Esta semana · 8 actividades terminadas</span></div>
+    </div>
+    <nav aria-label="Secciones del curso" style="display: flex; gap: 8px; flex-wrap: wrap"><a href="Mock-Estudiantes.dc.html" style="padding: 10px 16px; border-radius: 12px; text-decoration: none; font-weight: 800; font-size: 15px; color: #4B5563; border: 2px solid #E5E7EB; border-bottom-width: 4px">Estudiantes</a><a href="Mock-Textos.dc.html" style="padding: 10px 16px; border-radius: 12px; text-decoration: none; font-weight: 800; font-size: 15px; color: #4B5563; border: 2px solid #E5E7EB; border-bottom-width: 4px">Textos activos</a><a href="Mock-Panel.dc.html" aria-current="page" style="padding: 10px 16px; border-radius: 12px; text-decoration: none; font-weight: 900; font-size: 15px; background: #2F5BEA; color: #FFFFFF; border-bottom: 4px solid #1A36A8">Panel del curso</a><a href="#" style="padding: 10px 16px; border-radius: 12px; text-decoration: none; font-weight: 800; font-size: 15px; color: #4B5563; border: 2px solid #E5E7EB; border-bottom-width: 4px">Reglas del curso</a></nav>
+    <div style="display: flex; gap: 16px; flex-wrap: wrap">
+      <div class="card" style="flex: 1 1 220px; min-width: 0; background: #FFFFFF; border: 2px solid #E5E7EB; border-bottom-width: 5px; border-radius: 22px; padding: 16px; display: flex; align-items: center; gap: 14px">
+        <div style="width: 52px; height: 52px; border-radius: 16px; background: #2F6BFF; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 19v-1a4 4 0 0 0-8 0v1M12 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path></svg></div>
+        <div style="display: flex; flex-direction: column"><span style="font-weight: 900; font-size: 28px; line-height: 1.1">7/8</span><span style="font-weight: 700; font-size: 13px; color: #4B5563">Participación</span></div>
+      </div>      <div class="card" style="flex: 1 1 220px; min-width: 0; background: #FFFFFF; border: 2px solid #E5E7EB; border-bottom-width: 5px; border-radius: 22px; padding: 16px; display: flex; align-items: center; gap: 14px">
+        <div style="width: 52px; height: 52px; border-radius: 16px; background: #2BEA7C; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#111111" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"></path></svg></div>
+        <div style="display: flex; flex-direction: column"><span style="font-weight: 900; font-size: 28px; line-height: 1.1">64%</span><span style="font-weight: 700; font-size: 13px; color: #4B5563">Acierto promedio</span></div>
+      </div>      <div class="card" style="flex: 1 1 220px; min-width: 0; background: #FFFFFF; border: 2px solid #E5E7EB; border-bottom-width: 5px; border-radius: 22px; padding: 16px; display: flex; align-items: center; gap: 14px">
+        <div style="width: 52px; height: 52px; border-radius: 16px; background: #FFE600; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#111111" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"></path></svg></div>
+        <div style="display: flex; flex-direction: column"><span style="font-weight: 900; font-size: 28px; line-height: 1.1">2.010</span><span style="font-weight: 700; font-size: 13px; color: #4B5563">Puntos del curso</span></div>
+      </div>      <div class="card" style="flex: 1 1 220px; min-width: 0; background: #FFFFFF; border: 2px solid #E5E7EB; border-bottom-width: 5px; border-radius: 22px; padding: 16px; display: flex; align-items: center; gap: 14px">
+        <div style="width: 52px; height: 52px; border-radius: 16px; background: #FF7A00; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#111111" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c1 4 5 6 5 10a5 5 0 0 1-10 0c0-2 1-3.5 2-4.5 0 2 1 3 2 3 0-3-1-6 1-8.5z"></path></svg></div>
+        <div style="display: flex; flex-direction: column"><span style="font-weight: 900; font-size: 28px; line-height: 1.1">6 días</span><span style="font-weight: 700; font-size: 13px; color: #4B5563">Racha más larga</span></div>
+      </div>
+    </div>
+    <div style="display: flex; gap: 18px; flex-wrap: wrap; align-items: stretch">
+      <section style="flex: 1 1 360px; min-width: 0; background: #FFFFFF; border: 2px solid #E5E7EB; border-bottom-width: 5px; border-radius: 22px; padding: 20px; display: flex; flex-direction: column; gap: 16px">
+        <h2 style="margin: 0; font-weight: 900; font-size: 21px">Avance por nivel</h2>
+        <div style="display: flex; align-items: center; gap: 8px"><span style="width: 96px; font-weight: 800; font-size: 12px; color: #4B5563">Idea principal</span><div style="flex-grow: 1; height: 10px; border-radius: 999px; background: #EEF2F7; overflow: hidden"><div class="grow" style="height: 10px; width: 71%; border-radius: 999px; background: #1A36A8"></div></div><span style="width: 36px; text-align: right; font-weight: 900; font-size: 12px">71%</span></div>
+        <div style="display: flex; align-items: center; gap: 8px"><span style="width: 96px; font-weight: 800; font-size: 12px; color: #4B5563">Organización</span><div style="flex-grow: 1; height: 10px; border-radius: 999px; background: #EEF2F7; overflow: hidden"><div class="grow" style="height: 10px; width: 62%; border-radius: 999px; background: #2F5BEA"></div></div><span style="width: 36px; text-align: right; font-weight: 900; font-size: 12px">62%</span></div>
+        <div style="display: flex; align-items: center; gap: 8px"><span style="width: 96px; font-weight: 800; font-size: 12px; color: #4B5563">Lenguaje</span><div style="flex-grow: 1; height: 10px; border-radius: 999px; background: #EEF2F7; overflow: hidden"><div class="grow" style="height: 10px; width: 55%; border-radius: 999px; background: #9CC3FF"></div></div><span style="width: 36px; text-align: right; font-weight: 900; font-size: 12px">55%</span></div>
+        <p style="margin: 0; padding: 10px 12px; border-radius: 12px; background: #EEF3FF; color: #1A36A8; font-weight: 700; font-size: 13.5px; line-height: 1.4">Lenguaje es el nivel más bajo: vale la pena repasar las palabras cargadas en la próxima clase.</p>
+      </section>
+      <section style="flex: 1 1 360px; min-width: 0; background: #FFFFFF; border: 2px solid #E5E7EB; border-bottom-width: 5px; border-radius: 22px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+        <h2 style="margin: 0; font-weight: 900; font-size: 21px">Ánimo del curso</h2>
+        <div role="img" aria-label="3 con motivación alta, 3 neutrales, 2 podrían necesitar acompañamiento" style="display: flex; gap: 4px; height: 22px">
+          <div style="flex: 3; border-radius: 999px; background: #2F5BEA"></div>
+          <div style="flex: 3; border-radius: 999px; background: #C9DBFF"></div>
+          <div style="flex: 2; border-radius: 999px; background: #FF8A3D"></div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 8px; font-weight: 800; font-size: 14px">
+          <span style="display: flex; align-items: center; gap: 8px"><span style="width: 12px; height: 12px; border-radius: 50%; background: #2F5BEA"></span>Motivación alta · 3</span>
+          <span style="display: flex; align-items: center; gap: 8px"><span style="width: 12px; height: 12px; border-radius: 50%; background: #C9DBFF; border: 1px solid #9CC3FF"></span>Neutral · 3</span>
+          <span style="display: flex; align-items: center; gap: 8px"><span style="width: 12px; height: 12px; border-radius: 50%; background: #FF8A3D"></span>Podría necesitar acompañamiento · 2</span>
+        </div>
+        <p style="margin: 0; padding: 10px 12px; border-radius: 12px; background: #F3F4F6; color: #4B5563; font-weight: 700; font-size: 13px; line-height: 1.4">Solo apoyo pedagógico. No es un diagnóstico y no afecta puntos ni calificación.</p>
+      </section>
+    </div>
+    <section style="background: #FFFFFF; border: 2px solid #E5E7EB; border-bottom-width: 5px; border-radius: 22px; padding: 20px; display: flex; flex-direction: column; gap: 12px">
+      <div style="display: flex; align-items: center; gap: 10px">
+        <h2 style="margin: 0; font-weight: 900; font-size: 21px; flex-grow: 1">Alertas para acompañar</h2>
+        <span style="padding: 5px 12px; border-radius: 999px; background: #FFF4E5; color: #8A4B00; font-weight: 900; font-size: 13px">{{nAlerts}} pendientes</span>
+      </div>
+      <sc-for list="{{alerts}}" as="a" hint-placeholder-count="2">
+        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 12px 14px; border-radius: 16px; background: #FFF9F2; border: 2px solid #FFE3C2">
+          <div style="width: 44px; height: 44px; border-radius: 50%; background: {{a.bg}}; color: {{a.fg}}; border: 2px solid {{a.bd}}; box-sizing: border-box; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 15px; flex-shrink: 0">{{a.ini}}</div>
+          <div style="flex: 1 1 260px; min-width: 0; display: flex; flex-direction: column; gap: 2px"><strong style="font-weight: 900; font-size: 16px">{{a.name}}</strong><span style="font-weight: 700; font-size: 13.5px; color: #4B5563">{{a.why}}</span></div>
+          <a href="Mock-Estudiantes.dc.html" style="padding: 10px 14px; min-height: 44px; box-sizing: border-box; border-radius: 12px; border: 2px solid #E5E7EB; border-bottom-width: 4px; color: #1F2A37; text-decoration: none; font-weight: 900; font-size: 13px">VER PROGRESO</a>
+          <button type="button" class="press" onClick="{{a.attend}}" style="padding: 10px 14px; min-height: 44px; border: 0; border-radius: 12px; background: #2F5BEA; border-bottom: 4px solid #1A36A8; color: #FFFFFF; font-family: Nunito, sans-serif; font-weight: 900; font-size: 13px; cursor: pointer">MARCAR COMO ATENDIDA</button>
+        </div>
+      </sc-for>
+      <sc-if value="{{noAlerts}}" hint-placeholder-val="{{ false }}">
+        <div style="padding: 18px; border-radius: 16px; background: #EEF3FF; color: #1A36A8; font-weight: 800; font-size: 15px; text-align: center">No hay alertas pendientes. ¡Buen trabajo con el curso!</div>
+      </sc-if>
+    </section>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":940}}'>
+class Component extends DCLogic {
+  state = { done: {} };
+  renderVals() {
+    const A = [
+      { ini: 'CR', name: 'Camilo Restrepo', why: 'Respuestas muy cortas y actividades sin terminar, tres veces seguidas.', col: ['#2BEA7C', '#111111', '#12A856'] },
+      { ini: 'IT', name: 'Isabela Torres', why: 'Tres actividades seguidas con señales de poco ánimo.', col: ['#FFE600', '#111111', '#D1B800'] }
+    ];
+    const list = A.map((a, i) => Object.assign({}, a, { bg: a.col[0], fg: a.col[1], bd: a.col[2],
+      attend: () => { const d = Object.assign({}, this.state.done); d[i] = true; this.setState({ done: d }); } })).filter((a, i) => !this.state.done[i]);
+    return { alerts: list, hasAlerts: list.length > 0, noAlerts: list.length === 0, nAlerts: list.length };
+  }
+}
+</script>
+</body>
+</html>

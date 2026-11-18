@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Lente · Revisar el análisis de la IA</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;800&amp;family=Nunito:wght@700;800;900&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#2F5BEA}a:hover{color:#1A36A8}
+@keyframes grow{from{width:0}}
+@keyframes slidein{from{transform:translateX(40px);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.grow{animation:grow .9s ease-out both}
+.slidein{animation:slidein .28s ease-out both}
+.rise{animation:rise .4s ease-out both}
+.press{transition:transform .08s ease}
+.press:active{transform:translateY(3px)}
+.card{transition:transform .15s ease,border-color .15s ease}
+.card:hover{transform:translateY(-3px);border-color:#9CC3FF !important}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{animation:spin 1s linear infinite}
+@keyframes toast{0%{opacity:0;transform:translateY(20px)}12%,85%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(20px)}}
+.toast{animation:toast 3.2s ease both}
+@keyframes sweepS{0%,100%{transform:translateX(-6px)}50%{transform:translateX(6px)}}
+.sweepS{animation:sweepS 1.6s ease-in-out infinite}
+.ta:focus{outline:3px solid #9CC3FF;outline-offset:1px;border-color:#2F5BEA !important}
+@media (prefers-reduced-motion: reduce){.spinner,.toast,.sweepS{animation:none}.grow,.slidein,.rise{animation:none}.press,.card{transition:none}}
+</style>
+</helmet>
+<div style="min-height: 1000px; position: relative; background: #F7F9FC; font-family: 'Nunito', system-ui, sans-serif; color: #1F2A37">
+  <header style="display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 14px clamp(16px, 4vw, 40px); border-bottom: 2px solid #E5E7EB; background: #FFFFFF">
+    <div style="display: flex; align-items: center; gap: 10px">
+      <div style="width: 40px; height: 40px; border-radius: 12px; background: #2F5BEA; border-bottom: 4px solid #1A36A8; display: flex; align-items: center; justify-content: center">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="M15.5 15.5 21 21"></path></svg>
+      </div>
+      <span style="font-weight: 900; font-size: 26px; letter-spacing: -1px">lente</span>
+    </div>
+    <nav aria-label="Secciones" style="display: flex; gap: 6px; flex-wrap: wrap"><a href="Mock-Cursos.dc.html" style="padding: 10px 16px; border-radius: 12px; text-decoration: none; color: #4B5563; font-weight: 800; font-size: 15px; border: 2px solid transparent">Mis cursos</a><a href="Mock-Textos.dc.html" aria-current="page" style="padding: 10px 16px; border-radius: 12px; text-decoration: none; background: #EEF3FF; color: #1A36A8; font-weight: 900; font-size: 15px; border: 2px solid #C9DBFF">Biblioteca de textos</a><a href="Mock-Panel.dc.html" style="padding: 10px 16px; border-radius: 12px; text-decoration: none; color: #4B5563; font-weight: 800; font-size: 15px; border: 2px solid transparent">Panel del curso</a></nav>
+    <div style="display: flex; align-items: center; gap: 10px">
+      <div style="width: 40px; height: 40px; border-radius: 50%; background: #C9DBFF; color: #1A36A8; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 15px">JC</div>
+      <span style="font-weight: 800; font-size: 15px">Prof. Castro</span>
+      <a href="Mock-Login.dc.html" style="padding: 8px 12px; border-radius: 12px; border: 2px solid #E5E7EB; border-bottom-width: 4px; color: #4B5563; text-decoration: none; font-weight: 800; font-size: 14px">Salir</a>
+    </div>
+  </header>
+  <main style="max-width: 1200px; margin: 0 auto; padding: 24px clamp(16px, 4vw, 40px) 130px; display: flex; flex-direction: column; gap: 18px">
+    <nav aria-label="Ruta" style="display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 14px; color: #4B5563"><a href="Mock-Textos.dc.html" style="color: #2F5BEA; text-decoration: none">Biblioteca de textos</a><span aria-hidden="true">›</span><span>Polémica por nuevo horario escolar</span></nav>
+    <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap">
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <h1 style="margin: 0; font-weight: 900; font-size: 32px">Revisa lo que propuso la IA</h1>
+        <span style="font-weight: 700; font-size: 15px; color: #4B5563">La IA asiste, tú decides. Corrige lo que haga falta y apruébalo para usarlo en clase.</span>
+      </div>
+      <span style="padding: 7px 14px; border-radius: 999px; background: {{statusBg}}; color: {{statusFg}}; font-weight: 900; font-size: 14px">{{statusLabel}}</span>
+    </div>
+    <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-start">
+      <section aria-label="Noticia" style="flex: 1 1 420px; min-width: 0; background: #FFFFFF; border: 2px solid #E5E7EB; border-bottom-width: 5px; border-radius: 22px; padding: 20px 22px; display: flex; flex-direction: column; gap: 12px">
+        <span style="font-weight: 900; font-size: 13px; letter-spacing: 1px; color: #2F5BEA">LA NOTICIA</span>
+        <h2 style="margin: 0; font-weight: 900; font-size: 22px; line-height: 1.2"><span style="background: #FF2DAA; color: #111111; border-radius: 6px; padding: 1px 5px">Polémica</span> por nuevo horario escolar</h2>
+        <p style="margin: 0; font-family: 'Lexend', sans-serif; font-size: 17px; line-height: 1.9">
+          <sc-for list="{{toks}}" as="k" hint-placeholder-count="45"><span style="{{k.style}}">{{k.t}}</span> </sc-for>
+        </p>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; font-weight: 900; font-size: 13px">
+          <span style="padding: 4px 10px; border-radius: 999px; background: #00E1FF; color: #111111">Adjetivo</span>
+          <span style="padding: 4px 10px; border-radius: 999px; background: #2BEA7C; color: #111111">Verbo</span>
+          <span style="padding: 4px 10px; border-radius: 999px; background: #FF2DAA; color: #111111">Expresión</span>
+        </div>
+      </section>
+
+      <div style="flex: 1 1 440px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+        <section style="background: #FFFFFF; border: 2px solid #E5E7EB; border-bottom-width: 5px; border-radius: 22px; padding: 18px; display: flex; flex-direction: column; gap: 10px">
+          <div style="display: flex; align-items: center; gap: 10px">
+            <span style="width: 32px; height: 32px; border-radius: 10px; background: #1A36A8; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 900">1</span>
+            <label for="idea" style="font-weight: 900; font-size: 19px">Idea principal</label>
+          </div>
+          <textarea id="idea" class="ta" rows="3" value="{{idea}}" onChange="{{ideaChange}}" style="font-family: 'Lexend', sans-serif; font-size: 15px; line-height: 1.5; padding: 12px 14px; border-radius: 14px; border: 2px solid #E5E7EB; border-bottom-width: 4px; background: #F8FAFC; color: #1F2A37; resize: vertical"></textarea>
+          <sc-if value="{{ideaEmpty}}" hint-placeholder-val="{{ false }}"><span style="font-weight: 800; font-size: 13px; color: #9C3412">Sin idea principal no se puede aprobar el texto.</span></sc-if>
+        </section>
+
+        <section style="background: #FFFFFF; border: 2px solid #E5E7EB; border-bottom-width: 5px; border-radius: 22px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+          <div style="display: flex; align-items: center; gap: 10px">
+            <span style="width: 32px; height: 32px; border-radius: 10px; background: #2F5BEA; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 900">2</span>
+            <strong style="font-weight: 900; font-size: 19px; flex-grow: 1">Preguntas de organización · {{qcount}}</strong>
+          </div>
+          <sc-for list="{{qs}}" as="q" hint-placeholder-count="3">
+            <div style="padding: 12px; border-radius: 16px; background: #F8FAFC; border: 2px solid #EEF0F3; display: flex; flex-direction: column; gap: 8px">
+              <div style="display: flex; align-items: flex-start; gap: 8px">
+                <strong style="flex-grow: 1; font-weight: 900; font-size: 15px">{{q.n}}. {{q.q}}</strong>
+                <button type="button" onClick="{{q.remove}}" aria-label="Eliminar pregunta" style="width: 32px; height: 32px; border-radius: 10px; border: 2px solid #E5E7EB; background: #FFFFFF; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M5 7h14M10 11v6M14 11v6M7 7l1 13h8l1-13M9 7V4h6v3"></path></svg></button>
+              </div>
+              <sc-for list="{{q.opts}}" as="o" hint-placeholder-count="3"><div style="{{o.style}}"><span>{{o.n}}.</span><span style="flex-grow: 1">{{o.o}}</span><span>{{o.mark}}</span></div></sc-for>
+            </div>
+          </sc-for>
+          <button type="button" style="padding: 10px; min-height: 44px; border-radius: 14px; border: 2px dashed #C9DBFF; background: #F7F9FF; color: #1A36A8; font-family: Nunito, sans-serif; font-weight: 900; font-size: 14px; cursor: pointer">+ Agregar pregunta</button>
+        </section>
+
+        <section style="background: #FFFFFF; border: 2px solid #E5E7EB; border-bottom-width: 5px; border-radius: 22px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+          <div style="display: flex; align-items: center; gap: 10px">
+            <span style="width: 32px; height: 32px; border-radius: 10px; background: #9CC3FF; color: #10193D; display: flex; align-items: center; justify-content: center; font-weight: 900">3</span>
+            <strong style="font-weight: 900; font-size: 19px">Palabras con carga · {{wcount}}</strong>
+          </div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap">
+            <sc-for list="{{words}}" as="w" hint-placeholder-count="5">
+              <span style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 6px 6px 12px; border-radius: 999px; background: {{w.bg}}; color: {{w.fg}}; font-weight: 900; font-size: 14px">
+                {{w.w}} <span style="font-weight: 700; font-size: 12px; opacity: .85">· {{w.t}}</span>
+                <button type="button" onClick="{{w.remove}}" aria-label="Quitar palabra" style="width: 26px; height: 26px; border-radius: 50%; border: 0; background: rgba(255,255,255,.7); cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button>
+              </span>
+            </sc-for>
+            <button type="button" style="padding: 6px 14px; min-height: 38px; border-radius: 999px; border: 2px dashed #C9DBFF; background: #F7F9FF; color: #1A36A8; font-family: Nunito, sans-serif; font-weight: 900; font-size: 14px; cursor: pointer">+ Agregar palabra</button>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <div style="position: absolute; left: 0; right: 0; bottom: 0; padding: 16px clamp(16px, 4vw, 40px) 20px; border-top: 2px solid #E5E7EB; background: #FFFFFF; display: flex; justify-content: flex-end; gap: 12px; flex-wrap: wrap">
+    <button type="button" class="press" style="padding: 14px 22px; min-height: 56px; border-radius: 16px; border: 2px solid #C9DBFF; border-bottom-width: 5px; background: #FFFFFF; color: #1A36A8; font-family: Nunito, sans-serif; font-weight: 900; font-size: 15px; letter-spacing: .5px; cursor: pointer">VOLVER A PREPARAR CON IA</button>
+    <button type="button" class="press" onClick="{{approve}}" disabled="{{approveDisabled}}" style="{{approveStyle}}">{{approveLabel}}</button>
+  </div>
+
+  <sc-if value="{{showToast}}" hint-placeholder-val="{{ false }}">
+    <div class="toast" role="status" style="position: absolute; left: 50%; bottom: 110px; margin-left: -230px; width: 460px; box-sizing: border-box; padding: 14px 18px; border-radius: 16px; background: #10193D; color: #FFFFFF; font-weight: 800; font-size: 15px; display: flex; align-items: center; gap: 10px">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9CC3FF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>
+      Texto aprobado. Ya puedes activarlo en tus cursos.
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":1000}}'>
+class Component extends DCLogic {
+  state = {
+    idea: 'La Secretaría de Educación cambió el horario de clases a las 6:00 a. m. y los padres protestan, aunque la Secretaría dice que así se aprovecha mejor la jornada.',
+    words: [['furiosos', 'Adjetivo'], ['despropósito', 'Expresión'], ['obligará', 'Verbo'], ['absurda', 'Adjetivo'], ['polémica', 'Expresión']],
+    qs: [
+      { q: '¿Qué cuenta primero la noticia?', o: ['El anuncio de la Secretaría', 'La opinión de los padres', 'La historia del colegio'], ok: 0 },
+      { q: '¿Quién tiene más espacio en la noticia?', o: ['La Secretaría', 'Los padres de familia', 'Los estudiantes'], ok: 1 },
+      { q: '¿Cómo termina la noticia?', o: ['Con una encuesta', 'Con la opinión de un experto', 'Con la respuesta de la Secretaría'], ok: 2 }
+    ],
+    approved: false, toast: 0
+  };
+  renderVals() {
+    const st = this.state;
+    const TC = { 'Adjetivo': ['#00E1FF', '#111111'], 'Verbo': ['#2BEA7C', '#111111'], 'Expresión': ['#FF2DAA', '#111111'] };
+    const loaded = st.words.map((w) => w[0]);
+    const BODY = 'La Secretaría de Educación anunció que desde febrero las clases empezarán a las 6:00 a. m. Padres de familia, furiosos, calificaron la medida como un despropósito que obligará a los niños a madrugar de forma absurda. La Secretaría defendió que el cambio permitirá aprovechar mejor la jornada.';
+    const toks = BODY.split(' ').map((t) => {
+      const n = t.toLowerCase().replace(/[.,;:«»]/g, '');
+      const k = st.words.find((w) => w[0] === n);
+      return { t, style: k ? 'background: ' + TC[k[1]][0] + '; color: ' + TC[k[1]][1] + '; border-radius: 6px; padding: 1px 5px; font-weight: 800' : '' };
+    });
+    const canApprove = st.idea.trim().length > 0 && !st.approved;
+    return {
+      toks,
+      idea: st.idea, ideaChange: (e) => this.setState({ idea: e.target.value }),
+      ideaEmpty: st.idea.trim().length === 0,
+      words: st.words.map(([w, t], i) => ({ w, t, bg: TC[t][0], fg: TC[t][1],
+        remove: () => this.setState({ words: this.state.words.filter((_, j) => j !== i) }) })),
+      wcount: st.words.length,
+      qs: st.qs.map((q, qi) => ({ q: q.q, n: qi + 1, opts: q.o.map((o, oi) => ({ o, n: oi + 1,
+        style: oi === q.ok ? 'display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 12px; background: #D9F7E3; color: #145A2E; font-weight: 800; font-size: 14px; border: 2px solid #22A559' : 'display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 12px; background: #FFFFFF; color: #374151; font-weight: 700; font-size: 14px; border: 2px solid #E5E7EB',
+        mark: oi === q.ok ? '✓ Correcta' : '' })),
+        remove: () => this.setState({ qs: this.state.qs.filter((_, j) => j !== qi) }) })),
+      qcount: st.qs.length,
+      statusLabel: st.approved ? 'Aprobado' : 'En revisión',
+      statusBg: st.approved ? '#D9F7E3' : '#FFF4E5', statusFg: st.approved ? '#145A2E' : '#8A4B00',
+      approve: () => { if (this.state.idea.trim()) this.setState({ approved: true, toast: this.state.toast + 1 }); },
+      approveDisabled: !canApprove,
+      approveLabel: st.approved ? 'APROBADO ✓' : 'APROBAR TEXTO',
+      approveStyle: 'padding: 15px 28px; min-height: 56px; border: 0; border-radius: 16px; font-family: Nunito, sans-serif; font-weight: 900; font-size: 16px; letter-spacing: .6px; ' + (canApprove ? 'background: #2F5BEA; color: #FFFFFF; border-bottom: 5px solid #1A36A8; cursor: pointer;' : (st.approved ? 'background: #1F7A3E; color: #FFFFFF; border-bottom: 5px solid #145A2E; cursor: default;' : 'background: #E5E7EB; color: #6B7280; border-bottom: 5px solid #D1D5DB; cursor: not-allowed;')),
+      showToast: st.toast > 0, toastKey: 'toast'
+    };
+  }
+}
+</script>
+</body>
+</html>

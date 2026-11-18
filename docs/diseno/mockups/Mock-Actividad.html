@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Lente · Actividad en modo aula</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600&amp;family=Nunito:wght@700;800;900&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#2F5BEA}a:hover{color:#1A36A8}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes sheet{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes pop{0%{transform:scale(.9)}60%{transform:scale(1.08)}100%{transform:scale(1)}}
+@keyframes sweep{0%,10%{transform:translateX(-120px)}50%,60%{transform:translateX(120px)}100%{transform:translateX(-120px)}}
+@keyframes unsweep{0%,10%{transform:translateX(120px)}50%,60%{transform:translateX(-120px)}100%{transform:translateX(120px)}}
+@keyframes dots{0%,20%{opacity:.2}50%{opacity:1}100%{opacity:.2}}
+@keyframes jump{0%,100%{transform:translateY(0)}40%{transform:translateY(-14px)}}
+.rise{animation:rise .4s ease-out both}
+.sheet{animation:sheet .3s cubic-bezier(.2,.9,.3,1) both}
+.on{animation:pop .22s ease-out}
+.sweep{animation:sweep 3.2s ease-in-out infinite}
+.unsweep{animation:unsweep 3.2s ease-in-out infinite}
+.d1{animation:dots 1.2s infinite}.d2{animation:dots 1.2s .2s infinite}.d3{animation:dots 1.2s .4s infinite}
+.jump{animation:jump 1.4s ease-in-out infinite}
+.press{transition:transform .08s ease}
+.press:active{transform:translateY(3px)}
+.ta:focus{outline:3px solid #9CC3FF;outline-offset:1px;border-color:#2F5BEA !important}
+@media (prefers-reduced-motion: reduce){.rise,.sheet,.on,.sweep,.unsweep,.d1,.d2,.d3,.jump{animation:none}.press{transition:none}}
+</style>
+</helmet>
+<div style="min-height: 800px; position: relative; overflow: hidden; background: #FFFFFF; font-family: 'Nunito', system-ui, sans-serif; color: #1F2A37; display: flex; flex-direction: column">
+
+  <header style="display: flex; align-items: center; gap: 16px; padding: 14px clamp(16px, 4vw, 36px); border-bottom: 2px solid #E5E7EB">
+    <a href="Mock-Estudiantes.dc.html" aria-label="Salir del modo aula" style="display: flex; align-items: center; gap: 6px; padding: 8px 12px; min-height: 44px; box-sizing: border-box; border-radius: 12px; border: 2px solid #E5E7EB; border-bottom-width: 4px; color: #4B5563; text-decoration: none; font-weight: 800; font-size: 14px">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg>Salir
+    </a>
+    <div style="flex-grow: 1; display: flex; gap: 8px" role="progressbar" aria-label="Avance de la actividad" aria-valuenow="{{pct}}" aria-valuemin="0" aria-valuemax="100">
+      <sc-for list="{{segs}}" as="g" hint-placeholder-count="3">
+        <div style="flex: 1 1 0; display: flex; flex-direction: column; gap: 4px">
+          <div style="height: 14px; border-radius: 999px; background: #E5E7EB; overflow: hidden"><div style="height: 14px; border-radius: 999px; width: {{g.w}}; background: {{g.c}}; transition: width .5s ease"></div></div>
+          <span style="font-weight: 800; font-size: 12px; color: {{g.tc}}">{{g.label}}</span>
+        </div>
+      </sc-for>
+    </div>
+    <div style="display: flex; align-items: center; gap: 8px; padding: 6px 12px 6px 6px; border-radius: 999px; background: #EEF3FF">
+      <div style="width: 34px; height: 34px; border-radius: 50%; background: #2F5BEA; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 13px">SM</div>
+      <span style="font-weight: 900; font-size: 14px; color: #1A36A8">Sofía M. · 7.° A</span>
+    </div>
+  </header>
+
+  <sc-if value="{{isIntro}}" hint-placeholder-val="{{ true }}">
+    <main class="rise" style="flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: 40px 20px; text-align: center; background-color: #1A36A8; background-image: radial-gradient(rgba(255,255,255,.07) 1px, transparent 1px), radial-gradient(120% 90% at 0% 0%, #6E94FF 0%, #2F5BEA 45%, #1A36A8 100%); background-size: 3px 3px, 100% 100%; color: #FFFFFF">
+      <svg class="jump" width="120" height="120" viewBox="0 0 120 120" aria-hidden="true">
+        <rect x="78" y="80" width="18" height="40" rx="9" fill="#9CC3FF" transform="rotate(-45 87 100)"></rect>
+        <circle cx="52" cy="50" r="38" fill="#FFFFFF" stroke="#DCE6FF" stroke-width="10"></circle>
+        <circle cx="40" cy="48" r="6.5" fill="#1F2A37"></circle><circle cx="64" cy="48" r="6.5" fill="#1F2A37"></circle>
+        <circle cx="42" cy="46" r="2" fill="#FFFFFF"></circle><circle cx="66" cy="46" r="2" fill="#FFFFFF"></circle>
+        <path d="M42 62q10 9 20 0" fill="none" stroke="#1F2A37" stroke-width="4" stroke-linecap="round"></path>
+      </svg>
+      <span style="font-weight: 800; font-size: 18px; color: #C9DBFF">¡Hola, Sofía! Hoy vas a analizar</span>
+      <h1 style="margin: 0; font-weight: 900; font-size: 42px; line-height: 1.1; max-width: 760px">Miles de jóvenes «invaden» el parque</h1>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center">
+        <span style="padding: 8px 14px; border-radius: 999px; background: rgba(255,255,255,.16); font-weight: 800; font-size: 15px">1 · ¿De qué trata?</span>
+        <span style="padding: 8px 14px; border-radius: 999px; background: rgba(255,255,255,.16); font-weight: 800; font-size: 15px">2 · ¿Cómo está organizada?</span>
+        <span style="padding: 8px 14px; border-radius: 999px; background: rgba(255,255,255,.16); font-weight: 800; font-size: 15px">3 · ¿Qué palabras muestran una postura?</span>
+      </div>
+      <button type="button" class="press" onClick="{{start}}" style="margin-top: 10px; padding: 16px 40px; min-height: 58px; border: 0; border-radius: 16px; background: #FFFFFF; border-bottom: 5px solid #9CC3FF; color: #1A36A8; font-family: Nunito, sans-serif; font-weight: 900; font-size: 18px; letter-spacing: .8px; cursor: pointer">EMPEZAR</button>
+    </main>
+  </sc-if>
+
+  <sc-if value="{{isWork}}" hint-placeholder-val="{{ false }}">
+    <main style="flex-grow: 1; width: 100%; max-width: 1200px; margin: 0 auto; box-sizing: border-box; padding: 24px clamp(16px, 4vw, 36px) 150px; display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start">
+
+      <section aria-label="Noticia" style="flex: 1 1 460px; min-width: 0; display: flex; flex-direction: column; gap: 10px">
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px">
+          <span style="font-weight: 900; font-size: 13px; letter-spacing: 1px; color: #2F5BEA">LA NOTICIA</span>
+          <sc-if value="{{isMicro}}" hint-placeholder-val="{{ false }}">
+            <button type="button" onClick="{{toggleLens}}" aria-pressed="{{lensOnAttr}}" style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; min-height: 36px; border-radius: 999px; border: 2px solid #C9DBFF; background: {{lensBtnBg}}; color: #1A36A8; font-family: Nunito, sans-serif; font-weight: 900; font-size: 13px; cursor: pointer">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A36A8" stroke-width="3" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="M15.5 15.5 21 21"></path></svg>{{lensLabel}}
+            </button>
+          </sc-if>
+        </div>
+
+        <div onMouseMove="{{lensMove}}" onMouseLeave="{{lensLeave}}" style="position: relative; border-radius: 20px; border: 2px solid #E5E7EB; border-bottom-width: 5px; background: #FFFFFF; padding: 20px 22px; font-family: 'Lexend', sans-serif">
+          <h2 style="margin: 0 0 10px; font-family: Nunito, sans-serif; font-weight: 900; font-size: 22px; line-height: 1.2">Miles de jóvenes «invaden» el parque</h2>
+          <sc-if value="{{notMicro}}" hint-placeholder-val="{{ true }}">
+            <div style="font-size: 17px; line-height: 1.75; display: flex; flex-direction: column; gap: 12px">
+              <p style="margin: 0">Cientos de jóvenes invadieron el sábado el parque de la Presidenta durante un festival de música que terminó en caos, <span style="{{citaStyle}}">según denunciaron los vecinos</span>.</p>
+              <p style="margin: 0">Los residentes, indignados, aseguraron que el ruido fue insoportable hasta la madrugada y que los asistentes dejaron el lugar convertido en un basurero.</p>
+              <p style="margin: 0">Los organizadores afirmaron que el evento contaba con todos los permisos y que el parque quedó limpio a las seis de la mañana.</p>
+            </div>
+          </sc-if>
+          <sc-if value="{{isMicro}}" hint-placeholder-val="{{ false }}">
+            <p style="margin: 0; font-size: 17px; line-height: 2.2">
+              <sc-for list="{{words}}" as="w" hint-placeholder-count="60">
+                <span><button type="button" class="{{w.cls}}" onClick="{{w.click}}" aria-pressed="{{w.on}}" style="{{w.style}}">{{w.t}}</button> </span>
+              </sc-for>
+            </p>
+            <sc-if value="{{lensVisible}}" hint-placeholder-val="{{ false }}">
+              <div aria-hidden="true" style="position: absolute; left: {{lx}}; top: {{ly}}; width: 150px; height: 150px; pointer-events: none; z-index: 3">
+                <div style="position: absolute; left: 112px; top: 112px; width: 20px; height: 70px; border-radius: 10px; background: #2F5BEA; border-bottom: 4px solid #1A36A8; transform: rotate(-45deg); transform-origin: 10px 0"></div>
+                <div style="position: absolute; inset: 0; border-radius: 50%; overflow: hidden; border: 7px solid #DCE3EE; box-shadow: 0 10px 24px rgba(15,26,64,.25), inset 0 0 0 2px #FFFFFF; background: #FFFFFF">
+                  <div style="position: absolute; left: 0; top: 0; width: {{cw}}; padding: 20px 22px; box-sizing: border-box; transform-origin: 0 0; transform: {{lensTf}}">
+                    <div style="height: 37px"></div>
+                    <p style="margin: 0; font-size: 17px; line-height: 2.2">
+                      <sc-for list="{{words}}" as="w" hint-placeholder-count="60">
+                        <span><span style="{{w.style}}">{{w.t}}</span> </span>
+                      </sc-for>
+                    </p>
+                  </div>
+                  <div style="position: absolute; left: 14px; top: 12px; width: 46px; height: 18px; border-radius: 50%; background: rgba(255,255,255,.7); transform: rotate(-30deg)"></div>
+                </div>
+              </div>
+            </sc-if>
+          </sc-if>
+        </div>
+      </section>
+
+      <section aria-label="Tarea" style="flex: 1 1 380px; min-width: 0; display: flex; flex-direction: column; gap: 14px">
+
+        <sc-if value="{{isMacro}}" hint-placeholder-val="{{ false }}">
+          <div class="rise" style="display: flex; flex-direction: column; gap: 14px">
+            <span style="font-weight: 900; font-size: 13px; letter-spacing: 1px; color: #2F5BEA">PASO 1 · IDEA PRINCIPAL</span>
+            <h3 style="margin: 0; font-weight: 900; font-size: 26px; line-height: 1.2">¿De qué trata la noticia? Escríbelo con tus palabras.</h3>
+            <sc-if value="{{macroEditing}}" hint-placeholder-val="{{ true }}">
+              <label for="macro" style="font-weight: 800; font-size: 14px; color: #4B5563">Tu respuesta</label>
+              <textarea id="macro" class="ta" rows="5" value="{{macroText}}" onChange="{{macroChange}}" placeholder="La noticia trata de…" style="font-family: 'Lexend', sans-serif; font-size: 17px; line-height: 1.5; padding: 14px 16px; border-radius: 16px; border: 2px solid #E5E7EB; border-bottom-width: 4px; background: #F8FAFC; color: #1F2A37; resize: vertical"></textarea>
+            </sc-if>
+            <sc-if value="{{macroWaiting}}" hint-placeholder-val="{{ false }}">
+              <div role="status" style="display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 22px 16px; border-radius: 20px; background: #EEF3FF; border: 2px solid #C9DBFF">
+                <svg width="300" height="96" viewBox="0 0 300 96" aria-hidden="true">
+                  <defs><clipPath id="waitClip"><circle cx="150" cy="44" r="34"></circle></clipPath></defs>
+                  <rect x="20" y="30" width="260" height="10" rx="5" fill="#C9DBFF"></rect>
+                  <rect x="20" y="50" width="200" height="10" rx="5" fill="#C9DBFF"></rect>
+                  <g class="sweep">
+                    <rect x="170" y="70" width="14" height="34" rx="7" fill="#2F5BEA" transform="rotate(-45 177 87)"></rect>
+                    <g clip-path="url(#waitClip)">
+                      <circle cx="150" cy="44" r="34" fill="#FFFFFF"></circle>
+                      <g transform="translate(-75 -22) scale(1.5)"><g class="unsweep">
+                        <rect x="20" y="30" width="260" height="10" rx="5" fill="#2F5BEA"></rect>
+                        <rect x="20" y="50" width="200" height="10" rx="5" fill="#9CC3FF"></rect>
+                      </g></g>
+                    </g>
+                    <circle cx="150" cy="44" r="37" fill="none" stroke="#1A36A8" stroke-width="6"></circle>
+                  </g>
+                </svg>
+                <strong style="font-weight: 900; font-size: 18px; color: #1A36A8">{{waitMsg}}<span class="d1">.</span><span class="d2">.</span><span class="d3">.</span></strong>
+                <span style="font-weight: 700; font-size: 14px; color: #4B5563">Esto toma unos segundos.</span>
+              </div>
+            </sc-if>
+            <sc-if value="{{macroDone}}" hint-placeholder-val="{{ false }}">
+              <div style="display: flex; flex-direction: column; gap: 10px">
+                <span style="font-weight: 800; font-size: 14px; color: #4B5563">Tu respuesta</span>
+                <p style="margin: 0; padding: 12px 14px; border-radius: 14px; background: #F8FAFC; border: 2px solid #E5E7EB; font-family: 'Lexend', sans-serif; font-size: 15px; line-height: 1.5">{{macroShown}}</p>
+                <span style="font-weight: 800; font-size: 14px; color: #4B5563">La idea principal</span>
+                <p style="margin: 0; padding: 12px 14px; border-radius: 14px; background: #EEF3FF; border: 2px solid #C9DBFF; font-family: 'Lexend', sans-serif; font-size: 15px; line-height: 1.5; color: #1A36A8">Un festival de música en el parque generó quejas de los vecinos por el ruido y la basura, aunque los organizadores dicen que tenían permiso.</p>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{isSuper}}" hint-placeholder-val="{{ false }}">
+          <div class="rise" style="display: flex; flex-direction: column; gap: 14px">
+            <span style="font-weight: 900; font-size: 13px; letter-spacing: 1px; color: #2F5BEA">PASO 2 · ORGANIZACIÓN</span>
+            <sc-for list="{{qs}}" as="q" hint-placeholder-count="2">
+              <fieldset style="margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 8px">
+                <legend style="padding: 0; margin-bottom: 8px; font-weight: 900; font-size: 20px; line-height: 1.25">{{q.text}}</legend>
+                <sc-for list="{{q.opts}}" as="o" hint-placeholder-count="3">
+                  <button type="button" class="press" onClick="{{o.pick}}" aria-pressed="{{o.on}}" style="{{o.style}}">
+                    <span style="{{o.badge}}">{{o.n}}</span>
+                    <span style="flex-grow: 1; text-align: left">{{o.label}}</span>
+                    <span style="font-weight: 900; font-size: 18px">{{o.mark}}</span>
+                  </button>
+                </sc-for>
+              </fieldset>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{isMicro}}" hint-placeholder-val="{{ false }}">
+          <div class="rise" style="display: flex; flex-direction: column; gap: 14px">
+            <span style="font-weight: 900; font-size: 13px; letter-spacing: 1px; color: #2F5BEA">PASO 3 · LENGUAJE</span>
+            <h3 style="margin: 0; font-weight: 900; font-size: 26px; line-height: 1.2">Marca en la noticia las palabras que muestran una postura.</h3>
+            <p style="margin: 0; font-weight: 700; font-size: 15px; color: #4B5563">Pasa la lupa por el texto para verlo de cerca. Elige el tipo y toca la palabra.</p>
+            <div role="radiogroup" aria-label="Tipo de palabra" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+              <sc-for list="{{types}}" as="t" hint-placeholder-count="3">
+                <button type="button" role="radio" aria-checked="{{t.on}}" class="press" onClick="{{t.pick}}" style="{{t.style}}">{{t.label}}</button>
+              </sc-for>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 14px; background: #EEF3FF; color: #1A36A8; font-weight: 800; font-size: 15px">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2F5BEA" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l4-1 11-11-3-3L5 16z"></path></svg>
+              Marcaste {{count}} {{countWord}}
+            </div>
+          </div>
+        </sc-if>
+      </section>
+    </main>
+
+    <div style="position: absolute; left: 0; right: 0; bottom: 0; padding: 16px clamp(16px, 4vw, 36px) 20px; border-top: 2px solid #E5E7EB; background: #FFFFFF; display: flex; justify-content: flex-end; z-index: 4">
+      <button type="button" class="press" onClick="{{primary}}" disabled="{{primaryDisabled}}" style="{{primaryStyle}}">{{primaryLabel}}</button>
+    </div>
+
+    <sc-if value="{{sheetOpen}}" hint-placeholder-val="{{ false }}">
+      <section class="sheet" role="status" style="position: absolute; left: 0; right: 0; bottom: 0; z-index: 5; padding: 20px clamp(16px, 4vw, 36px) 22px; background: {{sheetBg}}; display: flex; align-items: center; gap: 20px; flex-wrap: wrap">
+        <div style="width: 60px; height: 60px; border-radius: 50%; background: #FFFFFF; display: flex; align-items: center; justify-content: center; flex-shrink: 0">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="{{sheetInk}}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{sheetIcon}}"></path></svg>
+        </div>
+        <div style="flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 4px">
+          <strong style="font-weight: 900; font-size: 24px; color: {{sheetInk}}">{{sheetTitle}}</strong>
+          <span style="font-weight: 700; font-size: 16px; line-height: 1.45; color: {{sheetInk}}">{{sheetText}}</span>
+        </div>
+        <button type="button" class="press" onClick="{{next}}" style="{{nextStyle}}">{{nextLabel}}</button>
+      </section>
+    </sc-if>
+  </sc-if>
+
+  <sc-if value="{{isResult}}" hint-placeholder-val="{{ false }}">
+    <main class="rise" style="flex-grow: 1; display: flex; flex-direction: column; align-items: center; gap: 18px; padding: 32px 20px 40px">
+      <svg class="jump" width="120" height="120" viewBox="0 0 120 120" aria-hidden="true">
+        <rect x="78" y="80" width="18" height="40" rx="9" fill="#2F5BEA" transform="rotate(-45 87 100)"></rect>
+        <circle cx="52" cy="50" r="38" fill="#FFFFFF" stroke="#2F5BEA" stroke-width="10"></circle>
+        <path d="M33 47l7-7 7 7M57 47l7-7 7 7" fill="none" stroke="#1F2A37" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="M38 58q14 18 28 0z" fill="#1F2A37"></path>
+      </svg>
+      <h1 style="margin: 0; font-weight: 900; font-size: 36px; color: #1A36A8">¡Lección completa!</h1>
+      <div style="display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 820px">
+        <sc-for list="{{tiles}}" as="r" hint-placeholder-count="4">
+          <div style="flex: 1 1 170px; border-radius: 18px; border: 2px solid {{r.c}}; background: {{r.c}}; overflow: hidden; display: flex; flex-direction: column">
+            <span style="padding: 7px 0; text-align: center; font-weight: 900; font-size: 13px; letter-spacing: .6px; color: {{r.hc}}">{{r.h}}</span>
+            <div style="background: #FFFFFF; border-radius: 15px; padding: 14px 8px; text-align: center; font-weight: 900; font-size: 24px; color: #1A36A8">{{r.v}}</div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="width: 100%; max-width: 820px; box-sizing: border-box; display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 18px; border: 2px solid #E5E7EB; border-bottom-width: 5px">
+        <div style="width: 56px; height: 56px; border-radius: 50%; background: #FFF4D6; border: 3px solid #FFC800; display: flex; align-items: center; justify-content: center; flex-shrink: 0">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#9A6700" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4h10v4a5 5 0 0 1-10 0z"></path><path d="M7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4M12 13v4M8 21h8M9 17h6"></path></svg>
+        </div>
+        <div style="display: flex; flex-direction: column">
+          <span style="font-weight: 800; font-size: 13px; color: #6B7280">LOGRO DESBLOQUEADO</span>
+          <strong style="font-weight: 900; font-size: 20px">Detective de noticias</strong>
+        </div>
+      </div>
+      <div style="width: 100%; max-width: 820px; box-sizing: border-box; padding: 14px 16px; border-radius: 18px; background: #EEF3FF; color: #1A36A8; font-weight: 700; font-size: 15px; line-height: 1.45">
+        <strong style="font-weight: 900">Para la próxima:</strong> {{reco}}
+      </div>
+      <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center">
+        <button type="button" class="press" onClick="{{restart}}" style="padding: 14px 22px; min-height: 54px; border-radius: 16px; border: 2px solid #C9DBFF; border-bottom-width: 5px; background: #FFFFFF; color: #1A36A8; font-family: Nunito, sans-serif; font-weight: 900; font-size: 16px; letter-spacing: .6px; cursor: pointer">VOLVER A EMPEZAR</button>
+        <a href="Mock-Estudiantes.dc.html" class="press" style="padding: 15px 28px; min-height: 54px; box-sizing: border-box; border-radius: 16px; background: #2F5BEA; border-bottom: 5px solid #1A36A8; color: #FFFFFF; text-decoration: none; font-weight: 900; font-size: 16px; letter-spacing: .6px">TERMINAR Y VOLVER AL PANEL</a>
+      </div>
+    </main>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+  state = { step: 0, macro: '', mphase: 'edit', wait: 0, ans: {}, superChecked: false, type: 'adjetivo', sel: {}, microChecked: false, sheet: false, lens: true, lx: 0, ly: 0, lin: false, cw: 520 };
+
+  componentWillUnmount() { clearTimeout(this.t1); clearTimeout(this.t2); }
+
+  renderVals() {
+    const st = this.state;
+    const TEXT = 'Cientos de jóvenes invadieron el sábado el parque de la Presidenta durante un festival de música que terminó en caos, según denunciaron los vecinos. Los residentes, indignados, aseguraron que el ruido fue insoportable hasta la madrugada y que los asistentes dejaron el lugar convertido en un basurero. Los organizadores afirmaron que el evento contaba con todos los permisos.';
+    const LOADED = { invadieron: 1, caos: 1, indignados: 1, insoportable: 1, basurero: 1 };
+    const norm = (w) => w.toLowerCase().replace(/[.,;:«»"]/g, '');
+    const toks = TEXT.split(' ');
+    const TC = { adjetivo: ['#DCE6FF', '#1A36A8'], verbo: ['#C9DBFF', '#1A36A8'], expresion: ['#9CC3FF', '#10193D'] };
+    const base = 'font: inherit; cursor: pointer; padding: 0 5px; margin: 0 -3px; border-radius: 8px; ';
+
+    const words = toks.map((t, i) => {
+      const mine = st.sel[i], ok = LOADED[norm(t)];
+      let style = base, cls = '';
+      if (!st.microChecked) {
+        if (mine) { style += 'background:' + TC[mine][0] + '; color:' + TC[mine][1] + '; border: 2px solid #2F5BEA; border-bottom-width: 4px; font-weight: 600;'; cls = 'on'; }
+        else style += 'background: transparent; color: #1F2A37; border: 2px solid transparent; border-bottom-width: 4px;';
+      } else if (mine && ok) style += 'background: #D9F7E3; color: #145A2E; border: 2px solid #22A559; border-bottom-width: 4px; font-weight: 600;';
+      else if (mine) style += 'background: #F3F4F6; color: #6B7280; border: 2px solid #E5E7EB; border-bottom-width: 4px; text-decoration: line-through;';
+      else if (ok) style += 'background: transparent; color: #9C3412; border: 2px dashed #E8603C; border-bottom-width: 4px; font-weight: 600;';
+      else style += 'background: transparent; color: #1F2A37; border: 2px solid transparent; border-bottom-width: 4px; cursor: default;';
+      return { t, cls, style, on: mine ? 'true' : 'false', click: () => {
+        if (this.state.microChecked) return;
+        const s = Object.assign({}, this.state.sel);
+        if (s[i]) delete s[i]; else s[i] = this.state.type;
+        this.setState({ sel: s });
+      } };
+    });
+
+    const QS = [
+      { text: '¿Qué aparece primero en la noticia?', opts: ['La opinión de los organizadores', 'Lo que pasó y la queja de los vecinos', 'Una entrevista a la policía'], ok: 1 },
+      { text: '¿A quién le da más espacio la noticia?', opts: ['A los vecinos', 'A los jóvenes', 'A la alcaldía'], ok: 0 }
+    ];
+    const qs = QS.map((q, qi) => ({ text: q.text, opts: q.opts.map((label, oi) => {
+      const on = st.ans[qi] === oi, chk = st.superChecked;
+      let bg = '#FFFFFF', bd = '#E5E7EB', col = '#1F2A37', mark = '', bb = '#F3F4F6', bc = '#4B5563';
+      if (on && !chk) { bg = '#EEF3FF'; bd = '#2F5BEA'; col = '#1A36A8'; bb = '#2F5BEA'; bc = '#FFFFFF'; }
+      if (chk && oi === q.ok) { bg = '#D9F7E3'; bd = '#22A559'; col = '#145A2E'; mark = '✓'; bb = '#22A559'; bc = '#FFFFFF'; }
+      else if (chk && on) { bg = '#FFE9DF'; bd = '#E8603C'; col = '#9C3412'; mark = '✕'; bb = '#E8603C'; bc = '#FFFFFF'; }
+      return { label, n: oi + 1, on: on ? 'true' : 'false', mark,
+        pick: () => { if (this.state.superChecked) return; const a = Object.assign({}, this.state.ans); a[qi] = oi; this.setState({ ans: a }); },
+        style: 'display: flex; align-items: center; gap: 12px; padding: 12px 14px; min-height: 54px; border-radius: 16px; cursor: pointer; font-family: Nunito, sans-serif; font-weight: 800; font-size: 16px; background: ' + bg + '; color: ' + col + '; border: 2px solid ' + bd + '; border-bottom-width: 5px',
+        badge: 'width: 30px; height: 30px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 15px; flex-shrink: 0; background: ' + bb + '; color: ' + bc };
+    }) }));
+    const superHits = QS.filter((q, qi) => st.ans[qi] === q.ok).length;
+
+    const idx = Object.keys(st.sel).map(Number);
+    const picked = idx.map((i) => norm(toks[i]));
+    const hits = picked.filter((w) => LOADED[w]).length;
+    const miss = Object.keys(LOADED).filter((w) => !picked.includes(w));
+    const fp = picked.filter((w) => !LOADED[w]);
+
+    const types = [['adjetivo', 'Adjetivo'], ['verbo', 'Verbo'], ['expresion', 'Expresión']].map(([k, label]) => {
+      const on = st.type === k;
+      return { label, on: on ? 'true' : 'false', pick: () => this.setState({ type: k }),
+        style: 'cursor: pointer; min-height: 48px; border-radius: 14px; font-family: Nunito, sans-serif; font-weight: 900; font-size: 15px; ' + (on ? 'background: #2F5BEA; color: #FFFFFF; border: 2px solid #1A36A8; border-bottom-width: 5px;' : 'background: #FFFFFF; color: #4B5563; border: 2px solid #E5E7EB; border-bottom-width: 5px;') };
+    });
+
+    const step = st.step;
+    const done = [step > 1 || (step === 1 && st.mphase === 'done'), step > 2 || (step === 2 && st.superChecked), step > 3 || st.microChecked];
+    const segs = ['Idea principal', 'Organización', 'Lenguaje'].map((label, i) => {
+      const cur = step === i + 1;
+      return { label, w: done[i] ? '100%' : (cur ? '45%' : '0%'), c: '#2F5BEA', tc: cur || done[i] ? '#1A36A8' : '#9AA3AF' };
+    });
+
+    const btn = (enabled) => 'padding: 15px 34px; min-height: 56px; border: 0; border-radius: 16px; font-family: Nunito, sans-serif; font-weight: 900; font-size: 17px; letter-spacing: .8px; ' + (enabled ? 'background: #2F5BEA; color: #FFFFFF; border-bottom: 5px solid #1A36A8; cursor: pointer;' : 'background: #E5E7EB; color: #6B7280; border-bottom: 5px solid #D1D5DB; cursor: not-allowed;');
+
+    let primaryLabel = 'COMPROBAR', canPrimary = false, primary = () => {};
+    if (step === 1) {
+      canPrimary = st.mphase === 'edit' && st.macro.trim().length >= 10;
+      primaryLabel = st.mphase === 'wait' ? 'REVISANDO…' : 'COMPROBAR';
+      primary = () => {
+        if (this.state.mphase !== 'edit' || this.state.macro.trim().length < 10) return;
+        this.setState({ mphase: 'wait', wait: 0 });
+        this.t1 = setTimeout(() => this.setState({ wait: 1 }), 1500);
+        this.t2 = setTimeout(() => this.setState({ mphase: 'done', sheet: true }), 3400);
+      };
+    } else if (step === 2) {
+      canPrimary = !st.superChecked && Object.keys(st.ans).length === QS.length;
+      primary = () => { if (Object.keys(this.state.ans).length === QS.length) this.setState({ superChecked: true, sheet: true }); };
+    } else if (step === 3) {
+      primaryLabel = 'REVISAR MIS PALABRAS';
+      canPrimary = !st.microChecked && idx.length > 0;
+      primary = () => { if (Object.keys(this.state.sel).length) this.setState({ microChecked: true, sheet: true, lin: false }); };
+    }
+
+    let sheetTitle = '', sheetText = '', good = true;
+    if (step === 1) { sheetTitle = '¡Casi lo tienes!'; good = false; sheetText = 'Dijiste qué pasó y dónde, pero te faltó decir quién se queja. La noticia lo cuenta desde los vecinos: mira la frase resaltada.'; }
+    if (step === 2) { good = superHits === QS.length; sheetTitle = good ? '¡Muy bien!' : 'Acertaste ' + superHits + ' de ' + QS.length; sheetText = good ? 'Entendiste cómo está organizada: primero el hecho y la queja, y la voz principal es la de los vecinos.' : 'Fíjate en qué cuenta primero la noticia y a quién cita más veces.'; }
+    if (step === 3) { good = hits >= 4; sheetTitle = good ? '¡Muy bien!' : '¡Casi lo tienes!'; sheetText = 'Encontraste ' + hits + ' de 5. ' + (miss.length ? 'Te faltaron: ' + miss.join(', ') + '. ' : '') + (fp.length ? 'Estas son neutras: ' + fp.join(', ') + '.' : ''); }
+
+    const next = () => {
+      if (this.state.step === 3) this.setState({ step: 4, sheet: false });
+      else this.setState({ step: this.state.step + 1, sheet: false });
+    };
+
+    const pts = 20 + superHits * 10 + hits * 4;
+    const lensVisible = step === 3 && st.lens && st.lin && !st.microChecked;
+    const S = 1.6, R = 75 - 7;
+    return {
+      isIntro: step === 0, isWork: step >= 1 && step <= 3, isResult: step === 4,
+      isMacro: step === 1, isSuper: step === 2, isMicro: step === 3, notMicro: step !== 3,
+      start: () => this.setState({ step: 1 }),
+      segs, pct: Math.round(done.filter(Boolean).length / 3 * 100),
+      macroText: st.macro, macroChange: (e) => this.setState({ macro: e.target.value }),
+      macroEditing: st.mphase === 'edit', macroWaiting: st.mphase === 'wait', macroDone: st.mphase === 'done',
+      macroShown: st.macro || '—',
+      waitMsg: st.wait === 0 ? 'Lente está leyendo tu respuesta' : 'Comparando con la idea principal',
+      citaStyle: st.mphase === 'done' && step === 1 ? 'background: #C9DBFF; border-radius: 6px; padding: 1px 4px; box-shadow: 0 0 0 2px #2F5BEA; font-weight: 500' : '',
+      qs, words, types, count: idx.length, countWord: idx.length === 1 ? 'palabra' : 'palabras',
+      primary, primaryLabel, primaryDisabled: !canPrimary, primaryStyle: btn(canPrimary),
+      sheetOpen: st.sheet, sheetTitle, sheetText,
+      sheetBg: good ? '#D9F7E3' : '#FFE9DF', sheetInk: good ? '#145A2E' : '#9C3412',
+      sheetIcon: good ? 'M5 12.5l4.5 4.5L19 7.5' : 'M12 7v6M12 16.5v.5',
+      next, nextLabel: step === 3 ? 'VER MI RESULTADO' : 'CONTINUAR',
+      nextStyle: 'padding: 15px 34px; min-height: 56px; border: 0; border-radius: 16px; font-family: Nunito, sans-serif; font-weight: 900; font-size: 17px; letter-spacing: .8px; cursor: pointer; color: #FFFFFF; ' + (good ? 'background: #1F7A3E; border-bottom: 5px solid #145A2E;' : 'background: #C2410C; border-bottom: 5px solid #8A2E08;'),
+      toggleLens: () => this.setState({ lens: !this.state.lens }),
+      lensLabel: st.lens ? 'Lupa encendida' : 'Lupa apagada', lensOnAttr: st.lens ? 'true' : 'false', lensBtnBg: st.lens ? '#EEF3FF' : '#FFFFFF',
+      lensMove: (e) => { if (this.state.step !== 3) return; const r = e.currentTarget.getBoundingClientRect(); this.setState({ lin: true, lx: e.clientX - r.left, ly: e.clientY - r.top, cw: r.width }); },
+      lensLeave: () => this.setState({ lin: false }),
+      lensVisible, lx: (st.lx - 75) + 'px', ly: (st.ly - 75) + 'px', cw: (st.cw - 4) + 'px',
+      lensTf: 'translate(' + (R - st.lx * S).toFixed(1) + 'px, ' + (R - st.ly * S).toFixed(1) + 'px) scale(' + S + ')',
+      tiles: [
+        { h: 'PUNTOS', v: '+' + pts, c: '#FFC800', hc: '#5C4100' },
+        { h: 'IDEA PRINCIPAL', v: 'En parte', c: '#1A36A8', hc: '#FFFFFF' },
+        { h: 'ORGANIZACIÓN', v: superHits + '/2', c: '#2F5BEA', hc: '#FFFFFF' },
+        { h: 'LENGUAJE', v: hits + '/5', c: '#9CC3FF', hc: '#10193D' }
+      ],
+      reco: hits < 5 ? 'cambia cada palabra por una neutra. Si cambia lo que sientes, está cargada.' : 'cuando escribas la idea principal, di también quién cuenta la noticia.',
+      restart: () => this.setState({ step: 0, macro: '', mphase: 'edit', wait: 0, ans: {}, superChecked: false, sel: {}, microChecked: false, sheet: false })
+    };
+  }
+}
+</script>
+</body>
+</html>

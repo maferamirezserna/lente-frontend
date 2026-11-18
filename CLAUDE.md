@@ -24,6 +24,10 @@ Este repositorio es **solo el frontend**, hecho con **React 18 + Vite + TypeScri
 react-router-dom** (ver README.md). El cliente de la API está en `src/api/client.ts`. El backend (API, base de datos e IA) ya
 existe y no se modifica desde aquí.
 
+## Diseño
+
+El diseño aprobado (logo, colores, pantallas) está en `docs/diseno/`: lee `docs/diseno/README.md` y mira las imágenes de `docs/diseno/capturas/` antes de cambiar cualquier pantalla. Si el código y el mockup no coinciden, manda el mockup (sin inventar datos que la API no entrega).
+
 ## Usuarios y modo aula
 
 - Solo inician sesión **administrador** y **profesor**. El **estudiante no tiene cuenta**.

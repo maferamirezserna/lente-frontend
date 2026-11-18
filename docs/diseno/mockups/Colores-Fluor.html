@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Lente · Elige tu color</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#0B7F91}a:hover{color:#075E6B}
+.press{transition:transform .08s ease}
+.press:active{transform:translateY(3px)}
+.press:hover{filter:brightness(1.04)}
+@media (prefers-reduced-motion: reduce){.press{transition:none}}
+</style>
+</helmet>
+<div style="width: 1320px; height: 900px; box-sizing: border-box; padding: 40px 44px; background: #FFFFFF; font-family: 'Nunito', system-ui, sans-serif; color: #1F2A37; display: flex; gap: 36px">
+
+  <div style="flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 18px">
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <h1 style="margin: 0; font-weight: 900; font-size: 34px">Elige el color de Lente</h1>
+      <p style="margin: 0; font-weight: 700; font-size: 15px; color: #4B5563">Toca una tarjeta y mira a la derecha cómo queda la app. Arriba están las familias cobalto, esmeralda y cielo, con un brillo de cristal. El texto se pone blanco u oscuro según lo que se lea mejor.</p>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px">
+      <sc-for list="{{cols}}" as="c" hint-placeholder-count="16">
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <button type="button" class="press" onClick="{{c.pick}}" aria-pressed="{{c.on}}" aria-label="Color {{c.name}}" style="{{c.card}}">
+            <span aria-hidden="true" style="position: absolute; left: 10px; right: 10px; top: 5px; height: 4px; border-radius: 999px; background: rgba(255,255,255,.35)"></span>
+            <span style="font-weight: 800; font-size: 10px; letter-spacing: .8px; opacity: .85">UNIDAD 2</span>
+            <span style="font-weight: 900; font-size: 14px; line-height: 1.15">Noticias de mi ciudad</span>
+          </button>
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px; padding: 0 2px">
+            <span style="font-weight: 900; font-size: 13px">{{c.name}}</span>
+            <span style="font-weight: 700; font-size: 11px; color: #6B7280; font-family: ui-monospace, monospace">{{c.hex}}</span>
+          </div>
+          <sc-if value="{{c.hasTag}}" hint-placeholder-val="{{ false }}">
+            <span style="align-self: flex-start; padding: 2px 8px; border-radius: 999px; background: #F3F4F6; color: #4B5563; font-weight: 800; font-size: 10px">{{c.tag}}</span>
+          </sc-if>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="width: 360px; flex-shrink: 0; display: flex; flex-direction: column; gap: 10px">
+    <span style="font-weight: 900; font-size: 13px; letter-spacing: 1px; color: #6B7280">ASÍ SE VE · {{selName}}</span>
+    <div style="flex-grow: 1; border-radius: 36px; border: 2px solid #E5E7EB; overflow: hidden; display: flex; flex-direction: column; background: #FFFFFF">
+      <div style="display: flex; align-items: center; gap: 10px; padding: 16px 16px 10px">
+        <div style="flex-grow: 1; height: 14px; border-radius: 999px; background: #E5E7EB; overflow: hidden">
+          <div style="height: 14px; width: 62%; border-radius: 999px; background: {{hex}}"></div>
+        </div>
+        <span style="font-weight: 900; font-size: 15px; color: #C25A00">Racha 4</span>
+      </div>
+
+      <div style="position: relative; margin: 4px 16px 0; padding: 16px 16px 14px; border-radius: 18px; background: {{hex}}; border-bottom: 5px solid {{edge}}; color: {{on}}; display: flex; flex-direction: column; gap: 2px">
+        <div aria-hidden="true" style="position: absolute; left: 14px; right: 14px; top: 6px; height: 6px; border-radius: 999px; background: rgba(255,255,255,.35)"></div>
+        <span style="font-weight: 800; font-size: 12px; letter-spacing: 1px; opacity: .9">UNIDAD 2 · SECCIÓN 1</span>
+        <span style="font-weight: 900; font-size: 20px">Noticias de mi ciudad</span>
+      </div>
+
+      <div style="position: relative; height: 260px">
+        <div style="position: absolute; left: 140px; top: 18px; width: 70px; height: 64px; border-radius: 50%; background: #FFC800; border-bottom: 6px solid #E0A800; display: flex; align-items: center; justify-content: center">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>
+        </div>
+        <div style="position: absolute; left: 92px; top: 96px; width: 104px; text-align: center; padding: 6px 0; border-radius: 12px; border: 2px solid #E5E7EB; background: #FFFFFF; color: {{textHex}}; font-weight: 900; font-size: 13px">EMPEZAR</div>
+        <div style="position: absolute; left: 110px; top: 136px; width: 70px; height: 64px; border-radius: 50%; background: {{hex}}; border-bottom: 6px solid {{edge}}; display: flex; align-items: center; justify-content: center">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="{{on}}" aria-hidden="true"><path d="M12 3l2.6 5.4 5.9.8-4.3 4.1 1 5.9L12 16.4 6.8 19.2l1-5.9-4.3-4.1 5.9-.8z"></path></svg>
+        </div>
+        <div style="position: absolute; left: 180px; top: 214px; width: 60px; height: 40px; border-radius: 50% 50% 0 0; background: #E5E7EB"></div>
+      </div>
+
+      <div style="margin: 0 16px; display: flex; flex-wrap: wrap; gap: 6px; font-size: 15px; line-height: 1.9">
+        <span>Los vecinos,</span>
+        <span style="padding: 0 8px; border-radius: 10px; background: {{soft}}; border: 2px solid {{hex}}; border-bottom-width: 4px; font-weight: 800; color: {{textHex}}">indignados</span>
+        <span>dijeron que fue</span>
+        <span style="padding: 0 8px; border-radius: 10px; background: {{soft}}; border: 2px solid {{hex}}; border-bottom-width: 4px; font-weight: 800; color: {{textHex}}">insoportable</span>
+      </div>
+
+      <div style="margin-top: auto; padding: 14px 16px 18px; border-top: 2px solid #E5E7EB">
+        <div style="position: relative; text-align: center; padding: 14px; border-radius: 16px; background: {{hex}}; border-bottom: 5px solid {{edge}}; color: {{on}}; font-weight: 900; font-size: 17px; letter-spacing: .8px"><div aria-hidden="true" style="position: absolute; left: 14px; right: 14px; top: 6px; height: 6px; border-radius: 999px; background: rgba(255,255,255,.35)"></div>COMPROBAR</div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1320,"height":900}}'>
+class Component extends DCLogic {
+  state = { sel: 1 };
+
+  renderVals() {
+    const C = [
+      ['Turquesa Lente', '#0B7F91', 'Actual'],
+      ['Azul cobalto', '#2F5BEA', 'Familia cobalto'],
+      ['Azul rey', '#1F45D1', 'Familia cobalto'],
+      ['Cobalto luminoso', '#4C7DFF', 'Familia cobalto'],
+      ['Esmeralda', '#00A878', 'Familia esmeralda'],
+      ['Esmeralda brillante', '#12C48B', 'Familia esmeralda'],
+      ['Verde cristal', '#2BD9A6', 'Familia esmeralda'],
+      ['Jade', '#00B39B', 'Familia esmeralda'],
+      ['Esmeralda profunda', '#03865E', 'Familia esmeralda'],
+      ['Verde agua cristal', '#5EE6C3', 'Familia esmeralda'],
+      ['Azul cielo', '#38B6FF', 'Familia cielo'],
+      ['Celeste', '#5AC8FA', 'Familia cielo'],
+      ['Cielo despejado', '#1EA7FD', 'Familia cielo'],
+      ['Azul piscina', '#00B4E6', 'Familia cielo'],
+      ['Azul hielo cristal', '#7FD3FF', 'Familia cielo'],
+      ['Cielo profundo', '#0A84D6', 'Familia cielo'],
+      ['Amarillo neón', '#FFE014', ''],
+      ['Mandarina', '#FF9F0A', ''],
+      ['Naranja neón', '#FF6A00', ''],
+      ['Coral eléctrico', '#FF5A4E', ''],
+      ['Rojo fresa', '#FF2E63', ''],
+      ['Rosa neón', '#FF2DAA', ''],
+      ['Verde lima', '#7ED957', 'Se parece a Duolingo'],
+      ['Violeta eléctrico', '#8B3DFF', 'Muy común en IA']
+    ];
+    const hexToRgb = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
+    const lin = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+    const lum = (rgb) => 0.2126 * lin(rgb[0]) + 0.7152 * lin(rgb[1]) + 0.0722 * lin(rgb[2]);
+    const toHex = (rgb) => '#' + rgb.map((v) => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0')).join('');
+    const info = (hex) => {
+      const rgb = hexToRgb(hex), L = lum(rgb);
+      const white = 1.05 / (L + 0.05), ink = (L + 0.05) / (lum(hexToRgb('#1F2A37')) + 0.05);
+      const on = white >= 4.5 ? '#FFFFFF' : (ink >= white ? '#1F2A37' : '#FFFFFF');
+      const edge = toHex(rgb.map((v) => v * 0.72));
+      const soft = toHex(rgb.map((v) => v + (255 - v) * 0.82));
+      let t = rgb.slice(), k = 0;
+      while (1.05 / (lum(t) + 0.05) < 4.5 && k < 40) { t = t.map((v) => v * 0.92); k++; }
+      return { on, edge, soft, textHex: toHex(t) };
+    };
+    const cols = C.map(([name, hex, tag], i) => {
+      const f = info(hex), on = this.state.sel === i;
+      return {
+        name, hex, tag, hasTag: !!tag, on: on ? 'true' : 'false',
+        pick: () => this.setState({ sel: i }),
+        card: 'position: relative; width: 100%; text-align: left; cursor: pointer; display: flex; flex-direction: column; gap: 2px; padding: 12px 12px; min-height: 76px; border-radius: 16px; font-family: Nunito, sans-serif; background: ' + hex + '; color: ' + f.on + '; border: 0; border-bottom: 5px solid ' + f.edge + '; ' + (on ? 'outline: 3px solid #1F2A37; outline-offset: 3px;' : 'outline: none;')
+      };
+    });
+    const [selName, hex] = C[this.state.sel];
+    const f = info(hex);
+    return { cols, selName: selName.toUpperCase(), hex, edge: f.edge, on: f.on, soft: f.soft, textHex: f.textHex };
+  }
+}
+</script>
+</body>
+</html>
