@@ -1,21 +1,121 @@
-import { useEffect, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useEffect, useState, type FormEvent, type ReactNode } from 'react'
+import { Link, useParams } from 'react-router-dom'
 import { api } from '../api/client'
-import type { Curso, TextoDetalle } from '../api/types'
+import type { TextoDetalle, TipoPalabra } from '../api/types'
 import { Cargando, ErrorCaja, Pagina, TIPO_PALABRA, useDatos } from '../components/ui'
 import { Estado } from './Textos'
 
-/* ---------- Revisión de un texto ---------- */
+// Revisar lo que propuso la IA, según docs/diseno/mockups/Mock-Revision.html.
+
+function Seccion({ n, color, tinta = '#FFFFFF', titulo, children }: { n: number; color: string; tinta?: string; titulo: ReactNode; children: ReactNode }) {
+  return (
+    <section className="card" style={{ borderRadius: 22, padding: 18, display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <span aria-hidden="true" style={{ width: 32, height: 32, borderRadius: 10, background: color, color: tinta, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900 }}>{n}</span>
+        <strong style={{ fontWeight: 900, fontSize: 19, flexGrow: 1 }}>{titulo}</strong>
+      </div>
+      {children}
+    </section>
+  )
+}
+
+const botonPunteado = { padding: 10, minHeight: 44, borderRadius: 14, border: '2px dashed var(--celeste-suave)', background: '#F7F9FF', color: 'var(--cobalto-borde)', font: 'inherit', fontWeight: 900, fontSize: 14, cursor: 'pointer' } as const
+
+function Papelera() {
+  return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="2.6" strokeLinecap="round" aria-hidden="true"><path d="M5 7h14M10 11v6M14 11v6M7 7l1 13h8l1-13M9 7V4h6v3" /></svg>
+}
+
+function NuevaPregunta({ textoId, alTerminar }: { textoId: number; alTerminar: (ok: boolean) => void }) {
+  const [pregunta, setPregunta] = useState('')
+  const [opciones, setOpciones] = useState(['', '', ''])
+  const [correcta, setCorrecta] = useState(1)
+  const [error, setError] = useState<unknown>(null)
+  const [enviando, setEnviando] = useState(false)
+  const llenas = opciones.map((o) => o.trim()).filter(Boolean)
+
+  async function enviar(e: FormEvent) {
+    e.preventDefault()
+    if (!pregunta.trim() || llenas.length < 2 || !opciones[correcta - 1]?.trim()) { setError(new Error('Escribe la pregunta, al menos dos opciones y marca la correcta.')); return }
+    setEnviando(true)
+    setError(null)
+    // Se envían solo las opciones escritas; la correcta se recalcula a su nueva posición.
+    const usadas = opciones.map((o, i) => ({ o: o.trim(), i })).filter((x) => x.o)
+    try {
+      await api.post(`/textos/${textoId}/preguntas`, { pregunta: pregunta.trim(), opciones: usadas.map((x) => x.o), correcta: usadas.findIndex((x) => x.i === correcta - 1) + 1 })
+      alTerminar(true)
+    } catch (err) { setError(err) } finally { setEnviando(false) }
+  }
+
+  return (
+    <form onSubmit={enviar} noValidate style={{ padding: 12, borderRadius: 16, background: '#F7F9FF', border: '2px solid var(--celeste-suave)', display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <label className="etiqueta" htmlFor="np">Nueva pregunta</label>
+      <input id="np" className="campo" autoFocus maxLength={300} value={pregunta} onChange={(e) => setPregunta(e.target.value)} placeholder="Ej.: ¿Qué cuenta primero la noticia?" />
+      <span style={{ fontWeight: 800, fontSize: 13, color: 'var(--gris)' }}>Opciones (marca la correcta)</span>
+      {opciones.map((o, i) => (
+        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <input type="radio" name="correcta" aria-label={`La opción ${i + 1} es la correcta`} checked={correcta === i + 1} onChange={() => setCorrecta(i + 1)} />
+          <input className="campo" value={o} onChange={(e) => setOpciones((xs) => xs.map((x, j) => (j === i ? e.target.value : x)))} placeholder={`Opción ${i + 1}`} style={{ minHeight: 44, padding: '8px 12px', fontSize: 15 }} />
+        </div>
+      ))}
+      {opciones.length < 6 && <button type="button" onClick={() => setOpciones((xs) => [...xs, ''])} style={{ ...botonPunteado, minHeight: 38, padding: 6 }}>+ Otra opción</button>}
+      <ErrorCaja error={error} />
+      <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+        <button type="button" className="btn btn-sec btn-peq" onClick={() => alTerminar(false)}>Cancelar</button>
+        <button type="submit" className="btn btn-peq" disabled={enviando}>{enviando ? 'Guardando…' : 'AGREGAR PREGUNTA'}</button>
+      </div>
+    </form>
+  )
+}
+
+function NuevaPalabra({ textoId, alTerminar }: { textoId: number; alTerminar: (ok: boolean) => void }) {
+  const [palabra, setPalabra] = useState('')
+  const [tipo, setTipo] = useState<TipoPalabra>('adjetivo')
+  const [error, setError] = useState<unknown>(null)
+  const [enviando, setEnviando] = useState(false)
+
+  async function enviar(e: FormEvent) {
+    e.preventDefault()
+    if (!palabra.trim()) { setError(new Error('Escribe la palabra tal como aparece en la noticia.')); return }
+    setEnviando(true)
+    setError(null)
+    try {
+      await api.post(`/textos/${textoId}/palabras`, { palabra: palabra.trim(), tipo })
+      alTerminar(true)
+    } catch (err) { setError(err) } finally { setEnviando(false) }
+  }
+
+  return (
+    <form onSubmit={enviar} noValidate style={{ flexBasis: '100%', padding: 12, borderRadius: 16, background: '#F7F9FF', border: '2px solid var(--celeste-suave)', display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
+      <div style={{ flex: '2 1 180px', display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <label className="etiqueta" htmlFor="npal">Palabra (tal como aparece)</label>
+        <input id="npal" className="campo" autoFocus maxLength={120} value={palabra} onChange={(e) => setPalabra(e.target.value)} style={{ minHeight: 44, padding: '8px 12px', fontSize: 15 }} />
+      </div>
+      <div style={{ flex: '1 1 140px', display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <label className="etiqueta" htmlFor="ntipo">Tipo</label>
+        <select id="ntipo" className="campo" value={tipo} onChange={(e) => setTipo(e.target.value as TipoPalabra)} style={{ minHeight: 44, padding: '8px 12px', fontSize: 15 }}>
+          {(Object.keys(TIPO_PALABRA) as TipoPalabra[]).map((k) => <option key={k} value={k}>{TIPO_PALABRA[k].nombre}</option>)}
+        </select>
+      </div>
+      <div style={{ display: 'flex', gap: 8 }}>
+        <button type="button" className="btn btn-sec btn-peq" onClick={() => alTerminar(false)}>Cancelar</button>
+        <button type="submit" className="btn btn-peq" disabled={enviando}>{enviando ? 'Guardando…' : 'AGREGAR'}</button>
+      </div>
+      {!!error && <div style={{ flexBasis: '100%' }}><ErrorCaja error={error} /></div>}
+    </form>
+  )
+}
+
 export default function Revision() {
   const { id } = useParams()
-  const nav = useNavigate()
   const t = useDatos(() => api.get<TextoDetalle>(`/textos/${id}`), [id])
-  const cursos = useDatos(() => api.get<Curso[]>('/cursos'))
   const [idea, setIdea] = useState<string | null>(null)
   const [error, setError] = useState<unknown>(null)
-  const [ok, setOk] = useState<string | null>(null)
+  const [aviso, setAviso] = useState<string | null>(null)
   const [ocupado, setOcupado] = useState(false)
+  const [agregandoPregunta, setAgregandoPregunta] = useState(false)
+  const [agregandoPalabra, setAgregandoPalabra] = useState(false)
 
+  // Mientras la IA prepara el texto, se consulta cada 10 s.
   useEffect(() => {
     if (t.datos?.estado !== 'preparando') return
     const i = setInterval(() => api.get<TextoDetalle>(`/textos/${id}`).then(t.setDatos).catch(() => {}), 10000)
@@ -23,22 +123,31 @@ export default function Revision() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [t.datos?.estado, id])
 
-  async function accion(fn: () => Promise<unknown>, mensaje: string) {
-    setOcupado(true); setError(null); setOk(null)
-    try { await fn(); setOk(mensaje); t.recargar() } catch (e) { setError(e) } finally { setOcupado(false) }
+  // El aviso flotante se va solo.
+  useEffect(() => {
+    if (!aviso) return
+    const x = setTimeout(() => setAviso(null), 3200)
+    return () => clearTimeout(x)
+  }, [aviso])
+
+  async function accion(fn: () => Promise<unknown>, mensaje?: string) {
+    setOcupado(true); setError(null)
+    try { await fn(); if (mensaje) setAviso(mensaje); setIdea(null); t.recargar() } catch (e) { setError(e) } finally { setOcupado(false) }
   }
 
   if (!t.datos) return <Pagina>{t.error ? <ErrorCaja error={t.error} /> : <Cargando />}</Pagina>
   const d = t.datos
-  const editable = d.estado !== 'aprobado' && d.estado !== 'archivado'
+  const editable = d.estado === 'borrador' || d.estado === 'en_revision'
   const ideaActual = idea ?? d.idea_principal ?? ''
+  const ideaCambio = idea !== null && idea.trim() !== (d.idea_principal ?? '')
+  const guardarIdea = () => api.patch(`/textos/${d.id}/paquete`, { idea_principal: ideaActual.trim() })
 
-  // Resaltar en el cuerpo las palabras cargadas que propuso la IA.
+  // Resaltar en el cuerpo las palabras con carga que propuso la IA.
   const cuerpo = d.cuerpo || ''
   const trozos: { t: string; tipo?: string }[] = []
   let k = 0
   for (const p of [...d.palabras].sort((a, b) => a.inicio - b.inicio)) {
-    if (p.inicio < k) continue
+    if (p.inicio < k || p.inicio < 0) continue
     trozos.push({ t: cuerpo.slice(k, p.inicio) }, { t: cuerpo.slice(p.inicio, p.fin), tipo: p.tipo })
     k = p.fin
   }
@@ -46,73 +155,96 @@ export default function Revision() {
 
   return (
     <Pagina>
-      <div>
-        <Link to="/textos" style={{ fontWeight: 800, textDecoration: 'none' }}>← Biblioteca</Link>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', marginTop: 6 }}>
-          <h1 className="titulo">{d.titulo}</h1><Estado e={d.estado} />
+      <nav aria-label="Ruta" style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 800, fontSize: 14, color: 'var(--gris)' }}>
+        <Link to="/textos" style={{ textDecoration: 'none' }}>Biblioteca de textos</Link><span aria-hidden="true">›</span><span>{d.titulo}</span>
+      </nav>
+      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <h1 style={{ margin: 0, fontWeight: 900, fontSize: 32 }}>{d.preparado_por_ia ? 'Revisa lo que propuso la IA' : 'Revisa el análisis del texto'}</h1>
+          <span style={{ fontWeight: 700, fontSize: 15, color: 'var(--gris)' }}>La IA asiste, tú decides. Corrige lo que haga falta y apruébalo para usarlo en clase.</span>
         </div>
-        <p className="sub" style={{ marginTop: 6 }}>{d.fuente || 'Sin fuente'} · {d.preparado_por_ia ? 'Preparado por la IA: revisa y corrige antes de aprobar.' : 'Preparado a mano.'}</p>
+        <span style={{ transform: 'scale(1.1)', transformOrigin: 'right bottom' }}><Estado e={d.estado} /></span>
       </div>
       <ErrorCaja error={error} />
-      {ok && <div className="aviso aviso-info" role="status">{ok}</div>}
-      {d.estado === 'preparando' && <div className="aviso aviso-info"><Cargando texto="La IA está preparando la actividad. Esta página se actualiza sola" /></div>}
+      {d.estado === 'preparando' && <div className="aviso aviso-info"><Cargando texto="La IA está preparando el análisis. Esta página se actualiza sola" /></div>}
 
-      <div style={{ display: 'flex', gap: 18, flexWrap: 'wrap', alignItems: 'flex-start' }}>
-        <article className="card" style={{ flex: '3 1 480px', padding: 24 }}>
-          <div className="kicker">Texto</div>
-          <p className="lectura" style={{ fontSize: 18, lineHeight: 1.8, whiteSpace: 'pre-wrap' }}>
-            {trozos.map((x, i) => x.tipo ? <mark key={i} style={{ background: TIPO_PALABRA[x.tipo]?.fondo || '#C9DBFF', color: '#111', fontWeight: 600, borderRadius: 6, padding: '0 3px' }}>{x.t}</mark> : <span key={i}>{x.t}</span>)}
+      <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', alignItems: 'flex-start', paddingBottom: editable || d.estado === 'aprobado' ? 90 : 0 }}>
+        <section aria-label="Noticia" className="card" style={{ flex: '1 1 420px', minWidth: 0, borderRadius: 22, padding: '20px 22px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <span className="kicker" style={{ letterSpacing: 1 }}>LA NOTICIA{d.fuente ? ` · ${d.fuente.toUpperCase()}` : ''}</span>
+          <h2 style={{ margin: 0, fontWeight: 900, fontSize: 22, lineHeight: 1.2 }}>{d.titulo}</h2>
+          <p className="lectura" style={{ margin: 0, fontSize: 17, lineHeight: 1.9, whiteSpace: 'pre-wrap' }}>
+            {trozos.map((x, i) => x.tipo ? <mark key={i} style={{ background: TIPO_PALABRA[x.tipo]?.fondo || 'var(--celeste-suave)', color: '#111111', fontWeight: 800, borderRadius: 6, padding: '1px 5px' }}>{x.t}</mark> : <span key={i}>{x.t}</span>)}
           </p>
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            {Object.entries(TIPO_PALABRA).map(([k2, v]) => <span key={k2} className="chip" style={{ background: v.fondo, color: '#111' }}>{v.nombre}</span>)}
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', fontWeight: 900, fontSize: 13 }}>
+            {Object.entries(TIPO_PALABRA).map(([k2, v]) => <span key={k2} style={{ padding: '4px 10px', borderRadius: 999, background: v.fondo, color: '#111111' }}>{v.nombre}</span>)}
           </div>
-        </article>
+        </section>
 
-        <section style={{ flex: '2 1 380px', display: 'flex', flexDirection: 'column', gap: 14 }}>
-          <div className="card" style={{ padding: 18, display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <div className="kicker">1 · Idea principal</div>
-            <textarea className="campo" rows={4} value={ideaActual} disabled={!editable} onChange={(e) => setIdea(e.target.value)} />
-            {editable && idea !== null && idea !== d.idea_principal && (
-              <button className="btn btn-peq" disabled={ocupado || !idea.trim()} onClick={() => accion(() => api.patch(`/textos/${d.id}/paquete`, { idea_principal: idea.trim() }), 'Idea principal guardada.')}>Guardar idea</button>
-            )}
-          </div>
-          <div className="card" style={{ padding: 18, display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <div className="kicker">2 · Preguntas de organización</div>
+        <div style={{ flex: '1 1 440px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <Seccion n={1} color="var(--cobalto-borde)" titulo={<label htmlFor="idea">Idea principal</label>}>
+            <textarea id="idea" className="campo" rows={3} value={ideaActual} disabled={!editable} onChange={(e) => setIdea(e.target.value)} onBlur={() => { if (editable && ideaCambio && ideaActual.trim()) accion(guardarIdea, 'Idea principal guardada.') }} style={{ fontSize: 15 }} />
+            {!ideaActual.trim() && <span style={{ fontWeight: 800, fontSize: 13, color: 'var(--mejorar-texto)' }}>Sin idea principal no se puede aprobar el texto.</span>}
+          </Seccion>
+
+          <Seccion n={2} color="var(--cobalto)" titulo={`Preguntas de organización · ${d.preguntas.length}`}>
             {d.preguntas.length === 0 && <p className="sub">Sin preguntas todavía.</p>}
-            {d.preguntas.map((p) => (
-              <div key={p.id} style={{ borderTop: '2px solid var(--borde)', paddingTop: 10 }}>
-                <div style={{ fontWeight: 900 }}>{p.orden}. {p.pregunta}</div>
-                <ol type="A" style={{ margin: '6px 0', fontWeight: 700 }}>
-                  {p.opciones.map((o, i) => <li key={i} style={{ color: i + 1 === p.correcta ? 'var(--ok-texto)' : undefined }}>{o}{i + 1 === p.correcta ? ' ✓' : ''}</li>)}
-                </ol>
-                {editable && <button className="btn btn-sec btn-peq" disabled={ocupado} onClick={() => accion(() => api.del(`/textos/${d.id}/preguntas/${p.id}`), 'Pregunta quitada.')}>Quitar</button>}
+            {d.preguntas.map((p, qi) => (
+              <div key={p.id} style={{ padding: 12, borderRadius: 16, background: '#F8FAFC', border: '2px solid #EEF0F3', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                  <strong style={{ flexGrow: 1, fontWeight: 900, fontSize: 15 }}>{qi + 1}. {p.pregunta}</strong>
+                  {editable && <button type="button" aria-label="Eliminar pregunta" disabled={ocupado} onClick={() => accion(() => api.del(`/textos/${d.id}/preguntas/${p.id}`), 'Pregunta eliminada.')} style={{ width: 32, height: 32, borderRadius: 10, border: '2px solid var(--borde)', background: '#FFFFFF', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Papelera /></button>}
+                </div>
+                {p.opciones.map((o, i) => {
+                  const ok = i + 1 === p.correcta
+                  return (
+                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 10px', borderRadius: 12, fontSize: 14, fontWeight: ok ? 800 : 700, background: ok ? 'var(--ok-fondo)' : '#FFFFFF', color: ok ? 'var(--ok-texto)' : '#374151', border: `2px solid ${ok ? 'var(--ok)' : 'var(--borde)'}` }}>
+                      <span>{i + 1}.</span><span style={{ flexGrow: 1 }}>{o}</span><span>{ok ? '✓ Correcta' : ''}</span>
+                    </div>
+                  )
+                })}
               </div>
             ))}
-          </div>
-          <div className="card" style={{ padding: 18, display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <div className="kicker">3 · Palabras cargadas</div>
+            {editable && (agregandoPregunta
+              ? <NuevaPregunta textoId={d.id} alTerminar={(ok) => { setAgregandoPregunta(false); if (ok) { setAviso('Pregunta agregada.'); t.recargar() } }} />
+              : <button type="button" onClick={() => setAgregandoPregunta(true)} style={botonPunteado}>+ Agregar pregunta</button>)}
+          </Seccion>
+
+          <Seccion n={3} color="var(--celeste)" tinta="#10193D" titulo={`Palabras con carga · ${d.palabras.length}`}>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               {d.palabras.map((p) => (
-                <span key={p.id} className="chip" style={{ background: TIPO_PALABRA[p.tipo]?.fondo || '#C9DBFF', color: '#111', fontSize: 14 }}>
-                  {p.palabra}
-                  {editable && <button type="button" aria-label={`Quitar ${p.palabra}`} disabled={ocupado} onClick={() => accion(() => api.del(`/textos/${d.id}/palabras/${p.id}`), 'Palabra quitada.')} style={{ border: 0, background: 'transparent', fontWeight: 900, cursor: 'pointer', color: '#111' }}>×</button>}
+                <span key={p.id} title={p.explicacion || undefined} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: editable ? '6px 6px 6px 12px' : '6px 12px', borderRadius: 999, background: TIPO_PALABRA[p.tipo]?.fondo || 'var(--celeste-suave)', color: '#111111', fontWeight: 900, fontSize: 14 }}>
+                  {p.palabra} <span style={{ fontWeight: 700, fontSize: 12, opacity: 0.85 }}>· {TIPO_PALABRA[p.tipo]?.nombre || p.tipo}</span>
+                  {editable && <button type="button" aria-label={`Quitar ${p.palabra}`} disabled={ocupado} onClick={() => accion(() => api.del(`/textos/${d.id}/palabras/${p.id}`), 'Palabra quitada.')} style={{ width: 26, height: 26, borderRadius: '50%', border: 0, background: 'rgba(255,255,255,.7)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#111111' }}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.4" strokeLinecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg></button>}
                 </span>
               ))}
+              {d.palabras.length === 0 && <p className="sub" style={{ margin: 0 }}>Sin palabras todavía.</p>}
+              {editable && (agregandoPalabra
+                ? <NuevaPalabra textoId={d.id} alTerminar={(ok) => { setAgregandoPalabra(false); if (ok) { setAviso('Palabra agregada.'); t.recargar() } }} />
+                : <button type="button" onClick={() => setAgregandoPalabra(true)} style={{ ...botonPunteado, padding: '6px 14px', minHeight: 38, borderRadius: 999 }}>+ Agregar palabra</button>)}
             </div>
-          </div>
-          {d.estado === 'borrador' && <button className="btn btn-sec" disabled={ocupado} onClick={() => accion(() => api.post(`/textos/${d.id}/preparar`), 'La IA empezó a preparar el texto.')}>PREPARAR CON IA</button>}
-          {d.estado === 'en_revision' && <button className="btn btn-ok" disabled={ocupado} onClick={() => accion(() => api.post(`/textos/${d.id}/aprobar`), 'Texto aprobado. Ya lo puedes activar en un curso.')}>APROBAR TEXTO</button>}
-          {d.estado === 'aprobado' && (
-            <div className="card" style={{ padding: 18, display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <div className="kicker">Usar en un curso</div>
-              {cursos.datos?.map((c) => (
-                <button key={c.id} className="btn btn-sec btn-peq" disabled={ocupado} onClick={() => accion(() => api.post(`/cursos/${c.id}/textos`, { texto_id: d.id }), `Activado en ${c.nombre}.`)}>Activar en {c.nombre}</button>
-              ))}
-              <button className="btn btn-peq" onClick={() => nav('/cursos')}>Ir a mis cursos</button>
-            </div>
-          )}
-        </section>
+          </Seccion>
+        </div>
       </div>
+
+      {(editable || d.estado === 'aprobado') && (
+        <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 10, padding: '16px clamp(16px, 4vw, 40px) 20px', borderTop: '2px solid var(--borde)', background: '#FFFFFF', display: 'flex', justifyContent: 'flex-end', gap: 12, flexWrap: 'wrap' }}>
+          {editable && <>
+            <button type="button" className="btn btn-sec" disabled={ocupado} onClick={() => accion(() => api.post(`/textos/${d.id}/preparar`), 'La IA empezó a preparar el texto.')} style={{ minHeight: 56, fontSize: 15 }}>{d.estado === 'borrador' ? 'PREPARAR CON IA' : 'VOLVER A PREPARAR CON IA'}</button>
+            <button type="button" className="btn" disabled={ocupado || !ideaActual.trim()} onClick={() => accion(async () => { if (ideaCambio) await guardarIdea(); await api.post(`/textos/${d.id}/aprobar`) }, 'Texto aprobado. Ya puedes activarlo en tus cursos.')} style={{ minHeight: 56, padding: '15px 28px', fontSize: 16 }}>APROBAR TEXTO</button>
+          </>}
+          {d.estado === 'aprobado' && <>
+            <button type="button" className="btn btn-sec" disabled={ocupado} onClick={() => accion(() => api.post(`/textos/${d.id}/revisar`), 'El texto volvió a revisión y se retiró de los cursos.')} style={{ minHeight: 56, fontSize: 15 }}>VOLVER A REVISIÓN</button>
+            <Link to="/textos" className="btn btn-ok" style={{ minHeight: 56, padding: '15px 28px', fontSize: 16 }}>APROBADO ✓ · ACTIVAR EN UN CURSO</Link>
+          </>}
+        </div>
+      )}
+
+      {aviso && (
+        <div role="status" className="aparecer" style={{ position: 'fixed', left: '50%', bottom: 110, transform: 'translateX(-50%)', zIndex: 30, width: 'min(460px, calc(100% - 32px))', boxSizing: 'border-box', padding: '14px 18px', borderRadius: 16, background: '#10193D', color: '#FFFFFF', fontWeight: 800, fontSize: 15, display: 'flex', alignItems: 'center', gap: 10 }}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9CC3FF" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+          {aviso}
+        </div>
+      )}
     </Pagina>
   )
 }

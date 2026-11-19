@@ -182,6 +182,21 @@ const rutas: Ruta[] = [
   ['PATCH', /^\/textos\/(\d+)\/paquete$/, (m, b) => { const t = textos.find((x) => x.id === +m[1])!; Object.assign(t, b); return t }],
   ['POST', /^\/textos\/(\d+)\/aprobar$/, (m) => { const t = textos.find((x) => x.id === +m[1])!; t.estado = 'aprobado'; t.aprobado_en = iso(); return t }],
   ['POST', /^\/textos\/(\d+)\/preparar$/, (m) => { const t = textos.find((x) => x.id === +m[1])!; t.estado = 'preparando'; return t }],
+  ['POST', /^\/textos\/(\d+)\/revisar$/, (m) => { const t = textos.find((x) => x.id === +m[1])!; t.estado = 'en_revision'; t.aprobado_en = null; for (const s of Object.values(activosEnCurso)) s.delete(t.id); return t }],
+  ['POST', /^\/textos\/(\d+)\/preguntas$/, (m, b) => {
+    const t = textos.find((x) => x.id === +m[1])!
+    const p = { id: Date.now(), orden: t.preguntas.length + 1, pregunta: b.pregunta, opciones: b.opciones, correcta: b.correcta, dificultad: b.dificultad ?? 1 }
+    t.preguntas.push(p)
+    return p
+  }],
+  ['POST', /^\/textos\/(\d+)\/palabras$/, (m, b) => {
+    const t = textos.find((x) => x.id === +m[1])!
+    const inicio = (t.cuerpo || '').indexOf(b.palabra)
+    if (inicio < 0) throw Object.assign(new Error('Esa palabra no aparece en el texto.'), { status: 422 })
+    const p = { id: Date.now(), palabra: b.palabra, tipo: b.tipo, inicio, fin: inicio + b.palabra.length, explicacion: null }
+    t.palabras.push(p)
+    return p
+  }],
   ['DELETE', /^\/textos\/(\d+)\/preguntas\/(\d+)$/, (m) => { const t = textos.find((x) => x.id === +m[1])!; t.preguntas = t.preguntas.filter((p) => p.id !== +m[2]); return undefined }],
   ['DELETE', /^\/textos\/(\d+)\/palabras\/(\d+)$/, (m) => { const t = textos.find((x) => x.id === +m[1])!; t.palabras = t.palabras.filter((p) => p.id !== +m[2]); return undefined }],
   ['POST', /^\/actividades$/, (_m, b) => nuevaActividad(b.estudiante_id, b.texto_id)],
