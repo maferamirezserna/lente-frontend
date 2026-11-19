@@ -8,7 +8,8 @@ import Login, { CambiarClave } from './pages/Login'
 import Cursos from './pages/Cursos'
 import Estudiantes from './pages/Estudiantes'
 import Actividad from './pages/Actividad'
-import Textos, { Revision } from './pages/Textos'
+import Textos from './pages/Textos'
+import Revision from './pages/Revision'
 import Panel from './pages/Panel'
 
 function Privada({ children }: { children: ReactNode }) {

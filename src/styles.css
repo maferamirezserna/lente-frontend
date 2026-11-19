@@ -127,6 +127,8 @@ label.etiqueta { font-weight: 800; font-size: 15px; }
 @keyframes lupaContrabarrer { 0%, 10% { transform: translateX(120px); } 50%, 60% { transform: translateX(-120px); } 100% { transform: translateX(120px); } }
 .lupa-barrer { animation: lupaBarrer 3.2s ease-in-out infinite; }
 .lupa-contrabarrer { animation: lupaContrabarrer 3.2s ease-in-out infinite; }
+@keyframes lupaVaiven { 0%, 100% { transform: translateX(-6px); } 50% { transform: translateX(6px); } }
+.lupa-vaiven { animation: lupaVaiven 1.6s ease-in-out infinite; }
 .marca-pop { animation: pop .22s ease-out; }
 .lupa-tag { animation: lupaFadein .8s ease-out .3s both; }
 .barrido { animation: barrido 7s ease-in-out infinite; }

@@ -66,6 +66,9 @@ const textos: TextoDetalle[] = [
     elementos_clave: [], consejo_macro: null, consejo_super: null, consejo_micro: null, preguntas: [], palabras: [],
   },
 ]
+// Textos activos en cada curso (curso_id → textos).
+const activosEnCurso: Record<number, Set<number>> = { 1: new Set([1]), 2: new Set([1]) }
+
 let alertas: Alerta[] = [
   { id: 1, estudiante_id: 2, estudiante: 'Camilo Restrepo', curso: '7.° A', motivo: 'Respuestas muy cortas y actividades sin terminar, tres veces seguidas.', atendida: false, nota_profesor: null, creada_en: iso(1), atendida_en: null, aviso: '' },
   { id: 2, estudiante_id: 3, estudiante: 'Isabela Torres', curso: '7.° A', motivo: 'Tres actividades seguidas con señales de poco ánimo.', atendida: false, nota_profesor: null, creada_en: iso(2), atendida_en: null, aviso: '' },
@@ -155,7 +158,9 @@ const rutas: Ruta[] = [
     cursos.push(c)
     return c
   }],
-  ['GET', /^\/cursos\/(\d+)\/textos$/, () => textos.filter((t) => t.estado === 'aprobado').map((t) => ({ id: t.id, titulo: t.titulo, tipo: t.tipo, fuente: t.fuente, activo: true, activado_en: iso(2) }))],
+  ['GET', /^\/cursos\/(\d+)\/textos$/, (m) => [...(activosEnCurso[+m[1]] || [])].map((id) => textos.find((t) => t.id === id)!).filter(Boolean).map((t) => ({ id: t.id, titulo: t.titulo, tipo: t.tipo, fuente: t.fuente, activo: true, activado_en: iso(2) }))],
+  ['POST', /^\/cursos\/(\d+)\/textos$/, (m, b) => { (activosEnCurso[+m[1]] ||= new Set()).add(b.texto_id); return undefined }],
+  ['DELETE', /^\/cursos\/(\d+)\/textos\/(\d+)$/, (m) => { activosEnCurso[+m[1]]?.delete(+m[2]); return undefined }],
   ['GET', /^\/cursos\/(\d+)\/panel$/, (m): Panel => {
     const c = cursos.find((x) => x.id === +m[1])!
     return { curso_id: c.id, curso: c.nombre, estudiantes_activos: 6, participaron: 5, acierto_promedio: 64, puntos_del_curso: 1390, racha_mas_larga: 6,

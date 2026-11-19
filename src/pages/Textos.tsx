@@ -1,65 +1,201 @@
-import { useEffect, useState, type FormEvent } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from 'react'
+import { Link } from 'react-router-dom'
 import { api } from '../api/client'
-import type { Curso, TextoDetalle, TextoResumen } from '../api/types'
-import { Cargando, ErrorCaja, Pagina, TIPO_PALABRA, useDatos } from '../components/ui'
+import type { Curso, TextoEnCurso, TextoResumen } from '../api/types'
+import { Cargando, ErrorCaja, Pagina, useDatos } from '../components/ui'
+
+// Biblioteca de textos según docs/diseno/mockups/Mock-Textos.html.
 
 const ESTADOS: Record<string, { nombre: string; fondo: string; texto: string }> = {
-  borrador: { nombre: 'Borrador', fondo: '#EEF2F7', texto: '#4B5563' },
-  preparando: { nombre: 'La IA lo está preparando', fondo: '#FFF4E5', texto: '#8A4B00' },
-  en_revision: { nombre: 'Listo para revisar', fondo: '#C9DBFF', texto: '#1A36A8' },
+  borrador: { nombre: 'Borrador', fondo: '#F3F4F6', texto: '#4B5563' },
+  preparando: { nombre: 'Preparando', fondo: '#EEF3FF', texto: '#1A36A8' },
+  en_revision: { nombre: 'En revisión', fondo: '#FFF4E5', texto: '#8A4B00' },
   aprobado: { nombre: 'Aprobado', fondo: '#D9F7E3', texto: '#145A2E' },
-  archivado: { nombre: 'Archivado', fondo: '#EEF2F7', texto: '#6B7280' },
+  archivado: { nombre: 'Archivado', fondo: '#F3F4F6', texto: '#6B7280' },
 }
+const ORDEN_FILTROS = ['borrador', 'preparando', 'en_revision', 'aprobado', 'archivado']
+
+function Girando({ color = '#1A36A8' }: { color?: string }) {
+  return <svg className="girar" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="3" strokeLinecap="round" aria-hidden="true"><path d="M12 3a9 9 0 1 1-9 9" /></svg>
+}
+
 export const Estado = ({ e }: { e: string }) => {
   const s = ESTADOS[e] || ESTADOS.borrador
-  return <span className="chip" style={{ background: s.fondo, color: s.texto }}>{s.nombre}</span>
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 10px', borderRadius: 999, background: s.fondo, color: s.texto, fontWeight: 900, fontSize: 12.5 }}>
+      {e === 'preparando' && <Girando color={s.texto} />}{s.nombre}
+    </span>
+  )
+}
+
+// Ícono y color por tipo de texto (los colores fosforescentes son de categoría).
+const ICONOS: Record<string, { nombre: string; fondo: string; trazo: string; d: string }> = {
+  noticia: { nombre: 'Noticia', fondo: '#2F6BFF', trazo: '#FFFFFF', d: 'M4 5h13v14H6a2 2 0 0 1-2-2zM17 9h3v8a2 2 0 0 1-2 2M8 9h5M8 13h5' },
+  video: { nombre: 'Video', fondo: '#FF2DAA', trazo: '#111111', d: 'M4 6h12v12H4zM16 10l4-2v8l-4-2' },
+  publicacion: { nombre: 'Publicación', fondo: '#FF7A00', trazo: '#111111', d: 'M5 4h14v12H9l-4 4z' },
+  aportado_en_clase: { nombre: 'Aportado en clase', fondo: '#2BEA7C', trazo: '#111111', d: 'M4 20l4-1 11-11-3-3L5 16zM14 6l3 3' },
+}
+function TipoIcono({ tipo }: { tipo: string }) {
+  const t = ICONOS[tipo] || { ...ICONOS.noticia, nombre: tipo }
+  return (
+    <span style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 800, fontSize: 13, color: 'var(--tinta)' }}>
+      <span style={{ width: 36, height: 36, borderRadius: 12, background: t.fondo, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={t.trazo} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={t.d} /></svg>
+      </span>
+      {t.nombre}
+    </span>
+  )
+}
+
+const fecha = (iso: string) => new Date(iso).toLocaleDateString('es-CO', { day: 'numeric', month: 'short' })
+const lista = (xs: string[]) => (xs.length <= 1 ? xs.join('') : `${xs.slice(0, -1).join(', ')} y ${xs[xs.length - 1]}`)
+
+// En qué cursos está activo cada texto (GET /cursos y GET /cursos/{id}/textos).
+function useActivosPorTexto(cursos: Curso[] | null, version: number) {
+  const [mapa, setMapa] = useState<Record<number, string[]>>({})
+  useEffect(() => {
+    if (!cursos) return
+    let vivo = true
+    Promise.all(cursos.map((c) => api.get<TextoEnCurso[]>(`/cursos/${c.id}/textos`).then((ts) => ({ c, ts })).catch(() => ({ c, ts: [] as TextoEnCurso[] }))))
+      .then((res) => {
+        if (!vivo) return
+        const m: Record<number, string[]> = {}
+        for (const { c, ts } of res) for (const t of ts) if (t.activo) (m[t.id] ||= []).push(c.nombre)
+        setMapa(m)
+      })
+    return () => { vivo = false }
+  }, [cursos, version])
+  return mapa
+}
+
+const botonTarjeta = { minHeight: 48, borderRadius: 14, fontSize: 14, letterSpacing: 0.5, width: '100%' } as const
+
+function ActivarEnCurso({ texto, cursos, activos, alCambiar }: { texto: TextoResumen; cursos: Curso[]; activos: string[]; alCambiar: () => void }) {
+  const [abierto, setAbierto] = useState(false)
+  const [ocupado, setOcupado] = useState<number | null>(null)
+  const [error, setError] = useState<unknown>(null)
+
+  async function activar(c: Curso) {
+    setOcupado(c.id)
+    setError(null)
+    try {
+      await api.post(`/cursos/${c.id}/textos`, { texto_id: texto.id })
+      alCambiar()
+    } catch (e) { setError(e) } finally { setOcupado(null) }
+  }
+
+  if (!abierto) return <button type="button" className="btn btn-sec" onClick={() => setAbierto(true)} style={{ ...botonTarjeta, color: 'var(--tinta)', borderColor: 'var(--borde)' }}>ACTIVAR EN UN CURSO</button>
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      {cursos.map((c) => {
+        const ya = activos.includes(c.nombre)
+        return (
+          <button key={c.id} type="button" className="btn btn-sec btn-peq" disabled={ya || ocupado != null} onClick={() => activar(c)}>
+            {ya ? `Ya está activo en ${c.nombre}` : ocupado === c.id ? 'Activando…' : `Activar en ${c.nombre}`}
+          </button>
+        )
+      })}
+      <ErrorCaja error={error} />
+      <button type="button" onClick={() => setAbierto(false)} style={{ border: 0, background: 'transparent', color: 'var(--gris)', fontWeight: 800, cursor: 'pointer', font: 'inherit' }}>Cerrar</button>
+    </div>
+  )
+}
+
+function Tarjeta({ t, i, activos, cursos, alCambiar }: { t: TextoResumen; i: number; activos: string[]; cursos: Curso[]; alCambiar: () => void }) {
+  const [ocupado, setOcupado] = useState(false)
+  const [error, setError] = useState<unknown>(null)
+
+  async function preparar() {
+    setOcupado(true)
+    setError(null)
+    try { await api.post(`/textos/${t.id}/preparar`); alCambiar() } catch (e) { setError(e) } finally { setOcupado(false) }
+  }
+
+  const detalle =
+    t.estado === 'aprobado' ? (activos.length ? `Activo en ${lista(activos)}` : 'Aún no está activo en ningún curso')
+    : t.estado === 'en_revision' ? (t.preparado_por_ia ? 'La IA ya propuso el análisis' : 'Listo para revisar')
+    : t.estado === 'preparando' ? 'La IA está trabajando'
+    : t.estado === 'borrador' ? 'Falta enviarlo a la IA'
+    : 'Ya no se usa en clase'
+
+  let accion: ReactNode
+  if (t.estado === 'aprobado') accion = <ActivarEnCurso texto={t} cursos={cursos} activos={activos} alCambiar={alCambiar} />
+  else if (t.estado === 'en_revision') accion = <Link to={`/textos/${t.id}`} className="btn" style={botonTarjeta}>REVISAR Y APROBAR</Link>
+  else if (t.estado === 'preparando') accion = (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 14, background: 'var(--hielo)' }}>
+      <svg className="lupa-vaiven" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2F5BEA" strokeWidth="2.8" strokeLinecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" /><path d="M15.5 15.5 21 21" /></svg>
+      <span style={{ fontWeight: 800, fontSize: 13, color: 'var(--cobalto-borde)' }}>Revisando la noticia…</span>
+    </div>
+  )
+  else if (t.estado === 'borrador') accion = <button type="button" className="btn btn-sec" disabled={ocupado} onClick={preparar} style={botonTarjeta}>{ocupado ? 'ENVIANDO…' : 'PREPARAR CON IA'}</button>
+  else accion = <Link to={`/textos/${t.id}`} className="btn btn-sec" style={{ ...botonTarjeta, color: 'var(--gris)', borderColor: 'var(--borde)', borderStyle: 'dashed' }}>Ver texto</Link>
+
+  return (
+    <article className="card tarjeta-curso aparecer" style={{ animationDelay: `${i * 60}ms`, minWidth: 0, borderRadius: 22, padding: 18, display: 'flex', flexDirection: 'column', gap: 12, opacity: t.estado === 'archivado' ? 0.7 : 1 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+        <TipoIcono tipo={t.tipo} />
+        <Estado e={t.estado} />
+      </div>
+      <Link to={`/textos/${t.id}`} style={{ fontWeight: 900, fontSize: 19, lineHeight: 1.25, color: 'var(--tinta)', textDecoration: 'none' }}>{t.titulo}</Link>
+      <span style={{ fontWeight: 700, fontSize: 13, color: 'var(--gris-claro)' }}>{t.fuente || 'Sin fuente'} · {fecha(t.creado_en)} · {detalle}</span>
+      <ErrorCaja error={error} />
+      <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column' }}>{accion}</div>
+    </article>
+  )
 }
 
 export default function Textos() {
-  const lista = useDatos(() => api.get<TextoResumen[]>('/textos'))
+  const textos = useDatos(() => api.get<TextoResumen[]>('/textos'))
+  const cursos = useDatos(() => api.get<Curso[]>('/cursos'))
+  const [version, setVersion] = useState(0)
+  const activos = useActivosPorTexto(cursos.datos, version)
   const [nuevo, setNuevo] = useState(false)
   const [filtro, setFiltro] = useState('todos')
 
   // Mientras alguno esté "preparando", revisar cada 10 s.
-  const preparando = lista.datos?.some((t) => t.estado === 'preparando')
+  const preparando = textos.datos?.some((t) => t.estado === 'preparando')
   useEffect(() => {
     if (!preparando) return
-    const t = setInterval(() => api.get<TextoResumen[]>('/textos').then(lista.setDatos).catch(() => {}), 10000)
+    const t = setInterval(() => api.get<TextoResumen[]>('/textos').then(textos.setDatos).catch(() => {}), 10000)
     return () => clearInterval(t)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [preparando])
 
-  const visibles = (lista.datos || []).filter((t) => filtro === 'todos' || t.estado === filtro)
+  const todos = textos.datos || []
+  const cuenta = useMemo(() => Object.fromEntries(ORDEN_FILTROS.map((e) => [e, todos.filter((t) => t.estado === e).length])), [todos])
+  const visibles = todos.filter((t) => filtro === 'todos' || t.estado === filtro)
+  const alCambiar = () => { textos.recargar(); setVersion((v) => v + 1) }
+
+  const filtroBoton = (clave: string, etiqueta: string, n: number) => {
+    const on = filtro === clave
+    return (
+      <button key={clave} type="button" aria-pressed={on} onClick={() => setFiltro(clave)} style={{ padding: '8px 14px', minHeight: 40, borderRadius: 999, border: `2px solid ${on ? 'var(--cobalto)' : 'var(--borde)'}`, background: on ? 'var(--cobalto)' : '#FFFFFF', color: on ? '#FFFFFF' : 'var(--gris)', font: 'inherit', fontWeight: on ? 900 : 800, fontSize: 14, cursor: 'pointer' }}>
+        {etiqueta} · {n}
+      </button>
+    )
+  }
+
   return (
     <Pagina>
       <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
-        <div>
-          <h1 className="titulo">Biblioteca de textos</h1>
-          <p className="sub" style={{ marginTop: 6 }}>Agrega una noticia, deja que la IA prepare la actividad y revísala antes de usarla en clase.</p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <h1 style={{ margin: 0, fontWeight: 900, fontSize: 36 }}>Biblioteca de textos</h1>
+          <span style={{ fontWeight: 700, fontSize: 15, color: 'var(--gris)' }}>Sube una noticia, la IA propone el análisis y tú lo revisas antes de usarlo en clase.</span>
         </div>
-        <button className="btn" onClick={() => setNuevo(true)}>+ NUEVO TEXTO</button>
+        {!nuevo && <button type="button" className="btn" onClick={() => setNuevo(true)} style={{ minHeight: 52 }}>+ SUBIR NOTICIA</button>}
       </div>
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-        {['todos', 'en_revision', 'preparando', 'aprobado', 'borrador'].map((f) => (
-          <button key={f} type="button" className={filtro === f ? 'btn btn-peq' : 'btn btn-sec btn-peq'} onClick={() => setFiltro(f)}>{f === 'todos' ? 'Todos' : ESTADOS[f].nombre}</button>
-        ))}
-      </div>
-      {nuevo && <NuevoTexto onCerrar={() => setNuevo(false)} onCreado={() => { setNuevo(false); lista.recargar() }} />}
-      {lista.cargando && <Cargando texto="Cargando la biblioteca" />}
-      <ErrorCaja error={lista.error} />
-      {lista.datos && visibles.length === 0 && <div className="aviso aviso-info">No hay textos aquí todavía.</div>}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {visibles.map((t, i) => (
-          <Link key={t.id} to={`/textos/${t.id}`} className="card aparecer" style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap', textDecoration: 'none', color: 'inherit', animationDelay: `${i * 40}ms` }}>
-            <div style={{ flex: 1, minWidth: 220 }}>
-              <div style={{ fontWeight: 900, fontSize: 18 }}>{t.titulo}</div>
-              <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--gris)' }}>{t.fuente || 'Sin fuente'} · {t.tipo} · {new Date(t.creado_en).toLocaleDateString('es-CO')}</div>
-            </div>
-            <Estado e={t.estado} />
-            <span style={{ fontWeight: 900, color: 'var(--cobalto)' }}>{t.estado === 'en_revision' ? 'Revisar →' : 'Ver →'}</span>
-          </Link>
-        ))}
+      {nuevo && <NuevoTexto onCerrar={() => setNuevo(false)} onCreado={() => { setNuevo(false); alCambiar() }} />}
+      {!!todos.length && (
+        <div role="group" aria-label="Filtrar por estado" style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          {filtroBoton('todos', 'Todos', todos.length)}
+          {ORDEN_FILTROS.filter((e) => cuenta[e] > 0).map((e) => filtroBoton(e, ESTADOS[e].nombre, cuenta[e]))}
+        </div>
+      )}
+      {textos.cargando && <Cargando texto="Cargando la biblioteca" />}
+      <ErrorCaja error={textos.error} />
+      {textos.datos && visibles.length === 0 && <div className="aviso aviso-info">No hay textos aquí todavía. Sube una noticia para empezar.</div>}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16 }}>
+        {visibles.map((t, i) => <Tarjeta key={t.id} t={t} i={i} activos={activos[t.id] || []} cursos={cursos.datos || []} alCambiar={alCambiar} />)}
       </div>
     </Pagina>
   )
@@ -81,13 +217,13 @@ function NuevoTexto({ onCerrar, onCreado }: { onCerrar: () => void; onCreado: ()
     } catch (err) { setError(err) } finally { setEnviando(false) }
   }
   return (
-    <form onSubmit={enviar} className="card aparecer" style={{ padding: 22, display: 'flex', flexDirection: 'column', gap: 12 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between' }}><h2 style={{ margin: 0, fontWeight: 900 }}>Nuevo texto</h2><button type="button" className="btn btn-sec btn-peq" onClick={onCerrar}>Cancelar</button></div>
+    <form onSubmit={enviar} className="card aparecer" style={{ padding: 22, borderRadius: 22, display: 'flex', flexDirection: 'column', gap: 12, borderColor: 'var(--celeste-suave)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}><h2 style={{ margin: 0, fontWeight: 900 }}>Subir una noticia</h2><button type="button" className="btn btn-sec btn-peq" onClick={onCerrar}>Cancelar</button></div>
       <div className="fila">
         <div style={{ flex: '2 1 300px', display: 'flex', flexDirection: 'column', gap: 6 }}><label className="etiqueta" htmlFor="t">Título</label><input id="t" className="campo" required maxLength={250} value={f.titulo} onChange={cambia('titulo')} /></div>
         <div style={{ flex: '1 1 180px', display: 'flex', flexDirection: 'column', gap: 6 }}><label className="etiqueta" htmlFor="f">Fuente</label><input id="f" className="campo" maxLength={120} value={f.fuente} onChange={cambia('fuente')} placeholder="El Tiempo, La Patria…" /></div>
         <div style={{ flex: '1 1 160px', display: 'flex', flexDirection: 'column', gap: 6 }}><label className="etiqueta" htmlFor="ti">Tipo</label>
-          <select id="ti" className="campo" value={f.tipo} onChange={cambia('tipo')}><option value="noticia">Noticia</option><option value="publicacion">Publicación</option><option value="video">Video</option><option value="otro">Otro</option></select></div>
+          <select id="ti" className="campo" value={f.tipo} onChange={cambia('tipo')}>{Object.entries(ICONOS).map(([k, v]) => <option key={k} value={k}>{v.nombre}</option>)}</select></div>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}><label className="etiqueta" htmlFor="c">Texto completo</label><textarea id="c" className="campo" rows={7} value={f.cuerpo} onChange={cambia('cuerpo')} placeholder="Pega aquí la noticia. Después no se puede cambiar." /></div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}><label className="etiqueta" htmlFor="e">Enlace (opcional)</label><input id="e" className="campo" type="url" value={f.enlace} onChange={cambia('enlace')} /></div>
@@ -95,117 +231,5 @@ function NuevoTexto({ onCerrar, onCreado }: { onCerrar: () => void; onCreado: ()
       <ErrorCaja error={error} />
       <button className="btn" disabled={enviando || !f.titulo.trim() || (!f.cuerpo.trim() && !f.enlace)}>{enviando ? 'Guardando…' : 'GUARDAR TEXTO'}</button>
     </form>
-  )
-}
-
-/* ---------- Revisión de un texto ---------- */
-export function Revision() {
-  const { id } = useParams()
-  const nav = useNavigate()
-  const t = useDatos(() => api.get<TextoDetalle>(`/textos/${id}`), [id])
-  const cursos = useDatos(() => api.get<Curso[]>('/cursos'))
-  const [idea, setIdea] = useState<string | null>(null)
-  const [error, setError] = useState<unknown>(null)
-  const [ok, setOk] = useState<string | null>(null)
-  const [ocupado, setOcupado] = useState(false)
-
-  useEffect(() => {
-    if (t.datos?.estado !== 'preparando') return
-    const i = setInterval(() => api.get<TextoDetalle>(`/textos/${id}`).then(t.setDatos).catch(() => {}), 10000)
-    return () => clearInterval(i)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [t.datos?.estado, id])
-
-  async function accion(fn: () => Promise<unknown>, mensaje: string) {
-    setOcupado(true); setError(null); setOk(null)
-    try { await fn(); setOk(mensaje); t.recargar() } catch (e) { setError(e) } finally { setOcupado(false) }
-  }
-
-  if (!t.datos) return <Pagina>{t.error ? <ErrorCaja error={t.error} /> : <Cargando />}</Pagina>
-  const d = t.datos
-  const editable = d.estado !== 'aprobado' && d.estado !== 'archivado'
-  const ideaActual = idea ?? d.idea_principal ?? ''
-
-  // Resaltar en el cuerpo las palabras cargadas que propuso la IA.
-  const cuerpo = d.cuerpo || ''
-  const trozos: { t: string; tipo?: string }[] = []
-  let k = 0
-  for (const p of [...d.palabras].sort((a, b) => a.inicio - b.inicio)) {
-    if (p.inicio < k) continue
-    trozos.push({ t: cuerpo.slice(k, p.inicio) }, { t: cuerpo.slice(p.inicio, p.fin), tipo: p.tipo })
-    k = p.fin
-  }
-  trozos.push({ t: cuerpo.slice(k) })
-
-  return (
-    <Pagina>
-      <div>
-        <Link to="/textos" style={{ fontWeight: 800, textDecoration: 'none' }}>← Biblioteca</Link>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', marginTop: 6 }}>
-          <h1 className="titulo">{d.titulo}</h1><Estado e={d.estado} />
-        </div>
-        <p className="sub" style={{ marginTop: 6 }}>{d.fuente || 'Sin fuente'} · {d.preparado_por_ia ? 'Preparado por la IA: revisa y corrige antes de aprobar.' : 'Preparado a mano.'}</p>
-      </div>
-      <ErrorCaja error={error} />
-      {ok && <div className="aviso aviso-info" role="status">{ok}</div>}
-      {d.estado === 'preparando' && <div className="aviso aviso-info"><Cargando texto="La IA está preparando la actividad. Esta página se actualiza sola" /></div>}
-
-      <div style={{ display: 'flex', gap: 18, flexWrap: 'wrap', alignItems: 'flex-start' }}>
-        <article className="card" style={{ flex: '3 1 480px', padding: 24 }}>
-          <div className="kicker">Texto</div>
-          <p className="lectura" style={{ fontSize: 18, lineHeight: 1.8, whiteSpace: 'pre-wrap' }}>
-            {trozos.map((x, i) => x.tipo ? <mark key={i} style={{ background: TIPO_PALABRA[x.tipo]?.fondo || '#C9DBFF', color: '#111', fontWeight: 600, borderRadius: 6, padding: '0 3px' }}>{x.t}</mark> : <span key={i}>{x.t}</span>)}
-          </p>
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            {Object.entries(TIPO_PALABRA).map(([k2, v]) => <span key={k2} className="chip" style={{ background: v.fondo, color: '#111' }}>{v.nombre}</span>)}
-          </div>
-        </article>
-
-        <section style={{ flex: '2 1 380px', display: 'flex', flexDirection: 'column', gap: 14 }}>
-          <div className="card" style={{ padding: 18, display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <div className="kicker">1 · Idea principal</div>
-            <textarea className="campo" rows={4} value={ideaActual} disabled={!editable} onChange={(e) => setIdea(e.target.value)} />
-            {editable && idea !== null && idea !== d.idea_principal && (
-              <button className="btn btn-peq" disabled={ocupado || !idea.trim()} onClick={() => accion(() => api.patch(`/textos/${d.id}/paquete`, { idea_principal: idea.trim() }), 'Idea principal guardada.')}>Guardar idea</button>
-            )}
-          </div>
-          <div className="card" style={{ padding: 18, display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <div className="kicker">2 · Preguntas de organización</div>
-            {d.preguntas.length === 0 && <p className="sub">Sin preguntas todavía.</p>}
-            {d.preguntas.map((p) => (
-              <div key={p.id} style={{ borderTop: '2px solid var(--borde)', paddingTop: 10 }}>
-                <div style={{ fontWeight: 900 }}>{p.orden}. {p.pregunta}</div>
-                <ol type="A" style={{ margin: '6px 0', fontWeight: 700 }}>
-                  {p.opciones.map((o, i) => <li key={i} style={{ color: i + 1 === p.correcta ? 'var(--ok-texto)' : undefined }}>{o}{i + 1 === p.correcta ? ' ✓' : ''}</li>)}
-                </ol>
-                {editable && <button className="btn btn-sec btn-peq" disabled={ocupado} onClick={() => accion(() => api.del(`/textos/${d.id}/preguntas/${p.id}`), 'Pregunta quitada.')}>Quitar</button>}
-              </div>
-            ))}
-          </div>
-          <div className="card" style={{ padding: 18, display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <div className="kicker">3 · Palabras cargadas</div>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              {d.palabras.map((p) => (
-                <span key={p.id} className="chip" style={{ background: TIPO_PALABRA[p.tipo]?.fondo || '#C9DBFF', color: '#111', fontSize: 14 }}>
-                  {p.palabra}
-                  {editable && <button type="button" aria-label={`Quitar ${p.palabra}`} disabled={ocupado} onClick={() => accion(() => api.del(`/textos/${d.id}/palabras/${p.id}`), 'Palabra quitada.')} style={{ border: 0, background: 'transparent', fontWeight: 900, cursor: 'pointer', color: '#111' }}>×</button>}
-                </span>
-              ))}
-            </div>
-          </div>
-          {d.estado === 'borrador' && <button className="btn btn-sec" disabled={ocupado} onClick={() => accion(() => api.post(`/textos/${d.id}/preparar`), 'La IA empezó a preparar el texto.')}>PREPARAR CON IA</button>}
-          {d.estado === 'en_revision' && <button className="btn btn-ok" disabled={ocupado} onClick={() => accion(() => api.post(`/textos/${d.id}/aprobar`), 'Texto aprobado. Ya lo puedes activar en un curso.')}>APROBAR TEXTO</button>}
-          {d.estado === 'aprobado' && (
-            <div className="card" style={{ padding: 18, display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <div className="kicker">Usar en un curso</div>
-              {cursos.datos?.map((c) => (
-                <button key={c.id} className="btn btn-sec btn-peq" disabled={ocupado} onClick={() => accion(() => api.post(`/cursos/${c.id}/textos`, { texto_id: d.id }), `Activado en ${c.nombre}.`)}>Activar en {c.nombre}</button>
-              ))}
-              <button className="btn btn-peq" onClick={() => nav('/cursos')}>Ir a mis cursos</button>
-            </div>
-          )}
-        </section>
-      </div>
-    </Pagina>
   )
 }
