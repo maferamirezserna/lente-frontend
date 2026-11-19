@@ -98,6 +98,23 @@ export function BarraSuperior() {
   )
 }
 
+// Pestañas dentro de un curso (Estudiantes · Textos activos · Panel del curso).
+export function PestanasCurso({ id, actual }: { id: string | number; actual: 'estudiantes' | 'panel' }) {
+  const estilo = (activa: boolean) => ({
+    padding: '10px 16px', borderRadius: 12, textDecoration: 'none', fontWeight: activa ? 900 : 800, fontSize: 15,
+    ...(activa
+      ? { background: 'var(--cobalto)', color: '#FFFFFF', borderBottom: '4px solid var(--cobalto-borde)' }
+      : { color: 'var(--gris)', border: '2px solid var(--borde)', borderBottomWidth: 4 }),
+  })
+  return (
+    <nav aria-label="Secciones del curso" style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+      <Link to={`/cursos/${id}`} aria-current={actual === 'estudiantes' ? 'page' : undefined} style={estilo(actual === 'estudiantes')}>Estudiantes</Link>
+      <Link to="/textos" style={estilo(false)}>Textos activos</Link>
+      <Link to={`/cursos/${id}/panel`} aria-current={actual === 'panel' ? 'page' : undefined} style={estilo(actual === 'panel')}>Panel del curso</Link>
+    </nav>
+  )
+}
+
 export function Pagina({ children }: { children: ReactNode }) {
   return (
     <div style={{ minHeight: '100vh', background: 'var(--fondo)' }}>

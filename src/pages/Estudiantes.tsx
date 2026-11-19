@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { api } from '../api/client'
 import type { ActividadVista, Alerta, Curso, Estudiante, TextoEnCurso } from '../api/types'
-import { AZULES, Avatar, Cargando, ErrorCaja, Pagina, pct, tipoTexto, useDatos } from '../components/ui'
+import { AZULES, Avatar, Cargando, ErrorCaja, Pagina, PestanasCurso, pct, tipoTexto, useDatos } from '../components/ui'
 
 // Pantalla del curso (modo aula) según docs/diseno/mockups/Mock-Estudiantes.html.
 
@@ -28,13 +28,6 @@ function BarrasAvance({ e }: { e: Estudiante }) {
     </div>
   )
 }
-
-const pestana = (activa: boolean) => ({
-  padding: '10px 16px', borderRadius: 12, textDecoration: 'none', fontWeight: activa ? 900 : 800, fontSize: 15,
-  ...(activa
-    ? { background: 'var(--cobalto)', color: '#FFFFFF', borderBottom: '4px solid var(--cobalto-borde)' }
-    : { color: 'var(--gris)', border: '2px solid var(--borde)', borderBottomWidth: 4 }),
-})
 
 function AgregarEstudiante({ cursoId, alTerminar }: { cursoId: string; alTerminar: (nuevo: boolean) => void }) {
   const [nombre, setNombre] = useState('')
@@ -125,11 +118,7 @@ export default function Estudiantes() {
         </div>
         {!agregando && <button type="button" className="btn btn-sec" onClick={() => setAgregando(true)} style={{ minHeight: 48, fontSize: 14 }}>+ AGREGAR ESTUDIANTE</button>}
       </div>
-      <nav aria-label="Secciones del curso" style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-        <Link to={`/cursos/${id}`} aria-current="page" style={pestana(true)}>Estudiantes</Link>
-        <Link to="/textos" style={pestana(false)}>Textos activos</Link>
-        <Link to={`/cursos/${id}/panel`} style={pestana(false)}>Panel del curso</Link>
-      </nav>
+      <PestanasCurso id={id} actual="estudiantes" />
 
       {agregando && <AgregarEstudiante cursoId={id} alTerminar={(nuevo) => { setAgregando(false); if (nuevo) { lista.recargar(); curso.recargar() } }} />}
       {lista.cargando && <Cargando texto="Cargando estudiantes" />}
