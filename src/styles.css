@@ -100,6 +100,7 @@ label.etiqueta { font-weight: 800; font-size: 15px; }
 .puntos span:nth-child(3) { animation-delay: .4s; }
 
 @keyframes crecer { from { width: 0; } }
+@keyframes entrarLado { from { transform: translateX(40px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 @keyframes pop { 0% { transform: scale(.9); } 60% { transform: scale(1.08); } 100% { transform: scale(1); } }
 @keyframes subir { from { transform: translateY(100%); } to { transform: translateY(0); } }
 @keyframes girar { to { transform: rotate(360deg); } }

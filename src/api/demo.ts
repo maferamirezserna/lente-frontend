@@ -142,6 +142,19 @@ const rutas: Ruta[] = [
   ['GET', /^\/cursos$/, () => cursos],
   ['GET', /^\/cursos\/(\d+)$/, (m) => cursos.find((c) => c.id === +m[1])],
   ['GET', /^\/cursos\/(\d+)\/estudiantes$/, (m) => estudiantes.filter((e) => e.curso_id === +m[1])],
+  ['POST', /^\/cursos\/(\d+)\/estudiantes$/, (m, b) => {
+    const c = cursos.find((x) => x.id === +m[1])!
+    const e = est(Math.max(...estudiantes.map((x) => x.id)) + 1, b.nombre, c.id, b.grado ?? 7, [null, null, null], 0, 0)
+    if (b.grado == null) Object.assign(e, { grado: null, grado_texto: 'Sin grado' })
+    estudiantes.push(e)
+    c.estudiantes += 1
+    return e
+  }],
+  ['POST', /^\/cursos$/, (_m, b) => {
+    const c: Curso = { id: Math.max(...cursos.map((x) => x.id)) + 1, nombre: b.nombre, institucion: b.institucion ?? null, anio: b.anio ?? new Date().getFullYear(), activo: true, estudiantes: 0 }
+    cursos.push(c)
+    return c
+  }],
   ['GET', /^\/cursos\/(\d+)\/textos$/, () => textos.filter((t) => t.estado === 'aprobado').map((t) => ({ id: t.id, titulo: t.titulo, tipo: t.tipo, fuente: t.fuente, activo: true, activado_en: iso(2) }))],
   ['GET', /^\/cursos\/(\d+)\/panel$/, (m): Panel => {
     const c = cursos.find((x) => x.id === +m[1])!

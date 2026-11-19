@@ -19,6 +19,15 @@ export const TIPO_PALABRA: Record<string, { nombre: string; fondo: string }> = {
   expresion: { nombre: 'Expresión', fondo: '#FF2DAA' },
 }
 
+// Nombres para mostrar de los tipos de texto de la API (TipoTexto en el backend).
+export const TIPO_TEXTO: Record<string, string> = {
+  noticia: 'Noticia',
+  publicacion: 'Publicación de red social',
+  video: 'Video',
+  aportado_en_clase: 'Aportado en clase',
+}
+export const tipoTexto = (t: string) => TIPO_TEXTO[t] || t
+
 export function iniciales(nombre: string) {
   return nombre.split(/\s+/).filter(Boolean).slice(0, 2).map((p) => p[0]?.toUpperCase()).join('')
 }
