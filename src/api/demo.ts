@@ -66,6 +66,23 @@ const textos: TextoDetalle[] = [
     elementos_clave: [], consejo_macro: null, consejo_super: null, consejo_micro: null, preguntas: [], palabras: [],
   },
 ]
+// Sesión de demo: escribir «admin» como usuario entra como administrador.
+function usuarioDemo() {
+  let rol = 'profesor'
+  try { rol = sessionStorage.getItem('lente-demo-rol') || 'profesor' } catch { /* nada */ }
+  return rol === 'administrador'
+    ? { id: 99, rol, nombre: 'Administración del colegio', debe_cambiar_clave: false }
+    : { id: 1, rol, nombre: 'Prof. Julián Castro', debe_cambiar_clave: false }
+}
+const claveDemo = () => `lente-${Math.random().toString(36).slice(2, 8)}`
+const profesores = [
+  { id: 1, nombre: 'Julián Castro', usuario: 'jcastro', activo: true, ultimo_ingreso: iso(0), cursos: 3, estudiantes: 8 },
+  { id: 2, nombre: 'Ana María Duque', usuario: 'aduque', activo: true, ultimo_ingreso: iso(2), cursos: 2, estudiantes: 31 },
+  { id: 3, nombre: 'Carlos Ibarra', usuario: 'cibarra', activo: true, ultimo_ingreso: iso(5), cursos: 1, estudiantes: 18 },
+  { id: 4, nombre: 'Lucía Vargas', usuario: 'lvargas', activo: true, ultimo_ingreso: null, cursos: 1, estudiantes: 27 },
+  { id: 5, nombre: 'Pedro Arango', usuario: 'parango', activo: false, ultimo_ingreso: iso(40), cursos: 0, estudiantes: 0 },
+]
+
 // Textos activos en cada curso (curso_id → textos).
 const activosEnCurso: Record<number, Set<number>> = { 1: new Set([1]), 2: new Set([1]) }
 
@@ -138,8 +155,27 @@ function terminar(a: ActDemo): ResultadoActividad {
 
 type Ruta = [string, RegExp, (m: RegExpMatchArray, body: any) => unknown]
 const rutas: Ruta[] = [
-  ['POST', /^\/auth\/login$/, (_m, b) => ({ access_token: 'demo', token_type: 'bearer', usuario: { id: 1, rol: b?.usuario === 'admin' ? 'administrador' : 'profesor', nombre: 'Prof. Julián Castro', debe_cambiar_clave: false } })],
-  ['GET', /^\/auth\/yo$/, () => ({ id: 1, rol: 'profesor', nombre: 'Prof. Julián Castro', debe_cambiar_clave: false })],
+  ['POST', /^\/auth\/login$/, (_m, b) => {
+    const admin = b?.usuario === 'admin'
+    try { sessionStorage.setItem('lente-demo-rol', admin ? 'administrador' : 'profesor') } catch { /* nada */ }
+    return { access_token: 'demo', token_type: 'bearer', usuario: usuarioDemo() }
+  }],
+  ['GET', /^\/auth\/yo$/, () => usuarioDemo()],
+  ['GET', /^\/admin\/resumen$/, () => ({
+    total_profesores: profesores.length, profesores_activos: profesores.filter((p) => p.activo).length,
+    total_estudiantes: estudiantes.length, estudiantes_activos: estudiantes.filter((e) => e.estado === 'activo').length,
+  })],
+  ['GET', /^\/admin\/profesores$/, () => profesores],
+  ['POST', /^\/admin\/profesores$/, (_m, b) => {
+    const usuario = b.usuario || b.nombre.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim().split(/\s+/).join('.')
+    if (profesores.some((p) => p.usuario === usuario)) throw Object.assign(new Error('Ese usuario ya existe. Escribe otro.'), { status: 409 })
+    const p = { id: Math.max(...profesores.map((x) => x.id)) + 1, nombre: b.nombre, usuario, activo: true, ultimo_ingreso: null, cursos: 0, estudiantes: 0 }
+    profesores.push(p)
+    return { ...p, clave_temporal: claveDemo() }
+  }],
+  ['PATCH', /^\/admin\/profesores\/(\d+)$/, (m, b) => { const p = profesores.find((x) => x.id === +m[1])!; Object.assign(p, b); return p }],
+  ['POST', /^\/admin\/profesores\/(\d+)\/clave$/, () => ({ clave_temporal: claveDemo() })],
+  ['GET', /^\/admin\/estudiantes$/, () => estudiantes.map((e) => ({ ...e, profesor_id: 1, profesor: 'Julián Castro' }))],
   ['POST', /^\/auth\/cambiar-clave$/, () => undefined],
   ['GET', /^\/salud$/, () => ({ estado: 'ok' })],
   ['GET', /^\/cursos$/, () => cursos],

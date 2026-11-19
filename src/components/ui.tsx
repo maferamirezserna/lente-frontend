@@ -63,9 +63,9 @@ export function LupaIcono({ size = 24, color = '#FFFFFF' }: { size?: number; col
   )
 }
 
-export function Marca({ tam = 26 }: { tam?: number }) {
+export function Marca({ tam = 26, a = '/cursos' }: { tam?: number; a?: string }) {
   return (
-    <Link to="/cursos" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', color: 'var(--tinta)' }}>
+    <Link to={a} style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', color: 'var(--tinta)' }}>
       <span style={{ width: tam + 14, height: tam + 14, borderRadius: 12, background: 'var(--cobalto)', borderBottom: '4px solid var(--cobalto-borde)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <LupaIcono size={tam - 2} />
       </span>
@@ -83,10 +83,16 @@ export function BarraSuperior() {
   })
   return (
     <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', padding: '14px clamp(16px, 4vw, 40px)', borderBottom: '2px solid var(--borde)', background: '#fff' }}>
-      <Marca />
+      <Marca a={usuario?.rol === 'administrador' ? '/admin' : '/cursos'} />
       <nav aria-label="Secciones" style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-        <NavLink to="/cursos" style={tab}>Mis cursos</NavLink>
-        <NavLink to="/textos" style={tab}>Biblioteca de textos</NavLink>
+        {usuario?.rol === 'administrador' ? (
+          <NavLink to="/admin" style={tab}>Administración</NavLink>
+        ) : (
+          <>
+            <NavLink to="/cursos" style={tab}>Mis cursos</NavLink>
+            <NavLink to="/textos" style={tab}>Biblioteca de textos</NavLink>
+          </>
+        )}
       </nav>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         {DEMO && <span className="chip" style={{ background: '#FFF4E5', color: '#8A4B00' }}>Modo demo</span>}

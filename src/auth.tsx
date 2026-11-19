@@ -38,6 +38,9 @@ export function SesionProvider({ children }: { children: ReactNode }) {
   return <Ctx.Provider value={{ usuario, cargando, entrar, salir }}>{children}</Ctx.Provider>
 }
 
+// Pantalla de inicio según el rol: el administrador va a su panel; el profe, a sus cursos.
+export const inicioDe = (u: UsuarioSesion) => (u.rol === 'administrador' ? '/admin' : '/cursos')
+
 export function useSesion() {
   const s = useContext(Ctx)
   if (!s) throw new Error('useSesion fuera de SesionProvider')

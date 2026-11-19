@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useSesion } from '../auth'
+import { inicioDe, useSesion } from '../auth'
 import { api, DEMO } from '../api/client'
 import { ErrorCaja } from '../components/ui'
 
@@ -170,7 +170,7 @@ export default function Login() {
     setEnviando(true)
     try {
       const u = await entrar(usuario.trim(), clave)
-      nav(u.debe_cambiar_clave ? '/cambiar-clave' : '/cursos', { replace: true })
+      nav(u.debe_cambiar_clave ? '/cambiar-clave' : inicioDe(u), { replace: true })
     } catch (err) {
       setError(err)
     } finally {
@@ -210,7 +210,7 @@ export default function Login() {
             {enviando ? 'ENTRANDO…' : 'INICIAR SESIÓN'}
           </button>
           <p style={{ margin: 0, fontWeight: 700, fontSize: 14, color: '#4B5563' }}>¿Olvidaste tu clave? Pídele al administrador que te la restablezca.</p>
-          {DEMO && <div className="aviso aviso-info" style={{ fontSize: 13 }}>Modo demo: escribe cualquier usuario y clave.</div>}
+          {DEMO && <div className="aviso aviso-info" style={{ fontSize: 13 }}>Modo demo: escribe cualquier usuario y clave. Con el usuario «admin» entras como administrador.</div>}
         </form>
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', maxWidth: 420, paddingTop: 18, borderTop: '2px solid #F0F2F5' }}>

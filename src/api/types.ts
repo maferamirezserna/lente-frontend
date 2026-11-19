@@ -57,6 +57,13 @@ export interface Panel {
   alertas_abiertas: number; avance_macro: number | null; avance_super: number | null; avance_micro: number | null
   destacados: { id: number; nombre: string; puntos: number; nivel: number; racha: number }[]
 }
+// Administración (app/schemas/admin.py)
+export interface ResumenAdmin { total_profesores: number; profesores_activos: number; total_estudiantes: number; estudiantes_activos: number }
+export interface Profesor { id: number; nombre: string; usuario: string; activo: boolean; ultimo_ingreso: string | null; cursos: number; estudiantes: number }
+export interface ProfesorCreado extends Profesor { clave_temporal: string | null }
+export interface ClaveGenerada { clave_temporal: string | null }
+export interface EstudianteAdmin extends Estudiante { profesor_id: number; profesor: string }
+
 export interface Alerta {
   id: number; estudiante_id: number; estudiante: string; curso: string; motivo: string; atendida: boolean
   nota_profesor: string | null; creada_en: string; atendida_en: string | null; aviso: string
