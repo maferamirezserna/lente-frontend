@@ -57,6 +57,8 @@ button { font-family: inherit; }
 .btn-peq { min-height: 42px; padding: 8px 14px; font-size: 13px; border-radius: 12px; border-bottom-width: 4px; }
 
 .card { background: #fff; border: 2px solid var(--borde); border-bottom-width: 5px; border-radius: var(--radio); }
+.tarjeta-curso { transition: translate .15s ease, border-color .15s ease; }
+.tarjeta-curso:hover { translate: 0 -3px; border-color: var(--celeste); }
 .chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 999px; font-weight: 900; font-size: 12.5px; }
 .campo {
   width: 100%; font: inherit; font-weight: 700; font-size: 17px; padding: 13px 16px; min-height: 52px;

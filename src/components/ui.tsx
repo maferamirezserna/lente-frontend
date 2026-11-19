@@ -81,7 +81,7 @@ export function BarraSuperior() {
       </nav>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         {DEMO && <span className="chip" style={{ background: '#FFF4E5', color: '#8A4B00' }}>Modo demo</span>}
-        {usuario && <Avatar nombre={usuario.nombre.replace(/^Prof\.?\s*/i, '')} i={0} size={40} />}
+        {usuario && <div aria-hidden="true" style={{ width: 40, height: 40, borderRadius: '50%', background: 'var(--celeste-suave)', color: 'var(--cobalto-borde)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: 15 }}>{iniciales(usuario.nombre.replace(/^Prof\.?\s*/i, ''))}</div>}
         <span style={{ fontWeight: 800, fontSize: 15 }}>{usuario?.nombre}</span>
         <button type="button" className="btn btn-sec btn-peq" onClick={salir}>Salir</button>
       </div>

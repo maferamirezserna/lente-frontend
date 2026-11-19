@@ -1,39 +1,105 @@
 import { Link } from 'react-router-dom'
 import { api } from '../api/client'
-import type { Curso } from '../api/types'
-import { Cargando, ErrorCaja, Pagina, neon, useDatos } from '../components/ui'
-import { useSesion } from '../auth'
+import type { Curso, Panel, TextoEnCurso, TextoResumen } from '../api/types'
+import { AZULES, Barra, Cargando, ErrorCaja, Pagina, neon, pct, useDatos } from '../components/ui'
+
+// Pantalla «Mis cursos» según docs/diseno/mockups/Mock-Cursos.html.
+// Solo muestra datos que entrega la API: GET /cursos, GET /textos y, por curso,
+// GET /cursos/{id}/panel y GET /cursos/{id}/textos.
+
+function saludo() {
+  const h = new Date().getHours()
+  return h < 12 ? 'Buenos días, profe' : h < 19 ? 'Buenas tardes, profe' : 'Buenas noches, profe'
+}
+
+// «7.° A» → «7°». Si el nombre no trae grado, se usan sus iniciales.
+function insignia(nombre: string) {
+  const g = nombre.match(/\d+/)?.[0]
+  return g ? `${g}°` : nombre.split(/\s+/).filter(Boolean).slice(0, 2).map((p) => p[0]?.toUpperCase()).join('')
+}
+
+const plural = (n: number, uno: string, varios: string) => `${n} ${n === 1 ? uno : varios}`
+
+function ResumenTextos() {
+  const { datos } = useDatos(() => api.get<TextoResumen[]>('/textos'))
+  if (!datos) return null
+  const aprobados = datos.filter((t) => t.estado === 'aprobado').length
+  const enRevision = datos.filter((t) => t.estado === 'en_revision').length
+  return (
+    <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+      <span style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', borderRadius: 14, background: '#FFFFFF', border: '2px solid var(--borde)', fontWeight: 800, fontSize: 14 }}>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--cobalto)" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2V5z" /></svg>
+        {plural(aprobados, 'texto aprobado', 'textos aprobados')}
+      </span>
+      {enRevision > 0 && (
+        <Link to="/textos" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', borderRadius: 14, background: 'var(--aviso-fondo)', border: '2px solid #FFD9A8', color: 'var(--aviso-texto)', fontWeight: 800, fontSize: 14, textDecoration: 'none' }}>
+          {plural(enRevision, 'texto en revisión', 'textos en revisión')}
+        </Link>
+      )}
+    </div>
+  )
+}
+
+function TarjetaCurso({ curso, i }: { curso: Curso; i: number }) {
+  const color = neon(i)
+  const panel = useDatos(() => api.get<Panel>(`/cursos/${curso.id}/panel`), [curso.id])
+  const textos = useDatos(() => api.get<TextoEnCurso[]>(`/cursos/${curso.id}/textos`), [curso.id])
+  const activos = textos.datos?.filter((t) => t.activo).length
+  const alertas = panel.datos?.alertas_abiertas ?? 0
+
+  return (
+    <article className="card tarjeta-curso aparecer" style={{ flex: '1 1 260px', minWidth: 0, borderRadius: 22, padding: '0 0 18px', overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: 14, animationDelay: `${i * 80}ms` }}>
+      <div style={{ height: 10, background: color.fondo }} />
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '0 18px' }}>
+        <div aria-hidden="true" style={{ width: 54, height: 54, borderRadius: 16, background: color.fondo, borderBottom: `4px solid ${color.borde}`, color: color.texto, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: 18, flexShrink: 0 }}>{insignia(curso.nombre)}</div>
+        <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+          <strong style={{ fontWeight: 900, fontSize: 20 }}>{curso.nombre}</strong>
+          <span style={{ fontWeight: 700, fontSize: 13, color: 'var(--gris)' }}>{curso.institucion || 'Colegio'} · {curso.anio}</span>
+        </div>
+      </div>
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', padding: '0 18px' }}>
+        <span style={{ padding: '5px 10px', borderRadius: 10, background: color.fondo, color: color.texto, fontWeight: 900, fontSize: 12.5 }}>{plural(curso.estudiantes, 'estudiante', 'estudiantes')}</span>
+        {activos != null && <span style={{ padding: '5px 10px', borderRadius: 10, border: '2px solid var(--borde)', fontWeight: 800, fontSize: 12.5 }}>{plural(activos, 'texto activo', 'textos activos')}</span>}
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 7, padding: '0 18px' }}>
+        <Barra etiqueta="Idea principal" valor={pct(panel.datos?.avance_macro)} color={AZULES.macro} />
+        <Barra etiqueta="Organización" valor={pct(panel.datos?.avance_super)} color={AZULES.super} />
+        <Barra etiqueta="Lenguaje" valor={pct(panel.datos?.avance_micro)} color={AZULES.micro} />
+      </div>
+      {panel.datos && (
+        <div style={{ padding: '0 18px' }}>
+          {alertas > 0 ? (
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 10px', borderRadius: 12, background: 'var(--aviso-fondo)', color: 'var(--aviso-texto)', fontWeight: 800, fontSize: 12.5 }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C26A00" strokeWidth="2.6" strokeLinecap="round" aria-hidden="true"><path d="M12 8v5M12 16.5v.5" /><circle cx="12" cy="12" r="9" /></svg>
+              {alertas === 1 ? '1 estudiante podría necesitar acompañamiento' : `${alertas} estudiantes podrían necesitar acompañamiento`}
+            </span>
+          ) : (
+            <span style={{ display: 'inline-flex', alignItems: 'center', padding: '6px 10px', borderRadius: 12, background: 'var(--hielo)', color: 'var(--cobalto-borde)', fontWeight: 800, fontSize: 12.5 }}>Sin alertas por ahora</span>
+          )}
+        </div>
+      )}
+      <Link to={`/cursos/${curso.id}`} className="btn" style={{ margin: 'auto 18px 0', borderRadius: 14 }} aria-label={`Abrir curso ${curso.nombre}`}>ABRIR CURSO</Link>
+    </article>
+  )
+}
 
 export default function Cursos() {
-  const { usuario } = useSesion()
   const { datos, error, cargando } = useDatos(() => api.get<Curso[]>('/cursos'))
-  const nombre = usuario?.nombre.replace(/^Prof\.?\s*/i, '').split(' ')[0]
 
   return (
     <Pagina>
-      <div>
-        <h1 className="titulo">¡Hola{nombre ? `, ${nombre}` : ''}!</h1>
-        <p className="sub" style={{ marginTop: 6 }}>Elige un curso para ver a tus estudiantes y abrirles una actividad.</p>
+      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <span style={{ fontWeight: 800, fontSize: 15, color: 'var(--cobalto)' }}>{saludo()}</span>
+          <h1 style={{ margin: 0, fontWeight: 900, fontSize: 36 }}>Mis cursos</h1>
+        </div>
+        <ResumenTextos />
       </div>
       {cargando && <Cargando texto="Cargando tus cursos" />}
       <ErrorCaja error={error} />
       {datos && datos.length === 0 && <div className="aviso aviso-info">Aún no tienes cursos asignados. El administrador del colegio los crea y te los asigna.</div>}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 18 }}>
-        {datos?.map((c, i) => {
-          const color = neon(i)
-          return (
-            <Link key={c.id} to={`/cursos/${c.id}`} className="card aparecer" style={{ textDecoration: 'none', color: 'inherit', overflow: 'hidden', display: 'flex', flexDirection: 'column', animationDelay: `${i * 60}ms` }}>
-              <div style={{ background: color.fondo, borderBottom: `4px solid ${color.borde}`, color: color.texto, padding: '22px 22px 18px' }}>
-                <div style={{ fontWeight: 900, fontSize: 40, letterSpacing: -1 }}>{c.nombre}</div>
-                <div style={{ fontWeight: 900, fontSize: 14 }}>{c.institucion || 'Colegio'} · {c.anio}</div>
-              </div>
-              <div style={{ padding: '16px 22px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span style={{ fontWeight: 800 }}>{c.estudiantes} estudiantes</span>
-                <span style={{ fontWeight: 900, color: 'var(--cobalto)' }}>Abrir →</span>
-              </div>
-            </Link>
-          )
-        })}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 18 }}>
+        {datos?.map((c, i) => <TarjetaCurso key={c.id} curso={c} i={i} />)}
       </div>
     </Pagina>
   )
