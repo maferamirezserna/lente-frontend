@@ -123,6 +123,11 @@ label.etiqueta { font-weight: 800; font-size: 15px; }
 .lupa-unword { animation: lupaUnword 7s cubic-bezier(.45,0,.25,1) infinite; }
 .lupa-glint { animation: girar 3.5s linear infinite; }
 .lupa-glow { animation: lupaGlow 2.4s ease-in-out infinite; }
+@keyframes lupaBarrer { 0%, 10% { transform: translateX(-120px); } 50%, 60% { transform: translateX(120px); } 100% { transform: translateX(-120px); } }
+@keyframes lupaContrabarrer { 0%, 10% { transform: translateX(120px); } 50%, 60% { transform: translateX(-120px); } 100% { transform: translateX(120px); } }
+.lupa-barrer { animation: lupaBarrer 3.2s ease-in-out infinite; }
+.lupa-contrabarrer { animation: lupaContrabarrer 3.2s ease-in-out infinite; }
+.marca-pop { animation: pop .22s ease-out; }
 .lupa-tag { animation: lupaFadein .8s ease-out .3s both; }
 .barrido { animation: barrido 7s ease-in-out infinite; }
 .contra-barrido { animation: contraBarrido 7s ease-in-out infinite; }

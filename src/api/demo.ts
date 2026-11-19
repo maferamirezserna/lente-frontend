@@ -188,7 +188,8 @@ const rutas: Ruta[] = [
   }],
   ['GET', /^\/actividades\/(\d+)\/macro$/, (m): EstadoMacro => {
     const a = actividades.get(+m[1])!
-    const listo = a.macro && Date.now() - a.macro.en > 4000
+    if (!a.macro) return { estado_ia: 'sin_respuesta', analizando: false, mensaje: null, veredicto: null, faltantes: null, explicacion: null, cita: null, idea_principal: null }
+    const listo = Date.now() - a.macro.en > 4000
     if (!listo) return { estado_ia: 'procesando', analizando: true, mensaje: null, veredicto: null, faltantes: null, explicacion: null, cita: null, idea_principal: null }
     if (a.vista.paso === 'macro') a.vista = { ...a.vista, paso: 'super' }
     const t = textos.find((x) => x.id === a.vista.texto_id)!
