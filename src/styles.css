@@ -106,6 +106,21 @@ label.etiqueta { font-weight: 800; font-size: 15px; }
 @keyframes parpadeo { 0%, 20% { opacity: .2; } 50% { opacity: 1; } 100% { opacity: .2; } }
 @keyframes barrido { 0%, 10% { transform: translateX(0); } 46%, 54% { transform: translateX(290px) translateY(36px); } 92%, 100% { transform: translateX(0); } }
 @keyframes contraBarrido { 0%, 10% { transform: translateX(0); } 46%, 54% { transform: translateX(-290px) translateY(-36px); } 92%, 100% { transform: translateX(0); } }
+/* Lupas de vidrio de la entrada (copiadas de docs/diseno/mockups/Mock-Login.html) */
+@keyframes lupaGlide { 0%, 8% { transform: translate(0, 0); } 46%, 54% { transform: translate(290px, 36px); } 92%, 100% { transform: translate(0, 0); } }
+@keyframes lupaUnglide { 0%, 8% { transform: translate(0, 0); } 46%, 54% { transform: translate(-290px, -36px); } 92%, 100% { transform: translate(0, 0); } }
+@keyframes lupaWord { 0%, 8% { transform: translate(-52px, 0); } 28%, 58% { transform: translate(0, 0); } 78%, 84% { transform: translate(125px, 0); } 100% { transform: translate(-52px, 0); } }
+@keyframes lupaUnword { 0%, 8% { transform: translate(52px, 0); } 28%, 58% { transform: translate(0, 0); } 78%, 84% { transform: translate(-125px, 0); } 100% { transform: translate(52px, 0); } }
+@keyframes lupaGlow { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+@keyframes lupaFadein { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.lupa-fb { transform-box: fill-box; transform-origin: center; }
+.lupa-glide { animation: lupaGlide 7s ease-in-out infinite; }
+.lupa-unglide { animation: lupaUnglide 7s ease-in-out infinite; }
+.lupa-word { animation: lupaWord 7s cubic-bezier(.45,0,.25,1) infinite; }
+.lupa-unword { animation: lupaUnword 7s cubic-bezier(.45,0,.25,1) infinite; }
+.lupa-glint { animation: girar 3.5s linear infinite; }
+.lupa-glow { animation: lupaGlow 2.4s ease-in-out infinite; }
+.lupa-tag { animation: lupaFadein .8s ease-out .3s both; }
 .barrido { animation: barrido 7s ease-in-out infinite; }
 .contra-barrido { animation: contraBarrido 7s ease-in-out infinite; }
 
