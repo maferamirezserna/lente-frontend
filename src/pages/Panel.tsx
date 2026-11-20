@@ -2,7 +2,7 @@ import { useState, type ReactNode } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { api } from '../api/client'
 import type { Alerta, Panel as PanelT } from '../api/types'
-import { AZULES, Avatar, Barra, Cargando, ErrorCaja, Pagina, PestanasCurso, pct, useDatos } from '../components/ui'
+import { AZULES, Avatar, Barra, Cargando, ErrorCaja, Pagina, PestanasCurso, Volver, pct, useDatos } from '../components/ui'
 
 // Panel del curso según docs/diseno/mockups/Mock-Panel.html.
 
@@ -61,11 +61,14 @@ export default function Panel() {
 
   return (
     <Pagina>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+      <Volver a={`/cursos/${id}`} texto={d?.curso || 'Curso'} />
       <nav aria-label="Ruta" style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 800, fontSize: 14, color: 'var(--gris)' }}>
         <Link to="/cursos" style={{ textDecoration: 'none' }}>Mis cursos</Link><span aria-hidden="true">›</span>
         <Link to={`/cursos/${id}`} style={{ textDecoration: 'none' }}>{d?.curso || 'Curso'}</Link><span aria-hidden="true">›</span>
         <span>Panel del curso</span>
       </nav>
+      </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
         <div aria-hidden="true" style={{ width: 54, height: 54, borderRadius: 16, background: 'var(--cobalto)', borderBottom: '4px solid var(--cobalto-borde)', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: 18 }}>{d ? insignia(d.curso) : ''}</div>
         <div style={{ display: 'flex', flexDirection: 'column' }}>

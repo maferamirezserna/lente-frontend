@@ -2,7 +2,7 @@ import { useEffect, useState, type FormEvent, type ReactNode } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { api } from '../api/client'
 import type { TextoDetalle, TipoPalabra } from '../api/types'
-import { Cargando, ErrorCaja, Pagina, TIPO_PALABRA, useDatos } from '../components/ui'
+import { Cargando, ErrorCaja, Pagina, TIPO_PALABRA, Volver, useDatos } from '../components/ui'
 import { Estado } from './Textos'
 
 // Revisar lo que propuso la IA, según docs/diseno/mockups/Mock-Revision.html.
@@ -155,9 +155,12 @@ export default function Revision() {
 
   return (
     <Pagina>
-      <nav aria-label="Ruta" style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 800, fontSize: 14, color: 'var(--gris)' }}>
-        <Link to="/textos" style={{ textDecoration: 'none' }}>Biblioteca de textos</Link><span aria-hidden="true">›</span><span>{d.titulo}</span>
-      </nav>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+        <Volver a="/textos" texto="Biblioteca" />
+        <nav aria-label="Ruta" style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 800, fontSize: 14, color: 'var(--gris)' }}>
+          <Link to="/textos" style={{ textDecoration: 'none' }}>Biblioteca de textos</Link><span aria-hidden="true">›</span><span>{d.titulo}</span>
+        </nav>
+      </div>
       <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           <h1 style={{ margin: 0, fontWeight: 900, fontSize: 32 }}>{d.preparado_por_ia ? 'Revisa lo que propuso la IA' : 'Revisa el análisis del texto'}</h1>
