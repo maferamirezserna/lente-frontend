@@ -12,6 +12,7 @@ import Textos from './pages/Textos'
 import Revision from './pages/Revision'
 import Panel from './pages/Panel'
 import Admin from './pages/Admin'
+import Progreso from './pages/Progreso'
 
 // Sin `rol`, cualquier sesión entra. Con `rol`, quien tenga otro rol vuelve a su inicio.
 function Privada({ children, rol }: { children: ReactNode; rol?: 'administrador' | 'profesor' }) {
@@ -36,6 +37,7 @@ function App() {
       <Route path="/cursos" element={<Profe><Cursos /></Profe>} />
       <Route path="/cursos/:id" element={<Profe><Estudiantes /></Profe>} />
       <Route path="/cursos/:id/panel" element={<Profe><Panel /></Profe>} />
+      <Route path="/estudiantes/:id" element={<Profe><Progreso /></Profe>} />
       <Route path="/textos" element={<Profe><Textos /></Profe>} />
       <Route path="/textos/:id" element={<Profe><Revision /></Profe>} />
       <Route path="/actividad/:id" element={<Profe><Actividad /></Profe>} />

@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { api } from '../api/client'
 import type { ActividadVista, Alerta, Curso, Estudiante, TextoEnCurso } from '../api/types'
-import { AZULES, Avatar, Cargando, ErrorCaja, Pagina, PestanasCurso, pct, tipoTexto, useDatos } from '../components/ui'
+import { AZULES, Avatar, Cargando, ErrorCaja, Pagina, PestanasCurso, Volver, pct, tipoTexto, useDatos } from '../components/ui'
 
 // Pantalla del curso (modo aula) según docs/diseno/mockups/Mock-Estudiantes.html.
 
@@ -108,9 +108,12 @@ export default function Estudiantes() {
 
   return (
     <Pagina>
-      <nav aria-label="Ruta" style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 800, fontSize: 14, color: 'var(--gris)' }}>
-        <Link to="/cursos" style={{ textDecoration: 'none' }}>Mis cursos</Link><span aria-hidden="true">›</span><span>{c?.nombre || 'Curso'}</span>
-      </nav>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+        <Volver a="/cursos" texto="Mis cursos" />
+        <nav aria-label="Ruta" style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 800, fontSize: 14, color: 'var(--gris)' }}>
+          <Link to="/cursos" style={{ textDecoration: 'none' }}>Mis cursos</Link><span aria-hidden="true">›</span><span>{c?.nombre || 'Curso'}</span>
+        </nav>
+      </div>
       <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           <h1 style={{ margin: 0, fontWeight: 900, fontSize: 34 }}>{c?.nombre || 'Curso'}</h1>
@@ -141,7 +144,7 @@ export default function Estudiantes() {
               <div key={e.id} className="aparecer" style={{ animationDelay: `${i * 50}ms`, display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap', padding: '12px 14px', borderRadius: 18, background: '#FFFFFF', border: `2px solid ${sel ? 'var(--cobalto)' : 'var(--borde)'}` }}>
                 <Avatar nombre={e.nombre} i={i} />
                 <div style={{ flex: '1 1 180px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 3 }}>
-                  <strong style={{ fontWeight: 900, fontSize: 16 }}>{e.nombre}</strong>
+                  <Link to={`/estudiantes/${e.id}`} title="Ver progreso" style={{ fontWeight: 900, fontSize: 16, color: 'var(--tinta)', textDecoration: 'none' }}>{e.nombre}</Link>
                   <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                     {conAlerta.has(e.id) && <span title="Podría necesitar acompañamiento" style={{ padding: '3px 8px', borderRadius: 999, background: 'var(--aviso-fondo)', color: 'var(--aviso-texto)', fontWeight: 800, fontSize: 11.5 }}>Acompañamiento</span>}
                     {sinActividades && <span style={{ padding: '3px 8px', borderRadius: 999, background: 'var(--hielo)', color: 'var(--cobalto-borde)', fontWeight: 800, fontSize: 11.5 }}>Sin actividades aún</span>}

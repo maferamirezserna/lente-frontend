@@ -105,9 +105,10 @@ export function BarraSuperior() {
 }
 
 // Flecha para volver a la pantalla anterior; si no hay historial (p. ej. se abrió el enlace directo), va a `porDefecto`.
-export function Volver({ porDefecto = '/cursos', texto = 'Volver' }: { porDefecto?: string; texto?: string }) {
+// Con `a`, va siempre a esa pantalla (por ejemplo «← Mis cursos»).
+export function Volver({ porDefecto = '/cursos', texto = 'Volver', a }: { porDefecto?: string; texto?: string; a?: string }) {
   const nav = useNavigate()
-  const ir = () => (window.history.state?.idx > 0 ? nav(-1) : nav(porDefecto))
+  const ir = () => (a ? nav(a) : window.history.state?.idx > 0 ? nav(-1) : nav(porDefecto))
   return (
     <button type="button" onClick={ir} aria-label={texto} className="btn btn-sec btn-peq" style={{ alignSelf: 'flex-start', gap: 6, color: 'var(--cobalto-borde)' }}>
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>

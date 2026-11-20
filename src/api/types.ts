@@ -57,6 +57,18 @@ export interface Panel {
   alertas_abiertas: number; avance_macro: number | null; avance_super: number | null; avance_micro: number | null
   destacados: { id: number; nombre: string; puntos: number; nivel: number; racha: number }[]
 }
+// Seguimiento de un estudiante (app/schemas/seguimiento.py)
+export interface ActividadResumen { id: number; titulo: string; numero: number; estado: string; resultado_macro: number | null; resultado_super: number | null; resultado_micro: number | null; puntos_ganados: number; iniciada_en: string; terminada_en: string | null }
+export interface LogroCatalogo { nombre: string; descripcion: string; regla: string; meta: number; ganado: boolean; ganado_en: string | null }
+export interface Progreso {
+  id: number; nombre: string; curso: string; grado_texto: string; nivel_escolar: string; puntos: number; nivel: number; nivel_nombre: string | null
+  racha: number; mejor_racha: number; actividades_hechas: number; actividades_pendientes: number; preguntas_respondidas: number; correctas: number; incorrectas: number
+  porcentaje_acierto: number | null; porcentaje_macro: number | null; porcentaje_super: number | null; porcentaje_micro: number | null
+  animo: string | null; aviso_animo: string; pendientes: { texto_id: number; titulo: string }[]; logros_catalogo: LogroCatalogo[]
+  logros: { nombre: string; descripcion: string; ganado_en: string }[]; evolucion: ActividadResumen[]
+}
+export interface Historial { actividad_id: number; titulo: string; fecha: string; nivel: string; pregunta: string; respuesta: string | null; respuesta_esperada: string | null; resultado: string | null; es_correcta: boolean | null }
+
 // Administración (app/schemas/admin.py)
 export interface ResumenAdmin { total_profesores: number; profesores_activos: number; total_estudiantes: number; estudiantes_activos: number }
 export interface Profesor { id: number; nombre: string; usuario: string; activo: boolean; ultimo_ingreso: string | null; cursos: number; estudiantes: number }

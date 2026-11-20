@@ -124,7 +124,7 @@ export default function Panel() {
                   <strong style={{ fontWeight: 900, fontSize: 16 }}>{a.estudiante}</strong>
                   <span style={{ fontWeight: 700, fontSize: 13.5, color: 'var(--gris)' }}>{a.motivo}</span>
                 </div>
-                <Link to={`/cursos/${id}`} className="btn btn-sec btn-peq" style={{ minHeight: 44, color: 'var(--tinta)', borderColor: 'var(--borde)' }}>VER PROGRESO</Link>
+                <Link to={`/estudiantes/${a.estudiante_id}`} className="btn btn-sec btn-peq" style={{ minHeight: 44, color: 'var(--tinta)', borderColor: 'var(--borde)' }}>VER PROGRESO</Link>
                 <button type="button" className="btn btn-peq" disabled={atendiendo === a.id} onClick={() => atender(a)} style={{ minHeight: 44 }}>{atendiendo === a.id ? 'GUARDANDO…' : 'MARCAR COMO ATENDIDA'}</button>
               </div>
             ))}

@@ -180,6 +180,41 @@ const rutas: Ruta[] = [
   ['GET', /^\/salud$/, () => ({ estado: 'ok' })],
   ['GET', /^\/cursos$/, () => cursos],
   ['GET', /^\/cursos\/(\d+)$/, (m) => cursos.find((c) => c.id === +m[1])],
+  ['GET', /^\/estudiantes\/(\d+)$/, (m) => estudiantes.find((e) => e.id === +m[1])],
+  ['GET', /^\/estudiantes\/(\d+)\/progreso$/, (m) => {
+    const e = estudiantes.find((x) => x.id === +m[1])!
+    const hizo = e.porcentaje_macro != null
+    return {
+      id: e.id, nombre: e.nombre, curso: e.curso, grado_texto: e.grado_texto, nivel_escolar: e.nivel_escolar, puntos: e.puntos, nivel: e.nivel,
+      nivel_nombre: e.nivel >= 4 ? 'Analista crítico' : e.nivel >= 2 ? 'Lector atento' : 'Explorador', racha: e.racha, mejor_racha: e.mejor_racha,
+      actividades_hechas: hizo ? 4 : 0, actividades_pendientes: 1, preguntas_respondidas: hizo ? 11 : 0, correctas: hizo ? 7 : 0, incorrectas: hizo ? 4 : 0,
+      porcentaje_acierto: hizo ? 64 : null, porcentaje_macro: e.porcentaje_macro, porcentaje_super: e.porcentaje_super, porcentaje_micro: e.porcentaje_micro,
+      animo: alertas.some((a) => a.estudiante_id === e.id && !a.atendida) ? 'requiere_apoyo' : hizo ? 'motivacion_alta' : null,
+      aviso_animo: 'Solo apoyo pedagógico. No es un diagnóstico y no afecta puntos ni calificación.',
+      pendientes: [{ texto_id: 1, titulo: 'Miles de jóvenes «invaden» el parque' }],
+      logros_catalogo: [
+        { nombre: 'Detective de noticias', descripcion: 'Completa tu primera actividad.', regla: 'actividades_terminadas', meta: 1, ganado: hizo, ganado_en: hizo ? iso(10) : null },
+        { nombre: 'Racha de 3 días', descripcion: 'Participa tres días seguidos.', regla: 'racha', meta: 3, ganado: e.mejor_racha >= 3, ganado_en: e.mejor_racha >= 3 ? iso(4) : null },
+        { nombre: 'Ojo de águila', descripcion: 'Encuentra todas las palabras cargadas.', regla: 'micro_perfecto', meta: 1, ganado: false, ganado_en: null },
+        { nombre: 'Llega al nivel 5', descripcion: 'Suma 400 puntos.', regla: 'nivel', meta: 5, ganado: e.nivel >= 5, ganado_en: e.nivel >= 5 ? iso(1) : null },
+      ],
+      logros: [],
+      evolucion: hizo ? [
+        { id: 31, titulo: 'Polémica por nuevo horario escolar', numero: 1, estado: 'terminada', resultado_macro: 0.5, resultado_super: 0.5, resultado_micro: 0.4, puntos_ganados: 46, iniciada_en: iso(12), terminada_en: iso(12) },
+        { id: 32, titulo: 'Miles de jóvenes «invaden» el parque', numero: 2, estado: 'terminada', resultado_macro: 1, resultado_super: 1, resultado_micro: 0.6, puntos_ganados: 52, iniciada_en: iso(5), terminada_en: iso(5) },
+      ] : [],
+    }
+  }],
+  ['GET', /^\/estudiantes\/(\d+)\/historial$/, (m) => {
+    const e = estudiantes.find((x) => x.id === +m[1])!
+    if (e.porcentaje_macro == null) return []
+    return [
+      { actividad_id: 32, titulo: 'Miles de jóvenes «invaden» el parque', fecha: iso(5), nivel: 'macro', pregunta: '¿De qué trata la noticia?', respuesta: 'Un festival en el parque dejó ruido y basura y los vecinos se quejaron.', respuesta_esperada: 'Un festival de música en el parque generó quejas de los vecinos por el ruido y la basura.', resultado: 'coincide', es_correcta: true },
+      { actividad_id: 32, titulo: 'Miles de jóvenes «invaden» el parque', fecha: iso(5), nivel: 'super', pregunta: '¿Qué aparece primero en la noticia?', respuesta: 'Lo que pasó y la queja de los vecinos', respuesta_esperada: 'Lo que pasó y la queja de los vecinos', resultado: 'correcta', es_correcta: true },
+      { actividad_id: 32, titulo: 'Miles de jóvenes «invaden» el parque', fecha: iso(5), nivel: 'micro', pregunta: 'Palabras con carga', respuesta: 'invadieron, indignados, parque', respuesta_esperada: 'invadieron, caos, indignados, insoportable, basurero', resultado: 'en_parte', es_correcta: null },
+      { actividad_id: 31, titulo: 'Polémica por nuevo horario escolar', fecha: iso(12), nivel: 'super', pregunta: '¿Quién tiene más espacio en la noticia?', respuesta: 'La Secretaría', respuesta_esperada: 'Los padres de familia', resultado: 'incorrecta', es_correcta: false },
+    ]
+  }],
   ['GET', /^\/cursos\/(\d+)\/estudiantes$/, (m) => estudiantes.filter((e) => e.curso_id === +m[1])],
   ['POST', /^\/cursos\/(\d+)\/estudiantes$/, (m, b) => {
     const c = cursos.find((x) => x.id === +m[1])!
