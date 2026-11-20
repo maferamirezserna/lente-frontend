@@ -1,3 +1,4 @@
+import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../api/client'
 import type { Curso, Panel, TextoEnCurso, TextoResumen } from '../api/types'
@@ -83,8 +84,70 @@ function TarjetaCurso({ curso, i }: { curso: Curso; i: number }) {
   )
 }
 
+// Tarjeta punteada «Crear un curso» del mockup. Al tocarla se vuelve un formulario corto
+// (POST /cursos: nombre obligatorio; colegio y año opcionales, vacío = año actual).
+function CrearCurso({ alCrear }: { alCrear: () => void }) {
+  const [abierto, setAbierto] = useState(false)
+  const [nombre, setNombre] = useState('')
+  const [institucion, setInstitucion] = useState('')
+  const [anio, setAnio] = useState('')
+  const [error, setError] = useState<unknown>(null)
+  const [enviando, setEnviando] = useState(false)
+
+  function cerrar() { setAbierto(false); setNombre(''); setInstitucion(''); setAnio(''); setError(null) }
+
+  async function enviar(e: FormEvent) {
+    e.preventDefault()
+    setError(null)
+    if (!nombre.trim()) { setError(new Error('Escribe el nombre del curso, por ejemplo «7.° A».')); return }
+    const a = anio.trim() ? Number(anio) : null
+    if (a != null && (!Number.isInteger(a) || a < 2020 || a > 2100)) { setError(new Error('El año debe estar entre 2020 y 2100.')); return }
+    setEnviando(true)
+    try {
+      await api.post<Curso>('/cursos', { nombre: nombre.trim(), institucion: institucion.trim() || null, anio: a })
+      cerrar()
+      alCrear()
+    } catch (err) { setError(err) } finally { setEnviando(false) }
+  }
+
+  if (!abierto) {
+    return (
+      <button type="button" className="tarjeta-curso" onClick={() => setAbierto(true)} style={{ flex: '1 1 260px', minWidth: 0, minHeight: 300, borderRadius: 22, border: '3px dashed var(--celeste-suave)', background: '#F7F9FF', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10, font: 'inherit', color: 'var(--cobalto-borde)' }}>
+        <span style={{ width: 56, height: 56, borderRadius: '50%', background: '#FFFFFF', border: '2px solid var(--celeste-suave)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2F5BEA" strokeWidth="3" strokeLinecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+        </span>
+        <span style={{ fontWeight: 900, fontSize: 17 }}>Crear un curso</span>
+        <span style={{ fontWeight: 700, fontSize: 13, color: 'var(--gris)' }}>Nombre, colegio y año</span>
+      </button>
+    )
+  }
+
+  return (
+    <form onSubmit={enviar} noValidate className="card aparecer" style={{ flex: '1 1 260px', minWidth: 0, minHeight: 300, borderRadius: 22, borderColor: 'var(--celeste-suave)', padding: 18, display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <strong style={{ fontWeight: 900, fontSize: 18 }}>Nuevo curso</strong>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <label className="etiqueta" htmlFor="cnombre">Nombre del curso</label>
+        <input id="cnombre" className="campo" autoFocus maxLength={80} value={nombre} onChange={(e) => setNombre(e.target.value)} placeholder="Ej.: 7.° A" style={{ minHeight: 46, padding: '10px 14px', fontSize: 16 }} />
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <label className="etiqueta" htmlFor="ccolegio">Colegio (opcional)</label>
+        <input id="ccolegio" className="campo" maxLength={120} value={institucion} onChange={(e) => setInstitucion(e.target.value)} placeholder="Ej.: Colegio San José" style={{ minHeight: 46, padding: '10px 14px', fontSize: 16 }} />
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <label className="etiqueta" htmlFor="canio">Año (opcional)</label>
+        <input id="canio" className="campo" inputMode="numeric" maxLength={4} value={anio} onChange={(e) => setAnio(e.target.value.replace(/\D/g, ''))} placeholder="Si lo dejas vacío, es este año" style={{ minHeight: 46, padding: '10px 14px', fontSize: 16 }} />
+      </div>
+      <ErrorCaja error={error} />
+      <div style={{ display: 'flex', gap: 8, marginTop: 'auto' }}>
+        <button type="button" className="btn btn-sec btn-peq" onClick={cerrar} style={{ flex: 1 }}>Cancelar</button>
+        <button type="submit" className="btn btn-peq" disabled={enviando} style={{ flex: 1 }}>{enviando ? 'CREANDO…' : 'CREAR CURSO'}</button>
+      </div>
+    </form>
+  )
+}
+
 export default function Cursos() {
-  const { datos, error, cargando } = useDatos(() => api.get<Curso[]>('/cursos'))
+  const { datos, error, cargando, recargar } = useDatos(() => api.get<Curso[]>('/cursos'))
 
   return (
     <Pagina>
@@ -97,9 +160,10 @@ export default function Cursos() {
       </div>
       {cargando && <Cargando texto="Cargando tus cursos" />}
       <ErrorCaja error={error} />
-      {datos && datos.length === 0 && <div className="aviso aviso-info">Aún no tienes cursos asignados. El administrador del colegio los crea y te los asigna.</div>}
+      {datos && datos.length === 0 && <div className="aviso aviso-info">Aún no tienes cursos. Crea el primero con «Crear un curso» y después agrega a tus estudiantes.</div>}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 18 }}>
         {datos?.map((c, i) => <TarjetaCurso key={c.id} curso={c} i={i} />)}
+        {datos && <CrearCurso alCrear={recargar} />}
       </div>
     </Pagina>
   )
