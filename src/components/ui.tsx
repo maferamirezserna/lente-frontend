@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react'
-import { NavLink, Link } from 'react-router-dom'
+import { NavLink, Link, useNavigate } from 'react-router-dom'
 import { useSesion } from '../auth'
 import { DEMO } from '../api/client'
 
@@ -101,6 +101,18 @@ export function BarraSuperior() {
         <button type="button" className="btn btn-sec btn-peq" onClick={salir}>Salir</button>
       </div>
     </header>
+  )
+}
+
+// Flecha para volver a la pantalla anterior; si no hay historial (p. ej. se abrió el enlace directo), va a `porDefecto`.
+export function Volver({ porDefecto = '/cursos', texto = 'Volver' }: { porDefecto?: string; texto?: string }) {
+  const nav = useNavigate()
+  const ir = () => (window.history.state?.idx > 0 ? nav(-1) : nav(porDefecto))
+  return (
+    <button type="button" onClick={ir} aria-label={texto} className="btn btn-sec btn-peq" style={{ alignSelf: 'flex-start', gap: 6, color: 'var(--cobalto-borde)' }}>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+      {texto}
+    </button>
   )
 }
 

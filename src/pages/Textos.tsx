@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from 're
 import { Link } from 'react-router-dom'
 import { api } from '../api/client'
 import type { Curso, TextoEnCurso, TextoResumen } from '../api/types'
-import { Cargando, ErrorCaja, Pagina, useDatos } from '../components/ui'
+import { Cargando, ErrorCaja, Pagina, Volver, useDatos } from '../components/ui'
 
 // Biblioteca de textos según docs/diseno/mockups/Mock-Textos.html.
 
@@ -177,6 +177,7 @@ export default function Textos() {
 
   return (
     <Pagina>
+      <Volver />
       <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           <h1 style={{ margin: 0, fontWeight: 900, fontSize: 36 }}>Biblioteca de textos</h1>
