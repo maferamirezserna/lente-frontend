@@ -73,7 +73,7 @@ function Recorte() {
 
 function Hero() {
   return (
-    <section className="cobalto-fondo" style={{ flex: '1 1 560px', minWidth: 0, minHeight: 420, padding: '48px clamp(24px, 5vw, 64px)', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 28 }}>
+    <section className="cobalto-fondo entrada-hero" style={{ flex: '1 1 560px', minWidth: 0, minHeight: 420, padding: '48px clamp(24px, 5vw, 64px)', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 28 }}>
       <Recorte />
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxWidth: 560 }}>
         <span style={{ alignSelf: 'flex-start', marginBottom: 6, padding: '6px 14px', borderRadius: 999, background: AMARILLO, color: '#10193D', fontWeight: 900, fontSize: 13, letterSpacing: 0.6 }}>PARA PROFES DE 3.° A 11.°</span>
@@ -181,7 +181,7 @@ export default function Login() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexWrap: 'wrap', background: '#FFFFFF' }}>
       <Hero />
-      <section style={{ flex: '1 1 420px', minWidth: 0, padding: '48px clamp(24px, 5vw, 64px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <section className="entrada-formulario" style={{ flex: '1 1 420px', minWidth: 0, padding: '48px clamp(24px, 5vw, 64px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ width: '100%', maxWidth: 420, display: 'flex', flexDirection: 'column', gap: 22 }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 4 }}><Logo /></div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>

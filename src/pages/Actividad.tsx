@@ -62,11 +62,11 @@ export default function Actividad() {
 
   return (
     <div style={{ minHeight: '100vh', background: '#FFFFFF', display: 'flex', flexDirection: 'column' }}>
-      <header style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '14px clamp(16px, 4vw, 36px)', borderBottom: '2px solid var(--borde)', background: '#FFFFFF' }}>
+      <header className="act-cabecera" style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '14px clamp(16px, 4vw, 36px)', borderBottom: '2px solid var(--borde)', background: '#FFFFFF' }}>
         <button type="button" onClick={salir} aria-label="Salir del modo aula" className="btn btn-sec btn-peq" style={{ minHeight: 44, color: 'var(--gris)', borderColor: 'var(--borde)', gap: 6 }}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="3" strokeLinecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>Salir
         </button>
-        <div role="progressbar" aria-label="Avance de la actividad" aria-valuenow={Math.round((hechos.filter(Boolean).length / 3) * 100)} aria-valuemin={0} aria-valuemax={100} style={{ flexGrow: 1, display: 'flex', gap: 8 }}>
+        <div role="progressbar" aria-label="Avance de la actividad" aria-valuenow={Math.round((hechos.filter(Boolean).length / 3) * 100)} aria-valuemin={0} aria-valuemax={100} className="act-progreso" style={{ flexGrow: 1, display: 'flex', gap: 8 }}>
           {PASOS.map((p, i) => {
             const actual = idx === i && !enIntro
             return (
@@ -79,9 +79,9 @@ export default function Actividad() {
             )
           })}
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px 6px 6px', borderRadius: 999, background: 'var(--hielo)' }}>
+        <div className="act-ficha" style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0, padding: '6px 12px 6px 6px', borderRadius: 999, background: 'var(--hielo)' }}>
           <div aria-hidden="true" style={{ width: 34, height: 34, borderRadius: '50%', background: 'var(--cobalto)', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: 13 }}>{iniciales(vista.estudiante)}</div>
-          <span style={{ fontWeight: 900, fontSize: 14, color: 'var(--cobalto-borde)', whiteSpace: 'nowrap' }}>{nombreCorto(vista.estudiante)}{vista.grado ? ` · ${vista.grado}.°` : ''}</span>
+          <span style={{ fontWeight: 900, fontSize: 14, color: 'var(--cobalto-borde)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{nombreCorto(vista.estudiante)}{vista.grado ? ` · ${vista.grado}.°` : ''}</span>
         </div>
       </header>
 

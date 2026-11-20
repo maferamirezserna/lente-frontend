@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { api } from '../api/client'
 import type { ActividadVista, Alerta, Curso, Estudiante, TextoEnCurso } from '../api/types'
@@ -80,6 +80,13 @@ export default function Estudiantes() {
   const [abriendo, setAbriendo] = useState(false)
   const [agregando, setAgregando] = useState(false)
   const [error, setError] = useState<unknown>(null)
+  const panelAula = useRef<HTMLElement>(null)
+
+  // En pantallas angostas el panel de modo aula queda debajo de la lista: se lleva a la vista al abrirlo.
+  useEffect(() => {
+    if (!elegido || window.innerWidth >= 900) return
+    panelAula.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [elegido])
 
   const activos = (textos.datos || []).filter((t) => t.activo)
   const conAlerta = new Set((alertas.datos || []).filter((a) => !a.atendida).map((a) => a.estudiante_id))
@@ -131,7 +138,7 @@ export default function Estudiantes() {
       <div style={{ display: 'flex', gap: 18, flexWrap: 'wrap', alignItems: 'flex-start' }}>
         <section aria-label="Lista de estudiantes" style={{ flex: '999 1 560px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
           {!!lista.datos?.length && (
-            <div aria-hidden="true" style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap', padding: '0 14px', fontWeight: 800, fontSize: 12, color: 'var(--gris-claro)' }}>
+            <div aria-hidden="true" className="solo-ancho" style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap', padding: '0 14px', fontWeight: 800, fontSize: 12, color: 'var(--gris-claro)' }}>
               <span style={{ flex: '1 1 180px', paddingLeft: 58 }}>Estudiante</span>
               <span style={{ flex: '2 1 220px', display: 'flex', gap: 6 }}><span style={{ flex: '1 1 0' }}>Idea principal</span><span style={{ flex: '1 1 0' }}>Organización</span><span style={{ flex: '1 1 0' }}>Lenguaje</span></span>
               <span style={{ width: 260 }}>Puntos · racha</span>
@@ -162,7 +169,7 @@ export default function Estudiantes() {
         </section>
 
         {elegido && (
-          <aside className="card" aria-label="Abrir actividad" style={{ flex: '1 1 320px', minWidth: 0, alignSelf: 'flex-start', position: 'sticky', top: 16, borderColor: 'var(--celeste-suave)', borderRadius: 22, padding: 20, display: 'flex', flexDirection: 'column', gap: 14, animation: 'entrarLado .28s ease-out both' }}>
+          <aside ref={panelAula} className="card" aria-label="Abrir actividad" style={{ flex: '1 1 320px', minWidth: 0, alignSelf: 'flex-start', position: 'sticky', top: 16, borderColor: 'var(--celeste-suave)', borderRadius: 22, padding: 20, display: 'flex', flexDirection: 'column', gap: 14, animation: 'entrarLado .28s ease-out both' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
               <span className="kicker">Modo aula</span>
               <button type="button" onClick={() => setElegido(null)} aria-label="Cerrar" style={{ width: 36, height: 36, borderRadius: 10, border: 0, background: '#F3F4F6', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

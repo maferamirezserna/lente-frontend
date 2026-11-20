@@ -82,9 +82,9 @@ export function BarraSuperior() {
     border: `2px solid ${isActive ? 'var(--celeste-suave)' : 'transparent'}`,
   })
   return (
-    <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', padding: '14px clamp(16px, 4vw, 40px)', borderBottom: '2px solid var(--borde)', background: '#fff' }}>
+    <header className="barra-sup" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', padding: '14px clamp(16px, 4vw, 40px)', borderBottom: '2px solid var(--borde)', background: '#fff' }}>
       <Marca a={usuario?.rol === 'administrador' ? '/admin' : '/cursos'} />
-      <nav aria-label="Secciones" style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+      <nav aria-label="Secciones" className="barra-sup-nav" style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
         {usuario?.rol === 'administrador' ? (
           <NavLink to="/admin" style={tab}>Administración</NavLink>
         ) : (
@@ -95,9 +95,9 @@ export function BarraSuperior() {
         )}
       </nav>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        {DEMO && <span className="chip" style={{ background: '#FFF4E5', color: '#8A4B00' }}>Modo demo</span>}
+        {DEMO && <span className="chip solo-ancho" style={{ background: '#FFF4E5', color: '#8A4B00' }}>Modo demo</span>}
         {usuario && <div aria-hidden="true" style={{ width: 40, height: 40, borderRadius: '50%', background: 'var(--celeste-suave)', color: 'var(--cobalto-borde)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: 15 }}>{iniciales(usuario.nombre.replace(/^Prof\.?\s*/i, ''))}</div>}
-        <span style={{ fontWeight: 800, fontSize: 15 }}>{usuario?.nombre}</span>
+        <span className="solo-ancho" style={{ fontWeight: 800, fontSize: 15 }}>{usuario?.nombre}</span>
         <button type="button" className="btn btn-sec btn-peq" onClick={salir}>Salir</button>
       </div>
     </header>

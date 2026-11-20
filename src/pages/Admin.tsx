@@ -146,11 +146,11 @@ function FilaProfesor({ p, i, alCambiar }: { p: Profesor; i: number; alCambiar: 
             )}
           </div>
         </td>
-        <td style={celda}><code style={{ fontSize: 14 }}>{p.usuario}</code></td>
-        <td style={{ ...celda, fontWeight: 800 }}>{p.cursos}</td>
-        <td style={{ ...celda, fontWeight: 800 }}>{p.estudiantes}</td>
-        <td style={celda}><EstadoCuenta activo={p.activo} /></td>
-        <td style={{ ...celda, textAlign: 'right', whiteSpace: 'nowrap' }}>
+        <td data-etiqueta="Usuario" style={celda}><code style={{ fontSize: 14 }}>{p.usuario}</code></td>
+        <td data-etiqueta="Cursos" style={{ ...celda, fontWeight: 800 }}>{p.cursos}</td>
+        <td data-etiqueta="Estudiantes" style={{ ...celda, fontWeight: 800 }}>{p.estudiantes}</td>
+        <td data-etiqueta="Estado" style={celda}><EstadoCuenta activo={p.activo} /></td>
+        <td className="celda-acciones" style={{ ...celda, textAlign: 'right', whiteSpace: 'nowrap' }}>
           <button type="button" style={accionEstilo} disabled={ocupado} onClick={() => setEditando(true)}>{icono(ICONO_EDITAR)}Editar</button>
           <button type="button" style={accionEstilo} disabled={ocupado} onClick={() => setConfirmarClave(true)}>{icono(ICONO_CLAVE)}Contraseña</button>
           <button type="button" style={{ ...accionEstilo, color: p.activo ? 'var(--mejorar-texto)' : 'var(--ok-texto)' }} disabled={ocupado} onClick={cambiarEstado}>{icono(ICONO_ESTADO)}{p.activo ? 'Desactivar' : 'Activar'}</button>
@@ -220,7 +220,7 @@ export default function Admin() {
           <>
             {profesores.cargando && <Cargando texto="Cargando profesores" />}
             <ErrorCaja error={profesores.error} />
-            <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 760 }}>
+            <table className="tabla-adaptable" style={{ width: '100%', borderCollapse: 'collapse', minWidth: 760 }}>
               <thead><tr><th style={cabecera}>PROFESOR</th><th style={cabecera}>USUARIO</th><th style={cabecera}>CURSOS</th><th style={cabecera}>ESTUDIANTES</th><th style={cabecera}>ESTADO</th><th style={{ ...cabecera, textAlign: 'right' }}>ACCIONES</th></tr></thead>
               <tbody>{profes.map((p, i) => <FilaProfesor key={p.id} p={p} i={i} alCambiar={recargar} />)}</tbody>
             </table>
@@ -230,16 +230,16 @@ export default function Admin() {
           <>
             {estudiantes.cargando && <Cargando texto="Cargando estudiantes" />}
             <ErrorCaja error={estudiantes.error} />
-            <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 640 }}>
+            <table className="tabla-adaptable" style={{ width: '100%', borderCollapse: 'collapse', minWidth: 640 }}>
               <thead><tr><th style={cabecera}>ESTUDIANTE</th><th style={cabecera}>CURSO</th><th style={cabecera}>GRADO</th><th style={cabecera}>PROFESOR</th><th style={cabecera}>ESTADO</th></tr></thead>
               <tbody>
                 {ests.map((e, i) => (
                   <tr key={e.id}>
                     <td style={celda}><div style={{ display: 'flex', alignItems: 'center', gap: 10 }}><Avatar nombre={e.nombre} i={i} size={34} /><strong style={{ fontWeight: 900 }}>{e.nombre}</strong></div></td>
-                    <td style={{ ...celda, fontWeight: 800 }}>{e.curso}</td>
-                    <td style={{ ...celda, fontWeight: 700 }}>{e.grado_texto}</td>
-                    <td style={{ ...celda, fontWeight: 700 }}>{e.profesor}</td>
-                    <td style={celda}><EstadoCuenta activo={e.estado === 'activo'} si="Activo" no="Inactivo" /></td>
+                    <td data-etiqueta="Curso" style={{ ...celda, fontWeight: 800 }}>{e.curso}</td>
+                    <td data-etiqueta="Grado" style={{ ...celda, fontWeight: 700 }}>{e.grado_texto}</td>
+                    <td data-etiqueta="Profesor" style={{ ...celda, fontWeight: 700 }}>{e.profesor}</td>
+                    <td data-etiqueta="Estado" style={celda}><EstadoCuenta activo={e.estado === 'activo'} si="Activo" no="Inactivo" /></td>
                   </tr>
                 ))}
               </tbody>
