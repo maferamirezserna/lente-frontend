@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode, type PointerEvent as ReactPointerEvent } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { api, ApiError, ahora, nuevoCodigo } from '../api/client'
 import type { ActividadVista, EstadoMacro, EstadoSuper, ResultadoActividad, TipoPalabra } from '../api/types'
@@ -393,7 +393,14 @@ function tokens(cuerpo: string) {
 }
 
 const normal = (s: string) => s.toLowerCase().trim()
-const LUPA = { d: 150, zoom: 1.6, aro: 7 }
+// Cursor de lupa mini para señalar palabras (con borde blanco para que se vea sobre cualquier color).
+const SVG_LUPA = "<svg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'>"
+  + "<path d='M17 17 25 25' stroke='white' stroke-width='7' stroke-linecap='round'/>"
+  + "<path d='M17 17 25 25' stroke='#1A36A8' stroke-width='4' stroke-linecap='round'/>"
+  + "<circle cx='11' cy='11' r='8' fill='rgba(201,219,255,.6)' stroke='white' stroke-width='5'/>"
+  + "<circle cx='11' cy='11' r='8' fill='none' stroke='#2F5BEA' stroke-width='3'/>"
+  + "<path d='M7 9a4.5 4.5 0 0 1 3-3' stroke='white' stroke-width='2' stroke-linecap='round' fill='none'/></svg>"
+const CURSOR_LUPA = `url("data:image/svg+xml,${encodeURIComponent(SVG_LUPA)}") 11 11, pointer`
 
 function PasoMicro({ vista, onRevisado, onListo, onError }: PropsPaso) {
   const cuerpo = vista.cuerpo || ''
@@ -402,8 +409,6 @@ function PasoMicro({ vista, onRevisado, onListo, onError }: PropsPaso) {
   const [tipo, setTipo] = useState<TipoPalabra>('adjetivo')
   const [resultado, setResultado] = useState<ResultadoActividad | null>(null)
   const [enviando, setEnviando] = useState(false)
-  const [lupaOn, setLupaOn] = useState(true)
-  const [lupa, setLupa] = useState<{ x: number; y: number; w: number } | null>(null)
   const pideTipo = vista.nivel_escolar !== 'primaria'
 
   useEffect(() => { if (resultado) onRevisado() }, [resultado, onRevisado])
@@ -431,7 +436,7 @@ function PasoMicro({ vista, onRevisado, onListo, onError }: PropsPaso) {
   const omisiones = new Set((m?.omisiones || []).map((p) => normal(p.palabra)))
 
   function estilo(t: Trozo): CSSProperties {
-    const base: CSSProperties = { font: 'inherit', cursor: resultado ? 'default' : 'pointer', padding: '0 3px', margin: '0 -3px', borderRadius: 8, border: '2px solid transparent', borderBottomWidth: 4, background: 'transparent', color: 'var(--tinta)' }
+    const base: CSSProperties = { font: 'inherit', cursor: resultado ? 'default' : CURSOR_LUPA, padding: '0 3px', margin: '0 -3px', borderRadius: 8, border: '2px solid transparent', borderBottomWidth: 4, background: 'transparent', color: 'var(--tinta)' }
     const mk = marcas.find((x) => x.inicio === t.inicio)
     const w = normal(t.texto)
     if (!resultado) {
@@ -445,27 +450,6 @@ function PasoMicro({ vista, onRevisado, onListo, onError }: PropsPaso) {
     return base
   }
 
-  // El mismo contenido se pinta dos veces: el de verdad (con botones) y la copia agrandada de la lupa.
-  const contenido = (interactivo: boolean) => (
-    <>
-      <h2 style={{ margin: '0 0 10px', fontFamily: 'Nunito, sans-serif', fontWeight: 900, fontSize: 22, lineHeight: 1.2 }}>{vista.titulo}</h2>
-      <p style={{ margin: 0, fontSize: 17, lineHeight: 2.2, whiteSpace: 'pre-wrap' }}>
-        {partes.map((t) => !t.palabra ? <span key={t.inicio}>{t.texto}</span>
-          : interactivo
-            ? <button key={t.inicio} type="button" className={marcas.some((x) => x.inicio === t.inicio) && !resultado ? 'marca-pop' : undefined} aria-pressed={marcas.some((x) => x.inicio === t.inicio)} onClick={() => tocar(t)} style={estilo(t)}>{t.texto}</button>
-            : <span key={t.inicio} style={estilo(t)}>{t.texto}</span>)}
-      </p>
-    </>
-  )
-
-  function mover(e: ReactPointerEvent<HTMLDivElement>) {
-    if (e.pointerType !== 'mouse') return
-    const r = e.currentTarget.getBoundingClientRect()
-    setLupa({ x: e.clientX - r.left, y: e.clientY - r.top, w: r.width })
-  }
-
-  const verLupa = lupaOn && !!lupa && !resultado
-  const R = LUPA.d / 2 - LUPA.aro
   const total = m ? m.aciertos.length + m.omisiones.length : 0
   const bueno = !!m?.logrado
 
@@ -474,31 +458,20 @@ function PasoMicro({ vista, onRevisado, onListo, onError }: PropsPaso) {
       izquierda={<>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
           <span style={kicker}>LA NOTICIA{vista.fuente ? ` · ${vista.fuente.toUpperCase()}` : ''}</span>
-          <button type="button" onClick={() => setLupaOn((x) => !x)} aria-pressed={lupaOn} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', minHeight: 36, borderRadius: 999, border: '2px solid var(--celeste-suave)', background: lupaOn ? 'var(--hielo)' : '#FFFFFF', color: 'var(--cobalto-borde)', font: 'inherit', fontWeight: 900, fontSize: 13, cursor: 'pointer' }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A36A8" strokeWidth="3" strokeLinecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" /><path d="M15.5 15.5 21 21" /></svg>
-            {lupaOn ? 'Lupa encendida' : 'Lupa apagada'}
-          </button>
         </div>
-        <div onPointerMove={mover} onPointerLeave={() => setLupa(null)} style={tarjetaTexto}>
-          {contenido(true)}
-          {verLupa && lupa && (
-            <div aria-hidden="true" style={{ position: 'absolute', left: lupa.x - LUPA.d / 2, top: lupa.y - LUPA.d / 2, width: LUPA.d, height: LUPA.d, pointerEvents: 'none', zIndex: 3 }}>
-              <div style={{ position: 'absolute', left: 112, top: 112, width: 20, height: 70, borderRadius: 10, background: 'var(--cobalto)', borderBottom: '4px solid var(--cobalto-borde)', transform: 'rotate(-45deg)', transformOrigin: '10px 0' }} />
-              <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', overflow: 'hidden', border: `${LUPA.aro}px solid #DCE3EE`, boxShadow: '0 10px 24px rgba(15,26,64,.25), inset 0 0 0 2px #FFFFFF', background: '#FFFFFF' }}>
-                <div style={{ position: 'absolute', left: 0, top: 0, width: lupa.w - 4, padding: '20px 22px', boxSizing: 'border-box', transformOrigin: '0 0', transform: `translate(${(R - lupa.x * LUPA.zoom).toFixed(1)}px, ${(R - lupa.y * LUPA.zoom).toFixed(1)}px) scale(${LUPA.zoom})` }}>
-                  {contenido(false)}
-                </div>
-                <div style={{ position: 'absolute', left: 14, top: 12, width: 46, height: 18, borderRadius: '50%', background: 'rgba(255,255,255,.7)', transform: 'rotate(-30deg)' }} />
-              </div>
-            </div>
-          )}
+        <div style={{ ...tarjetaTexto, cursor: resultado ? 'default' : CURSOR_LUPA }}>
+          <h2 style={{ margin: '0 0 10px', fontFamily: 'Nunito, sans-serif', fontWeight: 900, fontSize: 22, lineHeight: 1.2 }}>{vista.titulo}</h2>
+          <p style={{ margin: 0, fontSize: 17, lineHeight: 2.2, whiteSpace: 'pre-wrap' }}>
+            {partes.map((t) => !t.palabra ? <span key={t.inicio}>{t.texto}</span>
+              : <button key={t.inicio} type="button" className={marcas.some((x) => x.inicio === t.inicio) && !resultado ? 'marca-pop' : undefined} aria-pressed={marcas.some((x) => x.inicio === t.inicio)} onClick={() => tocar(t)} style={estilo(t)}>{t.texto}</button>)}
+          </p>
         </div>
       </>}
       derecha={<>
         <span style={kicker}>PASO 3 · LENGUAJE</span>
         <h3 style={{ margin: 0, fontWeight: 900, fontSize: 26, lineHeight: 1.2 }}>{vista.instruccion}</h3>
         <p style={{ margin: 0, fontWeight: 700, fontSize: 15, color: 'var(--gris)' }}>
-          Pasa la lupa por el texto para verlo de cerca. {pideTipo ? 'Elige el tipo y toca la palabra.' : 'Toca la palabra para marcarla.'} Tócala otra vez para quitarla.
+          {pideTipo ? 'Elige el tipo y toca la palabra con la lupa.' : 'Toca la palabra con la lupa para marcarla.'} Tócala otra vez para quitarla.
           {!pideTipo && vista.palabras_esperadas ? ` Busca ${vista.palabras_esperadas} palabras.` : ''}
         </p>
         {pideTipo && (
