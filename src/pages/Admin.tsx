@@ -1,5 +1,7 @@
 import { useState, type FormEvent, type ReactNode } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { api } from '../api/client'
+import { useSesion } from '../auth'
 import type { ClaveGenerada, EstudianteAdmin, Profesor, ProfesorCreado, ResumenAdmin } from '../api/types'
 import { Avatar, Cargando, ErrorCaja, Pagina, useDatos } from '../components/ui'
 
@@ -97,10 +99,11 @@ function EstadoCuenta({ activo, si = 'Activa', no = 'Desactivada' }: { activo: b
   return <span style={{ display: 'inline-block', padding: '4px 10px', borderRadius: 999, fontWeight: 900, fontSize: 12.5, background: activo ? 'var(--ok-fondo)' : '#F3F4F6', color: activo ? 'var(--ok-texto)' : 'var(--gris)' }}>{activo ? si : no}</span>
 }
 
-const accionEstilo = { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 10px', minHeight: 36, borderRadius: 10, border: '2px solid transparent', background: 'transparent', color: 'var(--cobalto-borde)', font: 'inherit', fontWeight: 900, fontSize: 14, cursor: 'pointer' } as const
+const accionEstilo = { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 10px', minHeight: 36, borderRadius: 10, border: '2px solid transparent', background: 'transparent', color: 'var(--cobalto-borde)', font: 'inherit', fontWeight: 900, fontSize: 14, cursor: 'pointer', whiteSpace: 'nowrap' } as const
 const icono = (d: string) => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={d} /></svg>
 const ICONO_EDITAR = 'M4 20l4-1 11-11-3-3L5 16zM14 6l3 3'
 const ICONO_CLAVE = 'M14 10a4 4 0 1 0-3.5 3.96L9 15.5V18h2.5v2H14v-2.5l1.04-1.04A4 4 0 0 0 14 10zM16 8h.01'
+const ICONO_VER = 'M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z'
 const ICONO_ESTADO = 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM5.6 5.6l12.8 12.8'
 
 const fechaIngreso = (iso: string | null) => (iso ? `Último ingreso: ${new Date(iso).toLocaleDateString('es-CO', { day: 'numeric', month: 'short', year: 'numeric' })}` : 'Aún no ha entrado')
@@ -125,6 +128,9 @@ function FilaProfesor({ p, i, alCambiar }: { p: Profesor; i: number; alCambiar: 
     setClave(r.clave_temporal)
   })
   const cambiarEstado = () => hacer(() => api.patch(`/admin/profesores/${p.id}`, { activo: !p.activo }))
+  const { supervisar } = useSesion()
+  const nav = useNavigate()
+  const verModulos = () => { supervisar({ id: p.id, nombre: p.nombre }); nav('/cursos') }
 
   return (
     <>
@@ -150,7 +156,8 @@ function FilaProfesor({ p, i, alCambiar }: { p: Profesor; i: number; alCambiar: 
         <td data-etiqueta="Cursos" style={{ ...celda, fontWeight: 800 }}>{p.cursos}</td>
         <td data-etiqueta="Estudiantes" style={{ ...celda, fontWeight: 800 }}>{p.estudiantes}</td>
         <td data-etiqueta="Estado" style={celda}><EstadoCuenta activo={p.activo} /></td>
-        <td className="celda-acciones" style={{ ...celda, textAlign: 'right', whiteSpace: 'nowrap' }}>
+        <td className="celda-acciones" style={{ ...celda, textAlign: 'right' }}>
+          <button type="button" style={accionEstilo} disabled={ocupado} onClick={verModulos} title="Ver y editar sus cursos, estudiantes y textos">{icono(ICONO_VER)}Ver módulos</button>
           <button type="button" style={accionEstilo} disabled={ocupado} onClick={() => setEditando(true)}>{icono(ICONO_EDITAR)}Editar</button>
           <button type="button" style={accionEstilo} disabled={ocupado} onClick={() => setConfirmarClave(true)}>{icono(ICONO_CLAVE)}Contraseña</button>
           <button type="button" style={{ ...accionEstilo, color: p.activo ? 'var(--mejorar-texto)' : 'var(--ok-texto)' }} disabled={ocupado} onClick={cambiarEstado}>{icono(ICONO_ESTADO)}{p.activo ? 'Desactivar' : 'Activar'}</button>

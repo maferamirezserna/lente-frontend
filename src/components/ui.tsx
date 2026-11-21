@@ -75,7 +75,9 @@ export function Marca({ tam = 26, a = '/cursos' }: { tam?: number; a?: string })
 }
 
 export function BarraSuperior() {
-  const { usuario, salir } = useSesion()
+  const { usuario, salir, supervisado, dejarDeSupervisar } = useSesion()
+  const nav = useNavigate()
+  const esAdmin = usuario?.rol === 'administrador'
   const tab = ({ isActive }: { isActive: boolean }) => ({
     padding: '10px 16px', borderRadius: 12, textDecoration: 'none', fontWeight: isActive ? 900 : 800, fontSize: 15,
     color: isActive ? 'var(--cobalto-borde)' : 'var(--gris)', background: isActive ? 'var(--hielo)' : 'transparent',
@@ -85,8 +87,12 @@ export function BarraSuperior() {
     <header className="barra-sup" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', padding: '14px clamp(16px, 4vw, 40px)', borderBottom: '2px solid var(--borde)', background: '#fff' }}>
       <Marca a={usuario?.rol === 'administrador' ? '/admin' : '/cursos'} />
       <nav aria-label="Secciones" className="barra-sup-nav" style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-        {usuario?.rol === 'administrador' ? (
-          <NavLink to="/admin" style={tab}>Administración</NavLink>
+        {esAdmin ? (
+          <>
+            <NavLink to="/admin" style={tab}>Administración</NavLink>
+            {supervisado && <NavLink to="/cursos" style={tab}>Cursos</NavLink>}
+            {supervisado && <NavLink to="/textos" style={tab}>Biblioteca de textos</NavLink>}
+          </>
         ) : (
           <>
             <NavLink to="/cursos" style={tab}>Mis cursos</NavLink>
@@ -100,6 +106,13 @@ export function BarraSuperior() {
         <span className="solo-ancho" style={{ fontWeight: 800, fontSize: 15 }}>{usuario?.nombre}</span>
         <button type="button" className="btn btn-sec btn-peq" onClick={salir}>Salir</button>
       </div>
+      {esAdmin && supervisado && (
+        <div role="status" style={{ flexBasis: '100%', display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', padding: '10px 14px', borderRadius: 14, background: '#FFF4E5', color: '#8A4B00', fontWeight: 800, fontSize: 14 }}>
+          <span style={{ flex: '1 1 260px' }}>Modo administrador: estás viendo y editando los módulos de <strong>{supervisado.nombre}</strong>.</span>
+          <button type="button" className="btn btn-sec btn-peq" onClick={() => nav('/admin')}>Cambiar de profesor</button>
+          <button type="button" className="btn btn-sec btn-peq" onClick={() => { dejarDeSupervisar(); nav('/admin') }}>Terminar</button>
+        </div>
+      )}
     </header>
   )
 }

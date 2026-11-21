@@ -250,6 +250,15 @@ const rutas: Ruta[] = [
     return t
   }],
   ['GET', /^\/textos\/(\d+)$/, (m) => textos.find((t) => t.id === +m[1])],
+  // En el demo se comporta como si los textos aprobados ya tuvieran actividades de estudiantes
+  ['DELETE', /^\/textos\/(\d+)\/definitivo$/, (m) => {
+    const i = textos.findIndex((t) => t.id === +m[1])
+    if (textos[i]?.estado === 'aprobado') throw Object.assign(new Error('Este texto ya tiene actividades de estudiantes y no se puede borrar sin perder su historial. Archívelo para ocultarlo'), { status: 409 })
+    if (i >= 0) textos.splice(i, 1)
+    for (const s of Object.values(activosEnCurso)) s.delete(+m[1])
+    return undefined
+  }],
+  ['DELETE', /^\/textos\/(\d+)$/, (m) => { const t = textos.find((x) => x.id === +m[1])!; t.estado = 'archivado'; for (const s of Object.values(activosEnCurso)) s.delete(t.id); return t }],
   ['PATCH', /^\/textos\/(\d+)\/paquete$/, (m, b) => { const t = textos.find((x) => x.id === +m[1])!; Object.assign(t, b); return t }],
   ['POST', /^\/textos\/(\d+)\/aprobar$/, (m) => { const t = textos.find((x) => x.id === +m[1])!; t.estado = 'aprobado'; t.aprobado_en = iso(); return t }],
   ['POST', /^\/textos\/(\d+)\/preparar$/, (m) => { const t = textos.find((x) => x.id === +m[1])!; t.estado = 'preparando'; return t }],

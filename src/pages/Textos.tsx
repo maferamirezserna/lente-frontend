@@ -111,6 +111,22 @@ function Tarjeta({ t, i, activos, cursos, alCambiar }: { t: TextoResumen; i: num
     try { await api.post(`/textos/${t.id}/preparar`); alCambiar() } catch (e) { setError(e) } finally { setOcupado(false) }
   }
 
+  // Borrar definitivamente. Si ya lo usaron estudiantes, el backend responde 409 y se ofrece archivarlo.
+  async function borrar() {
+    if (!window.confirm(`¿Borrar «${t.titulo}» de la biblioteca? Esta acción no se puede deshacer.`)) return
+    setOcupado(true)
+    setError(null)
+    try {
+      await api.del(`/textos/${t.id}/definitivo`)
+      alCambiar()
+    } catch (e) {
+      if ((e as { status?: number }).status === 409 && t.estado !== 'archivado' && t.estado !== 'preparando'
+          && window.confirm(`${(e as Error).message}\n\n¿Quiere archivarlo para ocultarlo de clase?`)) {
+        try { await api.del(`/textos/${t.id}`); alCambiar() } catch (e2) { setError(e2) }
+      } else setError(e)
+    } finally { setOcupado(false) }
+  }
+
   const detalle =
     t.estado === 'aprobado' ? (activos.length ? `Activo en ${lista(activos)}` : 'Aún no está activo en ningún curso')
     : t.estado === 'en_revision' ? (t.preparado_por_ia ? 'La IA ya propuso el análisis' : 'Listo para revisar')
@@ -139,7 +155,15 @@ function Tarjeta({ t, i, activos, cursos, alCambiar }: { t: TextoResumen; i: num
       <Link to={`/textos/${t.id}`} style={{ fontWeight: 900, fontSize: 19, lineHeight: 1.25, color: 'var(--tinta)', textDecoration: 'none' }}>{t.titulo}</Link>
       <span style={{ fontWeight: 700, fontSize: 13, color: 'var(--gris-claro)' }}>{t.fuente || 'Sin fuente'} · {fecha(t.creado_en)} · {detalle}</span>
       <ErrorCaja error={error} />
-      <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column' }}>{accion}</div>
+      <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {accion}
+        {t.estado !== 'preparando' && (
+          <button type="button" disabled={ocupado} onClick={borrar} aria-label={`Borrar ${t.titulo}`}
+            style={{ alignSelf: 'center', background: 'none', border: 'none', padding: '4px 8px', cursor: 'pointer', fontWeight: 800, fontSize: 13, color: '#C0392B', textDecoration: 'underline' }}>
+            Borrar noticia
+          </button>
+        )}
+      </div>
     </article>
   )
 }

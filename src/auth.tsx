@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react'
-import { api, token } from './api/client'
+import { api, supervision, token, type Supervisado } from './api/client'
 import type { TokenSalida, UsuarioSesion } from './api/types'
 
 interface Sesion {
@@ -7,6 +7,10 @@ interface Sesion {
   cargando: boolean
   entrar: (usuario: string, clave: string) => Promise<UsuarioSesion>
   salir: () => void
+  // Solo administrador: profesor cuyos módulos está viendo y editando
+  supervisado: Supervisado | null
+  supervisar: (p: Supervisado) => void
+  dejarDeSupervisar: () => void
 }
 
 const Ctx = createContext<Sesion | null>(null)
@@ -14,6 +18,7 @@ const Ctx = createContext<Sesion | null>(null)
 export function SesionProvider({ children }: { children: ReactNode }) {
   const [usuario, setUsuario] = useState<UsuarioSesion | null>(null)
   const [cargando, setCargando] = useState(true)
+  const [supervisado, setSupervisado] = useState<Supervisado | null>(() => supervision.leer())
 
   useEffect(() => {
     if (!token.leer()) { setCargando(false); return }
@@ -33,9 +38,11 @@ export function SesionProvider({ children }: { children: ReactNode }) {
     return r.usuario
   }, [])
 
-  const salir = useCallback(() => { token.borrar(); setUsuario(null) }, [])
+  const supervisar = useCallback((p: Supervisado) => { supervision.guardar(p); setSupervisado(p) }, [])
+  const dejarDeSupervisar = useCallback(() => { supervision.borrar(); setSupervisado(null) }, [])
+  const salir = useCallback(() => { token.borrar(); supervision.borrar(); setSupervisado(null); setUsuario(null) }, [])
 
-  return <Ctx.Provider value={{ usuario, cargando, entrar, salir }}>{children}</Ctx.Provider>
+  return <Ctx.Provider value={{ usuario, cargando, entrar, salir, supervisado, supervisar, dejarDeSupervisar }}>{children}</Ctx.Provider>
 }
 
 // Pantalla de inicio según el rol: el administrador va a su panel; el profe, a sus cursos.
