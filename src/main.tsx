@@ -15,13 +15,15 @@ import Admin from './pages/Admin'
 import Progreso from './pages/Progreso'
 
 // Sin `rol`, cualquier sesión entra. Con `rol`, quien tenga otro rol vuelve a su inicio.
+// El administrador que eligió un profesor (modo supervisión) también entra a las pantallas del profesor.
 function Privada({ children, rol }: { children: ReactNode; rol?: 'administrador' | 'profesor' }) {
-  const { usuario, cargando } = useSesion()
+  const { usuario, cargando, supervisado } = useSesion()
   const loc = useLocation()
   if (cargando) return <Cargando />
   if (!usuario) return <Navigate to="/login" replace />
   if (usuario.debe_cambiar_clave && loc.pathname !== '/cambiar-clave') return <Navigate to="/cambiar-clave" replace />
-  if (rol && usuario.rol !== rol) return <Navigate to={inicioDe(usuario)} replace />
+  const adminSupervisando = rol === 'profesor' && usuario.rol === 'administrador' && !!supervisado
+  if (rol && usuario.rol !== rol && !adminSupervisando) return <Navigate to={inicioDe(usuario)} replace />
   return <>{children}</>
 }
 

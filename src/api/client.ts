@@ -4,6 +4,7 @@ import { demoRequest } from './demo'
 const BASE = (import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '')
 export const DEMO = import.meta.env.VITE_DEMO === '1'
 const CLAVE_TOKEN = 'lente_token'
+const CLAVE_SUPERVISION = 'lente_supervision'
 
 export class ApiError extends Error {
   status: number
@@ -20,6 +21,15 @@ export const token = {
   leer: () => { try { return sessionStorage.getItem(CLAVE_TOKEN) } catch { return null } },
   guardar: (t: string) => { try { sessionStorage.setItem(CLAVE_TOKEN, t) } catch { /* sin almacenamiento */ } },
   borrar: () => { try { sessionStorage.removeItem(CLAVE_TOKEN) } catch { /* sin almacenamiento */ } },
+}
+
+// Administrador en modo supervisión: trabaja en los módulos de un profesor (cabecera X-Como-Profesor).
+// El backend ignora la cabecera si quien la envía es un profesor.
+export interface Supervisado { id: number; nombre: string }
+export const supervision = {
+  leer: (): Supervisado | null => { try { const v = sessionStorage.getItem(CLAVE_SUPERVISION); return v ? JSON.parse(v) : null } catch { return null } },
+  guardar: (p: Supervisado) => { try { sessionStorage.setItem(CLAVE_SUPERVISION, JSON.stringify(p)) } catch { /* sin almacenamiento */ } },
+  borrar: () => { try { sessionStorage.removeItem(CLAVE_SUPERVISION) } catch { /* sin almacenamiento */ } },
 }
 
 function mensajeDeError(status: number, data: unknown): { mensaje: string; campo?: string } {
@@ -41,6 +51,8 @@ async function request<T>(method: string, path: string, body?: unknown): Promise
   if (body !== undefined) headers['Content-Type'] = 'application/json'
   const t = token.leer()
   if (t) headers.Authorization = `Bearer ${t}`
+  const s = supervision.leer()
+  if (s) headers['X-Como-Profesor'] = String(s.id)
   let res: Response
   try {
     res = await fetch(BASE + path, { method, headers, body: body === undefined ? undefined : JSON.stringify(body) })
