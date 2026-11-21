@@ -26,12 +26,15 @@ export function SesionProvider({ children }: { children: ReactNode }) {
   }, [])
 
   useEffect(() => {
-    const vencida = () => setUsuario(null)
+    // Al vencer la sesión también termina la supervisión: quien entre después no hereda el profesor elegido
+    const vencida = () => { supervision.borrar(); setSupervisado(null); setUsuario(null) }
     window.addEventListener('lente:sesion-vencida', vencida)
     return () => window.removeEventListener('lente:sesion-vencida', vencida)
   }, [])
 
   const entrar = useCallback(async (u: string, c: string) => {
+    supervision.borrar()                    // cada inicio de sesión empieza sin profesor elegido
+    setSupervisado(null)
     const r = await api.post<TokenSalida>('/auth/login', { usuario: u, clave: c })
     token.guardar(r.access_token)
     setUsuario(r.usuario)
