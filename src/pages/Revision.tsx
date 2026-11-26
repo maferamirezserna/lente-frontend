@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { api } from '../api/client'
-import type { TextoDetalle, TipoPalabra } from '../api/types'
+import type { Pregunta, TextoDetalle, TipoPalabra } from '../api/types'
 import { Cargando, ErrorCaja, Pagina, TIPO_PALABRA, Volver, useDatos } from '../components/ui'
 import { Estado } from './Textos'
 
@@ -25,13 +25,25 @@ function Papelera() {
   return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="2.6" strokeLinecap="round" aria-hidden="true"><path d="M5 7h14M10 11v6M14 11v6M7 7l1 13h8l1-13M9 7V4h6v3" /></svg>
 }
 
-function NuevaPregunta({ textoId, alTerminar }: { textoId: number; alTerminar: (ok: boolean) => void }) {
-  const [pregunta, setPregunta] = useState('')
-  const [opciones, setOpciones] = useState(['', '', ''])
-  const [correcta, setCorrecta] = useState(1)
+function Lapiz() {
+  return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2F5BEA" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4zM14 6l4 4" /></svg>
+}
+
+// Crear una pregunta o editar una que propuso la IA: texto, opciones (2 a 6) y cuál es la correcta.
+function FormPregunta({ textoId, original, alTerminar }: { textoId: number; original?: Pregunta; alTerminar: (ok: boolean) => void }) {
+  const [pregunta, setPregunta] = useState(original?.pregunta ?? '')
+  const [opciones, setOpciones] = useState(original ? [...original.opciones] : ['', '', ''])
+  const [correcta, setCorrecta] = useState(original?.correcta ?? 1)
   const [error, setError] = useState<unknown>(null)
   const [enviando, setEnviando] = useState(false)
   const llenas = opciones.map((o) => o.trim()).filter(Boolean)
+  const idCampo = original ? `pregunta-${original.id}` : 'np'
+
+  function quitarOpcion(i: number) {
+    setOpciones((xs) => xs.filter((_, j) => j !== i))
+    // La correcta sigue siendo la misma opción aunque cambie de número.
+    setCorrecta((c) => (c - 1 === i ? 1 : c - 1 > i ? c - 1 : c))
+  }
 
   async function enviar(e: FormEvent) {
     e.preventDefault()
@@ -40,28 +52,31 @@ function NuevaPregunta({ textoId, alTerminar }: { textoId: number; alTerminar: (
     setError(null)
     // Se envían solo las opciones escritas; la correcta se recalcula a su nueva posición.
     const usadas = opciones.map((o, i) => ({ o: o.trim(), i })).filter((x) => x.o)
+    const datos = { pregunta: pregunta.trim(), opciones: usadas.map((x) => x.o), correcta: usadas.findIndex((x) => x.i === correcta - 1) + 1 }
     try {
-      await api.post(`/textos/${textoId}/preguntas`, { pregunta: pregunta.trim(), opciones: usadas.map((x) => x.o), correcta: usadas.findIndex((x) => x.i === correcta - 1) + 1 })
+      if (original) await api.patch(`/textos/${textoId}/preguntas/${original.id}`, datos)
+      else await api.post(`/textos/${textoId}/preguntas`, datos)
       alTerminar(true)
     } catch (err) { setError(err) } finally { setEnviando(false) }
   }
 
   return (
     <form onSubmit={enviar} noValidate style={{ padding: 12, borderRadius: 16, background: '#F7F9FF', border: '2px solid var(--celeste-suave)', display: 'flex', flexDirection: 'column', gap: 8 }}>
-      <label className="etiqueta" htmlFor="np">Nueva pregunta</label>
-      <input id="np" className="campo" autoFocus maxLength={300} value={pregunta} onChange={(e) => setPregunta(e.target.value)} placeholder="Ej.: ¿Qué cuenta primero la noticia?" />
+      <label className="etiqueta" htmlFor={idCampo}>{original ? 'Editar pregunta' : 'Nueva pregunta'}</label>
+      <textarea id={idCampo} className="campo" autoFocus rows={2} maxLength={300} value={pregunta} onChange={(e) => setPregunta(e.target.value)} placeholder="Ej.: ¿Qué cuenta primero la noticia?" style={{ fontSize: 15 }} />
       <span style={{ fontWeight: 800, fontSize: 13, color: 'var(--gris)' }}>Opciones (marca la correcta)</span>
       {opciones.map((o, i) => (
         <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <input type="radio" name="correcta" aria-label={`La opción ${i + 1} es la correcta`} checked={correcta === i + 1} onChange={() => setCorrecta(i + 1)} />
-          <input className="campo" value={o} onChange={(e) => setOpciones((xs) => xs.map((x, j) => (j === i ? e.target.value : x)))} placeholder={`Opción ${i + 1}`} style={{ minHeight: 44, padding: '8px 12px', fontSize: 15 }} />
+          <input type="radio" name={`correcta-${idCampo}`} aria-label={`La opción ${i + 1} es la correcta`} checked={correcta === i + 1} onChange={() => setCorrecta(i + 1)} style={{ width: 22, height: 22, flexShrink: 0 }} />
+          <input className="campo" aria-label={`Opción ${i + 1}`} value={o} maxLength={200} onChange={(e) => setOpciones((xs) => xs.map((x, j) => (j === i ? e.target.value : x)))} placeholder={`Opción ${i + 1}`} style={{ minHeight: 44, padding: '8px 12px', fontSize: 15, flexGrow: 1 }} />
+          {opciones.length > 2 && <button type="button" aria-label={`Quitar la opción ${i + 1}`} onClick={() => quitarOpcion(i)} style={{ width: 44, height: 44, borderRadius: 12, border: '2px solid var(--borde)', background: '#FFFFFF', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Papelera /></button>}
         </div>
       ))}
       {opciones.length < 6 && <button type="button" onClick={() => setOpciones((xs) => [...xs, ''])} style={{ ...botonPunteado, minHeight: 38, padding: 6 }}>+ Otra opción</button>}
       <ErrorCaja error={error} />
       <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
         <button type="button" className="btn btn-sec btn-peq" onClick={() => alTerminar(false)}>Cancelar</button>
-        <button type="submit" className="btn btn-peq" disabled={enviando}>{enviando ? 'Guardando…' : 'AGREGAR PREGUNTA'}</button>
+        <button type="submit" className="btn btn-peq" disabled={enviando}>{enviando ? 'Guardando…' : original ? 'GUARDAR CAMBIOS' : 'AGREGAR PREGUNTA'}</button>
       </div>
     </form>
   )
@@ -114,6 +129,7 @@ export default function Revision() {
   const [ocupado, setOcupado] = useState(false)
   const [agregandoPregunta, setAgregandoPregunta] = useState(false)
   const [agregandoPalabra, setAgregandoPalabra] = useState(false)
+  const [editandoPregunta, setEditandoPregunta] = useState<number | null>(null)
 
   // Mientras la IA prepara el texto, se consulta cada 10 s.
   useEffect(() => {
@@ -191,10 +207,13 @@ export default function Revision() {
 
           <Seccion n={2} color="var(--cobalto)" titulo={`Preguntas de organización · ${d.preguntas.length}`}>
             {d.preguntas.length === 0 && <p className="sub">Sin preguntas todavía.</p>}
-            {d.preguntas.map((p, qi) => (
+            {d.preguntas.map((p, qi) => editandoPregunta === p.id ? (
+              <FormPregunta key={p.id} textoId={d.id} original={p} alTerminar={(ok) => { setEditandoPregunta(null); if (ok) { setAviso('Pregunta guardada.'); t.recargar() } }} />
+            ) : (
               <div key={p.id} style={{ padding: 12, borderRadius: 16, background: '#F8FAFC', border: '2px solid #EEF0F3', display: 'flex', flexDirection: 'column', gap: 8 }}>
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
                   <strong style={{ flexGrow: 1, fontWeight: 900, fontSize: 15 }}>{qi + 1}. {p.pregunta}</strong>
+                  {editable && <button type="button" aria-label={`Editar la pregunta ${qi + 1}`} title="Editar pregunta y opciones" disabled={ocupado} onClick={() => { setEditandoPregunta(p.id); setAgregandoPregunta(false) }} style={{ width: 32, height: 32, borderRadius: 10, border: '2px solid var(--borde)', background: '#FFFFFF', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Lapiz /></button>}
                   {editable && <button type="button" aria-label="Eliminar pregunta" disabled={ocupado} onClick={() => accion(() => api.del(`/textos/${d.id}/preguntas/${p.id}`), 'Pregunta eliminada.')} style={{ width: 32, height: 32, borderRadius: 10, border: '2px solid var(--borde)', background: '#FFFFFF', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Papelera /></button>}
                 </div>
                 {p.opciones.map((o, i) => {
@@ -208,7 +227,7 @@ export default function Revision() {
               </div>
             ))}
             {editable && (agregandoPregunta
-              ? <NuevaPregunta textoId={d.id} alTerminar={(ok) => { setAgregandoPregunta(false); if (ok) { setAviso('Pregunta agregada.'); t.recargar() } }} />
+              ? <FormPregunta textoId={d.id} alTerminar={(ok) => { setAgregandoPregunta(false); if (ok) { setAviso('Pregunta agregada.'); t.recargar() } }} />
               : <button type="button" onClick={() => setAgregandoPregunta(true)} style={botonPunteado}>+ Agregar pregunta</button>)}
           </Seccion>
 
