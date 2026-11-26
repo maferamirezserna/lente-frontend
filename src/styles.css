@@ -54,6 +54,21 @@ button { font-family: inherit; }
 .btn-sec:hover { color: var(--cobalto-borde); }
 .btn-ok { background: #1F7A3E; border-bottom-color: var(--ok-texto); }
 .btn-mejorar { background: #C2410C; border-bottom-color: #8A2E08; }
+/* Modo aula: el texto no se selecciona (los campos donde se escribe sí) y no se imprime */
+.modo-aula { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.modo-aula textarea, .modo-aula input { -webkit-user-select: text; user-select: text; }
+@media print {
+  .modo-aula { display: none !important; }
+  body:has(.modo-aula)::after { content: 'La actividad de LENTE no se puede imprimir.'; display: block; padding: 40px; font: 700 20px sans-serif; }
+}
+
+.btn-peligro { background: #C0392B; border-bottom-color: #8E2A1F; }
+.btn-peligro:hover { color: #fff; }
+
+/* Ventana de confirmación propia (en vez del aviso del navegador) */
+.dialogo { width: min(460px, calc(100% - 32px)); padding: 0; border: 0; border-radius: 24px; box-shadow: 0 24px 60px rgba(16, 25, 61, .28); }
+.dialogo::backdrop { background: rgba(16, 25, 61, .45); }
+.dialogo[open] { animation: aparecer .18s ease-out both; }
 .btn-peq { min-height: 42px; padding: 8px 14px; font-size: 13px; border-radius: 12px; border-bottom-width: 4px; }
 
 .card { background: #fff; border: 2px solid var(--borde); border-bottom-width: 5px; border-radius: var(--radio); }

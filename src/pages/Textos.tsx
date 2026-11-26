@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from 're
 import { Link } from 'react-router-dom'
 import { api } from '../api/client'
 import type { Curso, TextoEnCurso, TextoResumen } from '../api/types'
-import { Cargando, ErrorCaja, Pagina, Volver, useDatos } from '../components/ui'
+import { Cargando, Confirmar, ErrorCaja, Pagina, Volver, useDatos } from '../components/ui'
 
 // Biblioteca de textos según docs/diseno/mockups/Mock-Textos.html.
 
@@ -111,20 +111,27 @@ function Tarjeta({ t, i, activos, cursos, alCambiar }: { t: TextoResumen; i: num
     try { await api.post(`/textos/${t.id}/preparar`); alCambiar() } catch (e) { setError(e) } finally { setOcupado(false) }
   }
 
-  // Borrar definitivamente. Si ya lo usaron estudiantes, el backend responde 409 y se ofrece archivarlo.
+  // Borrar definitivamente, después de confirmar. Si ya lo usaron estudiantes, el backend
+  // responde 409 y se ofrece archivarlo (deja de verse en clase, pero se conserva el historial).
+  const [confirmando, setConfirmando] = useState<'borrar' | 'archivar' | null>(null)
+
   async function borrar() {
-    if (!window.confirm(`¿Borrar «${t.titulo}» de la biblioteca? Esta acción no se puede deshacer.`)) return
     setOcupado(true)
     setError(null)
     try {
       await api.del(`/textos/${t.id}/definitivo`)
+      setConfirmando(null)
       alCambiar()
     } catch (e) {
-      if ((e as { status?: number }).status === 409 && t.estado !== 'archivado' && t.estado !== 'preparando'
-          && window.confirm(`${(e as Error).message}\n\n¿Quiere archivarlo para ocultarlo de clase?`)) {
-        try { await api.del(`/textos/${t.id}`); alCambiar() } catch (e2) { setError(e2) }
-      } else setError(e)
+      if ((e as { status?: number }).status === 409 && t.estado !== 'archivado' && t.estado !== 'preparando') setConfirmando('archivar')
+      else { setConfirmando(null); setError(e) }
     } finally { setOcupado(false) }
+  }
+
+  async function archivar() {
+    setOcupado(true)
+    setError(null)
+    try { await api.del(`/textos/${t.id}`); setConfirmando(null); alCambiar() } catch (e) { setConfirmando(null); setError(e) } finally { setOcupado(false) }
   }
 
   const detalle =
@@ -158,12 +165,22 @@ function Tarjeta({ t, i, activos, cursos, alCambiar }: { t: TextoResumen; i: num
       <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: 8 }}>
         {accion}
         {t.estado !== 'preparando' && (
-          <button type="button" disabled={ocupado} onClick={borrar} aria-label={`Borrar ${t.titulo}`}
+          <button type="button" disabled={ocupado} onClick={() => { setError(null); setConfirmando('borrar') }} aria-label={`Borrar ${t.titulo}`}
             style={{ alignSelf: 'center', background: 'none', border: 'none', padding: '4px 8px', cursor: 'pointer', fontWeight: 800, fontSize: 13, color: '#C0392B', textDecoration: 'underline' }}>
             Borrar noticia
           </button>
         )}
       </div>
+      <Confirmar abierto={confirmando === 'borrar'} peligro titulo="¿Seguro que quieres borrar esta noticia?"
+        si="Sí, borrarla" no="No, conservarla" ocupado={ocupado} onSi={borrar} onNo={() => setConfirmando(null)}>
+        <p style={{ margin: 0 }}><strong>«{t.titulo}»</strong> se quitará de tu biblioteca junto con lo que preparó la IA: la idea principal, las preguntas y las palabras.</p>
+        <p style={{ margin: '8px 0 0' }}>Esta acción no se puede deshacer.</p>
+      </Confirmar>
+      <Confirmar abierto={confirmando === 'archivar'} titulo="Tus estudiantes ya trabajaron con esta noticia"
+        si="Sí, archivarla" no="Cancelar" ocupado={ocupado} onSi={archivar} onNo={() => setConfirmando(null)}>
+        <p style={{ margin: 0 }}>Por eso no se puede borrar: se perderían sus resultados.</p>
+        <p style={{ margin: '8px 0 0' }}>¿Quieres <strong>archivarla</strong>? Dejará de aparecer en clase, pero el historial de tus estudiantes se conserva.</p>
+      </Confirmar>
     </article>
   )
 }

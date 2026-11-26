@@ -23,6 +23,53 @@ function nombreCorto(n: string) {
   return b ? `${a} ${b[0]}.` : a
 }
 
+// Modo aula protegido: dentro de la actividad no se puede copiar, cortar, pegar, arrastrar,
+// abrir el menú del clic derecho ni imprimir. Así el estudiante escribe con sus palabras y la
+// noticia no se saca de LENTE con un copiar y pegar.
+// Las capturas de pantalla NO se pueden impedir desde una página web (las toma el sistema
+// operativo o el celular); solo se avisa cuando se pulsa la tecla Impr Pant.
+const TECLAS_BLOQUEADAS = new Set(['c', 'x', 'v', 'a', 'p', 's', 'u'])
+
+function useProteccionAula(avisar: (m: string) => void) {
+  useEffect(() => {
+    const bloquear = (m: string) => (e: Event) => { e.preventDefault(); avisar(m) }
+    const copiar = bloquear('En modo aula no se puede copiar el texto.')
+    const pegar = bloquear('En modo aula no se puede pegar: escribe con tus propias palabras.')
+    const menu = (e: Event) => e.preventDefault()
+    const teclas = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && TECLAS_BLOQUEADAS.has(e.key.toLowerCase())) {
+        e.preventDefault()
+        avisar(e.key.toLowerCase() === 'v' ? 'En modo aula no se puede pegar: escribe con tus propias palabras.'
+          : 'En modo aula no se pueden usar esos atajos.')
+      }
+    }
+    const captura = (e: KeyboardEvent) => {
+      if (e.key === 'PrintScreen') {
+        navigator.clipboard?.writeText('').catch(() => { /* sin permiso: se ignora */ })
+        avisar('Las capturas de pantalla no están permitidas en modo aula.')
+      }
+    }
+    document.addEventListener('copy', copiar, true)
+    document.addEventListener('cut', copiar, true)
+    document.addEventListener('paste', pegar, true)
+    document.addEventListener('drop', pegar, true)
+    document.addEventListener('dragstart', menu, true)
+    document.addEventListener('contextmenu', menu, true)
+    document.addEventListener('keydown', teclas, true)
+    document.addEventListener('keyup', captura, true)
+    return () => {
+      document.removeEventListener('copy', copiar, true)
+      document.removeEventListener('cut', copiar, true)
+      document.removeEventListener('paste', pegar, true)
+      document.removeEventListener('drop', pegar, true)
+      document.removeEventListener('dragstart', menu, true)
+      document.removeEventListener('contextmenu', menu, true)
+      document.removeEventListener('keydown', teclas, true)
+      document.removeEventListener('keyup', captura, true)
+    }
+  }, [avisar])
+}
+
 export default function Actividad() {
   const { id } = useParams()
   const nav = useNavigate()
@@ -31,6 +78,14 @@ export default function Actividad() {
   const [empezo, setEmpezo] = useState(false)
   const [revisado, setRevisado] = useState(false)
   const marcarRevisado = useCallback(() => setRevisado(true), [])
+  const [avisoAula, setAvisoAula] = useState<string | null>(null)
+  const avisar = useCallback((m: string) => setAvisoAula(m), [])
+  useProteccionAula(avisar)
+  useEffect(() => {
+    if (!avisoAula) return
+    const x = setTimeout(() => setAvisoAula(null), 2800)
+    return () => clearTimeout(x)
+  }, [avisoAula])
 
   const cargar = useCallback(async () => {
     try {
@@ -61,7 +116,12 @@ export default function Actividad() {
   const hechos = PASOS.map((_, i) => idx > i || (idx === i && revisado))
 
   return (
-    <div style={{ minHeight: '100vh', background: '#FFFFFF', display: 'flex', flexDirection: 'column' }}>
+    <div className="modo-aula" style={{ minHeight: '100vh', background: '#FFFFFF', display: 'flex', flexDirection: 'column' }}>
+      {avisoAula && (
+        <div role="status" className="aparecer" style={{ position: 'fixed', left: '50%', top: 84, transform: 'translateX(-50%)', zIndex: 50, width: 'min(460px, calc(100% - 32px))', boxSizing: 'border-box', padding: '14px 18px', borderRadius: 16, background: '#10193D', color: '#FFFFFF', fontWeight: 800, fontSize: 16, textAlign: 'center' }}>
+          {avisoAula}
+        </div>
+      )}
       <header className="act-cabecera" style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '14px clamp(16px, 4vw, 36px)', borderBottom: '2px solid var(--borde)', background: '#FFFFFF' }}>
         <button type="button" onClick={salir} aria-label="Salir del modo aula" className="btn btn-sec btn-peq" style={{ minHeight: 44, color: 'var(--gris)', borderColor: 'var(--borde)', gap: 6 }}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="3" strokeLinecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>Salir
