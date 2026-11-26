@@ -29,19 +29,23 @@ function BarrasAvance({ e }: { e: Estudiante }) {
   )
 }
 
-function AgregarEstudiante({ cursoId, alTerminar }: { cursoId: string; alTerminar: (nuevo: boolean) => void }) {
-  const [nombre, setNombre] = useState('')
-  const [grado, setGrado] = useState('')
+// Agregar un estudiante o corregir el nombre y el grado de uno que ya está en el curso.
+function FormEstudiante({ cursoId, original, alTerminar }: { cursoId: string; original?: Estudiante; alTerminar: (cambio: boolean) => void }) {
+  const [nombre, setNombre] = useState(original?.nombre ?? '')
+  const [grado, setGrado] = useState(original?.grado != null ? String(original.grado) : '')
   const [error, setError] = useState<unknown>(null)
   const [enviando, setEnviando] = useState(false)
+  const pre = original ? `est-${original.id}` : 'nuevo'
 
   async function enviar(ev: FormEvent) {
     ev.preventDefault()
     if (!nombre.trim()) { setError(new Error('Escribe el nombre del estudiante.')); return }
     setEnviando(true)
     setError(null)
+    const datos = { nombre: nombre.trim(), grado: grado ? Number(grado) : null }
     try {
-      await api.post(`/cursos/${cursoId}/estudiantes`, { nombre: nombre.trim(), grado: grado ? Number(grado) : null })
+      if (original) await api.patch(`/estudiantes/${original.id}`, datos)
+      else await api.post(`/cursos/${cursoId}/estudiantes`, datos)
       alTerminar(true)
     } catch (e) { setError(e) } finally { setEnviando(false) }
   }
@@ -49,19 +53,19 @@ function AgregarEstudiante({ cursoId, alTerminar }: { cursoId: string; alTermina
   return (
     <form onSubmit={enviar} noValidate className="card aparecer" style={{ padding: 18, display: 'flex', gap: 12, alignItems: 'flex-end', flexWrap: 'wrap', borderColor: 'var(--celeste-suave)' }}>
       <div style={{ flex: '2 1 240px', display: 'flex', flexDirection: 'column', gap: 6 }}>
-        <label className="etiqueta" htmlFor="nuevo-nombre">Nombre del estudiante</label>
-        <input id="nuevo-nombre" className="campo" autoFocus value={nombre} onChange={(e) => setNombre(e.target.value)} placeholder="Ej.: Sofía Martínez" maxLength={80} />
+        <label className="etiqueta" htmlFor={`${pre}-nombre`}>{original ? 'Nombre del estudiante (corregir)' : 'Nombre del estudiante'}</label>
+        <input id={`${pre}-nombre`} className="campo" autoFocus value={nombre} onChange={(e) => setNombre(e.target.value)} placeholder="Ej.: Sofía Martínez" maxLength={80} />
       </div>
       <div style={{ flex: '1 1 140px', display: 'flex', flexDirection: 'column', gap: 6 }}>
-        <label className="etiqueta" htmlFor="nuevo-grado">Grado (opcional)</label>
-        <select id="nuevo-grado" className="campo" value={grado} onChange={(e) => setGrado(e.target.value)}>
+        <label className="etiqueta" htmlFor={`${pre}-grado`}>Grado (opcional)</label>
+        <select id={`${pre}-grado`} className="campo" value={grado} onChange={(e) => setGrado(e.target.value)}>
           <option value="">Sin grado</option>
           {[3, 4, 5, 6, 7, 8, 9, 10, 11].map((g) => <option key={g} value={g}>{g}.°</option>)}
         </select>
       </div>
       <div style={{ display: 'flex', gap: 8 }}>
         <button type="button" className="btn btn-sec" onClick={() => alTerminar(false)}>Cancelar</button>
-        <button type="submit" className="btn" disabled={enviando}>{enviando ? 'Guardando…' : 'AGREGAR'}</button>
+        <button type="submit" className="btn" disabled={enviando}>{enviando ? 'Guardando…' : original ? 'GUARDAR' : 'AGREGAR'}</button>
       </div>
       {!!error && <div style={{ flexBasis: '100%' }}><ErrorCaja error={error} /></div>}
     </form>
@@ -79,6 +83,7 @@ export default function Estudiantes() {
   const [texto, setTexto] = useState<number | null>(null)
   const [abriendo, setAbriendo] = useState(false)
   const [agregando, setAgregando] = useState(false)
+  const [editando, setEditando] = useState<number | null>(null)
   const [error, setError] = useState<unknown>(null)
   const panelAula = useRef<HTMLElement>(null)
 
@@ -130,7 +135,7 @@ export default function Estudiantes() {
       </div>
       <PestanasCurso id={id} actual="estudiantes" />
 
-      {agregando && <AgregarEstudiante cursoId={id} alTerminar={(nuevo) => { setAgregando(false); if (nuevo) { lista.recargar(); curso.recargar() } }} />}
+      {agregando && <FormEstudiante cursoId={id} alTerminar={(nuevo) => { setAgregando(false); if (nuevo) { lista.recargar(); curso.recargar() } }} />}
       {lista.cargando && <Cargando texto="Cargando estudiantes" />}
       <ErrorCaja error={lista.error || curso.error} />
       {lista.datos && lista.datos.length === 0 && <div className="aviso aviso-info">Este curso aún no tiene estudiantes. Agrégalos con el botón «Agregar estudiante».</div>}
@@ -147,12 +152,19 @@ export default function Estudiantes() {
           {lista.datos?.map((e, i) => {
             const sel = elegido?.id === e.id
             const sinActividades = e.porcentaje_macro == null && e.porcentaje_super == null && e.porcentaje_micro == null
+            if (editando === e.id) return <FormEstudiante key={e.id} cursoId={id} original={e} alTerminar={(cambio) => { setEditando(null); if (cambio) { lista.recargar(); if (elegido?.id === e.id) setElegido(null) } }} />
             return (
               <div key={e.id} className="aparecer" style={{ animationDelay: `${i * 50}ms`, display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap', padding: '12px 14px', borderRadius: 18, background: '#FFFFFF', border: `2px solid ${sel ? 'var(--cobalto)' : 'var(--borde)'}` }}>
                 <Avatar nombre={e.nombre} i={i} />
                 <div style={{ flex: '1 1 180px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 3 }}>
-                  <Link to={`/estudiantes/${e.id}`} title="Ver progreso" style={{ fontWeight: 900, fontSize: 16, color: 'var(--tinta)', textDecoration: 'none' }}>{e.nombre}</Link>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+                    <Link to={`/estudiantes/${e.id}`} title="Ver progreso" style={{ fontWeight: 900, fontSize: 16, color: 'var(--tinta)', textDecoration: 'none', overflowWrap: 'anywhere' }}>{e.nombre}</Link>
+                    <button type="button" aria-label={`Editar nombre y grado de ${e.nombre}`} title="Editar nombre y grado" onClick={() => { setEditando(e.id); setAgregando(false) }} style={{ width: 32, height: 32, borderRadius: 10, border: '2px solid var(--borde)', background: '#FFFFFF', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2F5BEA" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4zM14 6l4 4" /></svg>
+                    </button>
+                  </div>
                   <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                    <span style={{ padding: '3px 8px', borderRadius: 999, background: '#F3F4F6', color: '#374151', fontWeight: 800, fontSize: 11.5 }}>{e.grado != null ? `${e.grado}.°` : 'Sin grado'}</span>
                     {conAlerta.has(e.id) && <span title="Podría necesitar acompañamiento" style={{ padding: '3px 8px', borderRadius: 999, background: 'var(--aviso-fondo)', color: 'var(--aviso-texto)', fontWeight: 800, fontSize: 11.5 }}>Acompañamiento</span>}
                     {sinActividades && <span style={{ padding: '3px 8px', borderRadius: 999, background: 'var(--hielo)', color: 'var(--cobalto-borde)', fontWeight: 800, fontSize: 11.5 }}>Sin actividades aún</span>}
                   </div>

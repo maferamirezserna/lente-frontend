@@ -181,6 +181,12 @@ const rutas: Ruta[] = [
   ['GET', /^\/cursos$/, () => cursos],
   ['GET', /^\/cursos\/(\d+)$/, (m) => cursos.find((c) => c.id === +m[1])],
   ['GET', /^\/estudiantes\/(\d+)$/, (m) => estudiantes.find((e) => e.id === +m[1])],
+  ['PATCH', /^\/estudiantes\/(\d+)$/, (m, b) => {
+    const e = estudiantes.find((x) => x.id === +m[1])!
+    if (b.nombre !== undefined) e.nombre = b.nombre
+    if (b.grado !== undefined) { e.grado = b.grado; e.grado_texto = b.grado == null ? 'Sin grado' : `${b.grado}.°` }
+    return e
+  }],
   ['GET', /^\/estudiantes\/(\d+)\/progreso$/, (m) => {
     const e = estudiantes.find((x) => x.id === +m[1])!
     const hizo = e.porcentaje_macro != null
@@ -275,6 +281,11 @@ const rutas: Ruta[] = [
     if (inicio < 0) throw Object.assign(new Error('Esa palabra no aparece en el texto.'), { status: 422 })
     const p = { id: Date.now(), palabra: b.palabra, tipo: b.tipo, inicio, fin: inicio + b.palabra.length, explicacion: null }
     t.palabras.push(p)
+    return p
+  }],
+  ['PATCH', /^\/textos\/(\d+)\/preguntas\/(\d+)$/, (m, b) => {
+    const p = textos.find((x) => x.id === +m[1])!.preguntas.find((q) => q.id === +m[2])!
+    Object.assign(p, b)
     return p
   }],
   ['DELETE', /^\/textos\/(\d+)\/preguntas\/(\d+)$/, (m) => { const t = textos.find((x) => x.id === +m[1])!; t.preguntas = t.preguntas.filter((p) => p.id !== +m[2]); return undefined }],
