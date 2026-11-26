@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { NavLink, Link, useNavigate } from 'react-router-dom'
 import { useSesion } from '../auth'
 import { DEMO } from '../api/client'
@@ -162,6 +162,41 @@ export function Cargando({ texto = 'Cargando' }: { texto?: string }) {
       <svg className="girar" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--cobalto)" strokeWidth="3" strokeLinecap="round" aria-hidden="true"><path d="M12 3a9 9 0 1 1-9 9" /></svg>
       {texto}…
     </div>
+  )
+}
+
+// Ventana para confirmar una acción (borrar, archivar…) con palabras claras, en vez del
+// aviso gris del navegador. Usa <dialog>: enfoca el botón seguro, se cierra con Esc y
+// bloquea el resto de la página mientras está abierta.
+export function Confirmar({ abierto, titulo, children, si, no = 'Cancelar', peligro = false, ocupado = false, onSi, onNo }: {
+  abierto: boolean; titulo: string; children: ReactNode; si: string; no?: string; peligro?: boolean
+  ocupado?: boolean; onSi: () => void; onNo: () => void
+}) {
+  const ref = useRef<HTMLDialogElement>(null)
+  useEffect(() => {
+    const d = ref.current
+    if (!d) return
+    if (abierto && !d.open) d.showModal()
+    if (!abierto && d.open) d.close()
+  }, [abierto])
+  return (
+    <dialog ref={ref} className="dialogo" aria-labelledby="dialogo-titulo" onCancel={(e) => { e.preventDefault(); if (!ocupado) onNo() }}>
+      <div style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span aria-hidden="true" style={{ width: 44, height: 44, flexShrink: 0, borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', background: peligro ? 'var(--mejorar-fondo)' : 'var(--hielo)' }}>
+            {peligro
+              ? <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C0392B" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"><path d="M5 7h14M10 11v6M14 11v6M7 7l1 13h8l1-13M9 7V4h6v3" /></svg>
+              : <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2F5BEA" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"><path d="M4 7h16v12H4zM4 7l2-3h12l2 3M10 11h4" /></svg>}
+          </span>
+          <h2 id="dialogo-titulo" style={{ margin: 0, fontWeight: 900, fontSize: 20, lineHeight: 1.25, color: 'var(--tinta)' }}>{titulo}</h2>
+        </div>
+        <div style={{ fontWeight: 600, fontSize: 15, lineHeight: 1.55, color: '#374151' }}>{children}</div>
+        <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', flexWrap: 'wrap', marginTop: 4 }}>
+          <button type="button" className="btn btn-sec" autoFocus disabled={ocupado} onClick={onNo}>{no}</button>
+          <button type="button" className={`btn ${peligro ? 'btn-peligro' : ''}`} disabled={ocupado} onClick={onSi}>{ocupado ? 'Un momento…' : si}</button>
+        </div>
+      </div>
+    </dialog>
   )
 }
 
