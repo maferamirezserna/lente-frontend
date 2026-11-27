@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { api, ApiError, ahora, nuevoCodigo } from '../api/client'
 import type { ActividadVista, EstadoMacro, EstadoSuper, ResultadoActividad, TipoPalabra } from '../api/types'
@@ -189,6 +189,40 @@ const kicker = { fontWeight: 900, fontSize: 13, letterSpacing: 1, color: 'var(--
 const tarjetaTexto = { position: 'relative', borderRadius: 20, border: '2px solid var(--borde)', borderBottomWidth: 5, background: '#FFFFFF', padding: '20px 22px', fontFamily: "'Lexend', sans-serif" } as const
 
 // Dos columnas: la noticia a la izquierda y la tarea a la derecha, con barra inferior fija.
+// En celulares y tabletas el teclado en pantalla tapa la parte de abajo. Mientras se escribe,
+// el campo se mantiene en el espacio que queda libre: entre la cabecera y lo que esté más
+// arriba, el teclado (visualViewport) o la barra fija de «Comprobar».
+function useCampoVisible(ref: RefObject<HTMLElement | null>) {
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const mostrar = () => {
+      if (document.activeElement !== el) return
+      const vv = window.visualViewport
+      const arriba = vv ? vv.offsetTop : 0
+      const barra = document.querySelector('[data-barra-accion]')?.getBoundingClientRect().top ?? Infinity
+      const limite = Math.min(vv ? vv.offsetTop + vv.height : window.innerHeight, barra) - 12
+      const r = el.getBoundingClientRect()
+      if (r.top >= arriba + 12 && r.bottom <= limite) return
+      const espacio = limite - (arriba + 12)
+      const destino = arriba + 12 + Math.max(0, (espacio - r.height) / 2)
+      window.scrollBy({ top: r.top - destino, behavior: 'smooth' })
+    }
+    // El teclado tarda un momento en abrir: se revisa al enfocar y cada vez que cambia el alto visible.
+    const alEnfocar = () => { window.setTimeout(mostrar, 350); window.setTimeout(mostrar, 700) }
+    el.addEventListener('focus', alEnfocar)
+    el.addEventListener('input', mostrar)
+    window.visualViewport?.addEventListener('resize', mostrar)
+    window.addEventListener('resize', mostrar)
+    return () => {
+      el.removeEventListener('focus', alEnfocar)
+      el.removeEventListener('input', mostrar)
+      window.visualViewport?.removeEventListener('resize', mostrar)
+      window.removeEventListener('resize', mostrar)
+    }
+  }, [ref])
+}
+
 function Trabajo({ izquierda, derecha, abajo, hoja }: { izquierda: ReactNode; derecha: ReactNode; abajo: ReactNode; hoja?: ReactNode }) {
   return (
     <>
@@ -196,7 +230,7 @@ function Trabajo({ izquierda, derecha, abajo, hoja }: { izquierda: ReactNode; de
         <section aria-label="Noticia" style={{ flex: '1 1 460px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>{izquierda}</section>
         <section aria-label="Tarea" className="aparecer" style={{ flex: '1 1 380px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 14 }}>{derecha}</section>
       </main>
-      <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 10, padding: '16px clamp(16px, 4vw, 36px) 20px', borderTop: '2px solid var(--borde)', background: '#FFFFFF', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 16 }}>{abajo}</div>
+      <div data-barra-accion className="act-barra" style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 10, padding: '16px clamp(16px, 4vw, 36px) 20px', borderTop: '2px solid var(--borde)', background: '#FFFFFF', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 16 }}>{abajo}</div>
       {hoja}
     </>
   )
@@ -300,6 +334,8 @@ function PasoMacro({ vista, onRevisado, onListo, onError }: PropsPaso) {
   const [estado, setEstado] = useState<EstadoMacro | null>(null)
   const [enviando, setEnviando] = useState(false)
   const codigo = useRef(nuevoCodigo())
+  const campo = useRef<HTMLTextAreaElement>(null)
+  useCampoVisible(campo)
 
   // Si ya había respondido (p. ej. se recargó la página), retomar la revisión.
   useEffect(() => {
@@ -337,10 +373,10 @@ function PasoMacro({ vista, onRevisado, onListo, onError }: PropsPaso) {
       izquierda={<Noticia vista={vista} cita={revisado ? estado?.cita : null} />}
       derecha={<>
         <span style={kicker}>PASO 1 · IDEA PRINCIPAL</span>
-        <h3 style={{ margin: 0, fontWeight: 900, fontSize: 26, lineHeight: 1.2 }}>{vista.instruccion}</h3>
+        <h3 className="act-instruccion" style={{ margin: 0, fontWeight: 900, fontSize: 26, lineHeight: 1.2 }}>{vista.instruccion}</h3>
         {!estado && <>
           <label htmlFor="idea" style={{ fontWeight: 800, fontSize: 14, color: 'var(--gris)' }}>Tu respuesta</label>
-          <textarea id="idea" className="campo" rows={5} maxLength={2000} value={texto} onChange={(e) => setTexto(e.target.value)} placeholder="La noticia trata de…" style={{ fontSize: 17 }} />
+          <textarea ref={campo} id="idea" className="campo" rows={5} maxLength={2000} value={texto} onChange={(e) => setTexto(e.target.value)} placeholder="La noticia trata de…" style={{ fontSize: 17 }} />
         </>}
         {(estado?.analizando || enviando) && <Espera />}
         {revisado && <>
@@ -529,7 +565,7 @@ function PasoMicro({ vista, onRevisado, onListo, onError }: PropsPaso) {
       </>}
       derecha={<>
         <span style={kicker}>PASO 3 · LENGUAJE</span>
-        <h3 style={{ margin: 0, fontWeight: 900, fontSize: 26, lineHeight: 1.2 }}>{vista.instruccion}</h3>
+        <h3 className="act-instruccion" style={{ margin: 0, fontWeight: 900, fontSize: 26, lineHeight: 1.2 }}>{vista.instruccion}</h3>
         <p style={{ margin: 0, fontWeight: 700, fontSize: 15, color: 'var(--gris)' }}>
           {pideTipo ? 'Elige el tipo y toca la palabra con la lupa.' : 'Toca la palabra con la lupa para marcarla.'} Tócala otra vez para quitarla.
           {!pideTipo && vista.palabras_esperadas ? ` Busca ${vista.palabras_esperadas} palabras.` : ''}
