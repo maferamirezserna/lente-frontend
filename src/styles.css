@@ -166,6 +166,7 @@ label.etiqueta { font-weight: 800; font-size: 15px; }
   .act-cabecera { flex-wrap: wrap; justify-content: space-between; gap: 10px !important; }
   .act-progreso { order: 3; flex-basis: 100%; }
   .act-ficha { max-width: calc(100% - 120px); }
+  .act-instruccion { font-size: 21px !important; }
 
   /* Tablas del administrador: cada fila se vuelve una tarjeta */
   .tabla-adaptable { min-width: 0 !important; }
@@ -174,6 +175,13 @@ label.etiqueta { font-weight: 800; font-size: 15px; }
   .tabla-adaptable td { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 6px 4px !important; border: 0 !important; }
   .tabla-adaptable td[data-etiqueta]::before { content: attr(data-etiqueta); font-weight: 800; font-size: 12px; color: var(--gris-claro); text-transform: uppercase; letter-spacing: .5px; }
   .tabla-adaptable td.celda-acciones { justify-content: flex-start; flex-wrap: wrap; white-space: normal !important; }
+}
+
+/* Poco alto visible (teclado abierto o celular acostado): barra de «Comprobar» más baja */
+@media (max-height: 560px) {
+  .act-barra { padding-top: 8px !important; padding-bottom: 8px !important; }
+  .act-barra .btn { min-height: 44px !important; }
+  .act-instruccion { font-size: 19px !important; }
 }
 
 @media (prefers-reduced-motion: reduce) {
